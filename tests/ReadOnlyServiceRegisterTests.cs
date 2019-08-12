@@ -28,7 +28,7 @@
         public void TestRegister()
         {
             Assert.NotNull(ServiceRegister);
-            Assert.Empty(ServiceRegister);
+            Assert.Empty(ServiceRegister.Registrations);
 
             Assert.Throws<InvalidOperationException>(
                 () => ServiceRegister.Register(new DummyServiceRegistration()));
