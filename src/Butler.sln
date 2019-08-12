@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29123.89
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Butler", "Butler.csproj", "{DABF3CB1-8510-460F-B22C-2173921914FD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Butler.Tests", "..\tests\Butler.Tests.csproj", "{DFA456CC-5656-4FBA-8F55-1168F9E2DCA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Butler.Tests", "..\tests\Butler.Tests.csproj", "{079F45A3-0D9A-47C9-86F7-5D6483478603}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{DABF3CB1-8510-460F-B22C-2173921914FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DABF3CB1-8510-460F-B22C-2173921914FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DABF3CB1-8510-460F-B22C-2173921914FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DFA456CC-5656-4FBA-8F55-1168F9E2DCA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DFA456CC-5656-4FBA-8F55-1168F9E2DCA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DFA456CC-5656-4FBA-8F55-1168F9E2DCA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DFA456CC-5656-4FBA-8F55-1168F9E2DCA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{079F45A3-0D9A-47C9-86F7-5D6483478603}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{079F45A3-0D9A-47C9-86F7-5D6483478603}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{079F45A3-0D9A-47C9-86F7-5D6483478603}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{079F45A3-0D9A-47C9-86F7-5D6483478603}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
