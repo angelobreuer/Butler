@@ -1,5 +1,6 @@
 ﻿namespace Butler.Tests
 {
+    using Butler.Register;
     using Butler.Registration;
     using Butler.Tests.Dummy;
     using System;

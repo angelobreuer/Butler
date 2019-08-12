@@ -1,4 +1,4 @@
-﻿namespace Butler
+﻿namespace Butler.Register
 {
     using System;
     using System.Collections.Generic;
@@ -20,6 +20,11 @@
             _registrations = new List<IServiceRegistration>();
             _registrationsLock = new object();
         }
+
+        /// <summary>
+        ///     Gets a value indicating whether new service registrations are not allowed.
+        /// </summary>
+        public bool IsReadOnly { get; } = false;
 
         /// <summary>
         ///     Gets all copy of the service registrations in the register.
