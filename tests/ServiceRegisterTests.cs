@@ -37,15 +37,23 @@
         ///     Tests registering a dummy service registration.
         /// </summary>
         [Fact]
-        public void TestRegister()
+        public void TestRegisterInstance()
         {
+            // check before insert
             Assert.NotNull(ServiceRegister);
             Assert.Empty(ServiceRegister.Registrations);
 
-            ServiceRegister.Register(new DummyServiceRegistration());
+            // insert
+            var registration = new DummyServiceRegistration();
+            ServiceRegister.RegisterInstance<object>(registration);
 
+            // check after insert
             Assert.NotEmpty(ServiceRegister.Registrations);
             Assert.Single(ServiceRegister.Registrations);
+
+            // try resolve registration
+            Assert.NotNull(ServiceRegister.FindRegistration<object>());
+            Assert.Same(registration, ServiceRegister.FindRegistration<object>());
         }
     }
 }

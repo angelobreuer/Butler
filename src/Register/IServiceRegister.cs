@@ -17,13 +17,30 @@
         /// <summary>
         ///     Gets all service registrations in the register.
         /// </summary>
-        IReadOnlyList<KeyValuePair<Type, IServiceRegistration>> Registrations { get; }
+        IReadOnlyCollection<KeyValuePair<Type, IServiceRegistration>> Registrations { get; }
 
         /// <summary>
         ///     Creates a read-only instance of the service register.
         /// </summary>
         /// <returns>the read-only service register</returns>
         ReadOnlyServiceRegister AsReadOnly();
+
+        /// <summary>
+        ///     Finds the service registration for the specified <paramref name="type"/>.
+        /// </summary>
+        /// <param name="type">the type of the service to find the registration for</param>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="type"/> is <see langword="null"/>.
+        /// </exception>
+        /// <returns>the service registration</returns>
+        IServiceRegistration FindRegistration(Type type);
+
+        /// <summary>
+        ///     Finds the service registration for the specified <paramref name="type"/>.
+        /// </summary>
+        /// <typeparam name="TService">the type of the service to find the service for</typeparam>
+        /// <returns>the service registration</returns>
+        IServiceRegistration FindRegistration<TService>();
 
         /// <summary>
         ///     Registers the specified <paramref name="registration"/>.
@@ -39,7 +56,11 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
-        void Register(Type type, IServiceRegistration registration);
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <paramref name="type"/> already exists
+        ///     and replace is <see langword="false"/>.
+        /// </exception>
+        void Register(Type type, IServiceRegistration registration, bool replace = false);
 
         /// <summary>
         ///     Registers the specified <paramref name="registration"/>.
@@ -52,7 +73,11 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
-        void Register<T>(IServiceRegistration registration);
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <paramref name="type"/> already exists
+        ///     and replace is <see langword="false"/>.
+        /// </exception>
+        void Register<T>(IServiceRegistration registration, bool replace = false);
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
@@ -62,7 +87,11 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
-        void Register<T>(T instance) where T : class;
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <paramref name="type"/> already exists
+        ///     and replace is <see langword="false"/>.
+        /// </exception>
+        void RegisterInstance<T>(T instance, bool replace = false) where T : class;
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
@@ -73,7 +102,11 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
-        void Register<TAbstraction, TImplementation>(TImplementation instance)
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <paramref name="type"/> already exists
+        ///     and replace is <see langword="false"/>.
+        /// </exception>
+        void RegisterInstance<TAbstraction, TImplementation>(TImplementation instance, bool replace = false)
             where TImplementation : class, TAbstraction;
     }
 }

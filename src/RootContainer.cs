@@ -8,7 +8,7 @@
 
 #if SUPPORTS_ASYNC_DISPOSABLE
     using System.Threading.Tasks;
-#endif
+#endif // SUPPORTS_ASYNC_DISPOSABLE
 
     /// <summary>
     ///     An inversion of control (IoC) container that supports resolving services.
@@ -24,7 +24,7 @@
         {
         }
 
-#endif
+#endif // !SUPPORTS_ASYNC_DISPOSABLE
 
         /// <summary>
         ///     Gets the service registration enumerator.
@@ -39,6 +39,7 @@
         /// <returns>the service registration enumerator</returns>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+#if SUPPORTS_SERVICE_PROVIDER
         /// <summary>
         ///     Resolves a service of the specified <paramref name="serviceType"/>.
         /// </summary>
@@ -49,15 +50,24 @@
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
-        public object GetService(Type serviceType)
-        {
-            if (serviceType is null)
-            {
-                throw new ArgumentNullException(nameof(serviceType));
-            }
+        object IServiceProvider.GetService(Type serviceType) => Resolve(serviceType);
+#endif // SUPPORTS_SERVICE_PROVIDER
 
-            // TODO
-            return null;
+        /// <summary>
+        ///     Resolves a single service.
+        /// </summary>
+        /// <param name="serviceType">the type of the service to resolve</param>
+        /// <returns>the service instance of type <paramref name="serviceType"/></returns>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        public object Resolve(Type serviceType)
+        {
+            // find registration
+            var registration = FindRegistration(serviceType);
+
+            // TODO TODO TODO
+            return registration.Create();
         }
 
 #if SUPPORTS_ASYNC_DISPOSABLE
@@ -69,6 +79,6 @@
         {
             return default;
         }
-#endif
+#endif // SUPPORTS_ASYNC_DISPOSABLE
     }
 }

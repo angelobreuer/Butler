@@ -16,7 +16,7 @@
         ///     Initializes a new instance of the <see cref="ReadOnlyServiceRegisterTests"/> class.
         /// </summary>
         public ReadOnlyServiceRegisterTests()
-            => ServiceRegister = new ReadOnlyServiceRegister(new KeyValuePair<Type, IServiceRegistration>[0]);
+            => ServiceRegister = new ReadOnlyServiceRegister(new Dictionary<Type, IServiceRegistration>());
 
         /// <summary>
         ///     Gets the service register being tested.

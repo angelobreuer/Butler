@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
     using Butler.Registration;
 
     /// <summary>
@@ -10,11 +11,16 @@
     public sealed class ReadOnlyServiceRegister : IServiceRegister
     {
         /// <summary>
+        ///     The service registrations.
+        /// </summary>
+        private readonly IReadOnlyDictionary<Type, IServiceRegistration> _registrations;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ReadOnlyServiceRegister"/> class.
         /// </summary>
         /// <param name="registrations">the static registrations</param>
-        public ReadOnlyServiceRegister(IReadOnlyList<KeyValuePair<Type, IServiceRegistration>> registrations)
-            => Registrations = registrations ?? throw new ArgumentNullException(nameof(registrations));
+        public ReadOnlyServiceRegister(IReadOnlyDictionary<Type, IServiceRegistration> registrations)
+            => _registrations = registrations ?? throw new ArgumentNullException(nameof(registrations));
 
         /// <summary>
         ///     Gets a value indicating whether new service registrations are not allowed.
@@ -22,16 +28,36 @@
         public bool IsReadOnly { get; } = true;
 
         /// <summary>
-        ///     Gets all copy of the service registrations in the register.
+        ///     Gets all service registrations in the register.
         /// </summary>
-        public IReadOnlyList<KeyValuePair<Type, IServiceRegistration>> Registrations { get; }
+        public IReadOnlyCollection<KeyValuePair<Type, IServiceRegistration>> Registrations => _registrations;
 
         /// <summary>
         ///     Creates a read-only instance of the service register.
         /// </summary>
         /// <returns>the read-only service register</returns>
         public ReadOnlyServiceRegister AsReadOnly()
-            => new ReadOnlyServiceRegister(Registrations);
+            => new ReadOnlyServiceRegister(_registrations);
+
+        /// <summary>
+        ///     Finds the service registration for the specified <paramref name="type"/>.
+        /// </summary>
+        /// <param name="type">the type of the service to find the registration for</param>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="type"/> is <see langword="null"/>.
+        /// </exception>
+        /// <returns>the service registration</returns>
+        public IServiceRegistration FindRegistration(Type type)
+            => _registrations.TryGetValue(type, out var registration) ? registration : null;
+
+        /// <summary>
+        ///     Finds the service registration for the specified <paramref name="type"/>.
+        /// </summary>
+        /// <typeparam name="TService">the type of the service to find the service for</typeparam>
+        /// <returns>the service registration</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IServiceRegistration FindRegistration<TService>()
+            => FindRegistration(typeof(TService));
 
         /// <summary>
         ///     Registers the specified <paramref name="registration"/>.
@@ -47,7 +73,11 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
-        public void Register(Type type, IServiceRegistration registration)
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <paramref name="type"/> already exists
+        ///     and replace is <see langword="false"/>.
+        /// </exception>
+        public void Register(Type type, IServiceRegistration registration, bool replace = false)
             => ThrowReadOnlyException();
 
         /// <summary>
@@ -61,7 +91,11 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
-        public void Register<T>(IServiceRegistration registration)
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <paramref name="type"/> already exists
+        ///     and replace is <see langword="false"/>.
+        /// </exception>
+        public void Register<T>(IServiceRegistration registration, bool replace = false)
             => ThrowReadOnlyException();
 
         /// <summary>
@@ -72,7 +106,11 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
-        public void Register<T>(T instance) where T : class
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <paramref name="type"/> already exists
+        ///     and replace is <see langword="false"/>.
+        /// </exception>
+        public void Register<T>(T instance, bool replace = false) where T : class
             => ThrowReadOnlyException();
 
         /// <summary>
@@ -84,8 +122,13 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
-        public void Register<TAbstraction, TImplementation>(TImplementation instance)
-            where TImplementation : class, TAbstraction => ThrowReadOnlyException();
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <paramref name="type"/> already exists
+        ///     and replace is <see langword="false"/>.
+        /// </exception>
+        public void Register<TAbstraction, TImplementation>(TImplementation instance, bool replace = false)
+            where TImplementation : class, TAbstraction
+            => ThrowReadOnlyException();
 
         /// <summary>
         ///     Throws an exception that indicates that the service register is read-only.
