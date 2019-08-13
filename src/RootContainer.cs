@@ -1,12 +1,29 @@
 ﻿namespace Butler
 {
+    using Butler.Register;
+    using Butler.Registration;
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
 
     /// <summary>
     ///     A inversion of control (IoC) container that supports resolving services.
     /// </summary>
-    public class RootContainer : IServiceProvider
+    public class RootContainer : ServiceRegister, IEnumerable<KeyValuePair<Type, IServiceRegistration>>, IEnumerable, IServiceRegister, IServiceProvider
     {
+        /// <summary>
+        ///     Gets the service registration enumerator.
+        /// </summary>
+        /// <returns>the service registration enumerator</returns>
+        public IEnumerator<KeyValuePair<Type, IServiceRegistration>> GetEnumerator()
+            => Registrations.GetEnumerator();
+
+        /// <summary>
+        ///     Gets the service registration enumerator.
+        /// </summary>
+        /// <returns>the service registration enumerator</returns>
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
         /// <summary>
         ///     Resolves a service of the specified <paramref name="serviceType"/>.
         /// </summary>

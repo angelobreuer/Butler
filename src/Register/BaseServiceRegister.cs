@@ -2,29 +2,23 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
     using Butler.Registration;
 
     /// <summary>
-    ///     A class that provides a read-only service register.
+    ///     Abstraction for a service register.
     /// </summary>
-    public sealed class ReadOnlyServiceRegister : IServiceRegister
+    public abstract class BaseServiceRegister : IServiceRegister
     {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ReadOnlyServiceRegister"/> class.
-        /// </summary>
-        /// <param name="registrations">the static registrations</param>
-        public ReadOnlyServiceRegister(IReadOnlyList<KeyValuePair<Type, IServiceRegistration>> registrations)
-            => Registrations = registrations ?? throw new ArgumentNullException(nameof(registrations));
-
         /// <summary>
         ///     Gets a value indicating whether new service registrations are not allowed.
         /// </summary>
-        public bool IsReadOnly { get; } = true;
+        public abstract bool IsReadOnly { get; }
 
         /// <summary>
-        ///     Gets all copy of the service registrations in the register.
+        ///     Gets all service registrations in the register.
         /// </summary>
-        public IReadOnlyList<KeyValuePair<Type, IServiceRegistration>> Registrations { get; }
+        public abstract IReadOnlyList<KeyValuePair<Type, IServiceRegistration>> Registrations { get; }
 
         /// <summary>
         ///     Creates a read-only instance of the service register.
@@ -47,8 +41,7 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
-        public void Register(Type type, IServiceRegistration registration)
-            => ThrowReadOnlyException();
+        public abstract void Register(Type type, IServiceRegistration registration);
 
         /// <summary>
         ///     Registers the specified <paramref name="registration"/>.
@@ -61,8 +54,9 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Register<T>(IServiceRegistration registration)
-            => ThrowReadOnlyException();
+            => Register(typeof(T), registration);
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
@@ -73,7 +67,7 @@
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         public void Register<T>(T instance) where T : class
-            => ThrowReadOnlyException();
+            => Register<T>(new InstanceRegistration(instance));
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
@@ -85,13 +79,7 @@
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         public void Register<TAbstraction, TImplementation>(TImplementation instance)
-            where TImplementation : class, TAbstraction => ThrowReadOnlyException();
-
-        /// <summary>
-        ///     Throws an exception that indicates that the service register is read-only.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">always thrown</exception>
-        private void ThrowReadOnlyException()
-            => throw new InvalidOperationException("The register is read-only. No registrations are allowed.");
+            where TImplementation : class, TAbstraction
+            => Register<TAbstraction>(new InstanceRegistration(instance));
     }
 }
