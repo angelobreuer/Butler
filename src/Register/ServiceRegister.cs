@@ -165,7 +165,7 @@
         ///     and replace is <see langword="false"/>.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Register<T>(T instance, bool replace = false) where T : class
+        public void RegisterInstance<T>(T instance, bool replace = false) where T : class
             => Register<T>(new InstanceRegistration(instance), replace);
 
         /// <summary>
@@ -181,7 +181,7 @@
         ///     thrown if a registration with the specified <paramref name="type"/> already exists
         ///     and replace is <see langword="false"/>.
         /// </exception>
-        public void Register<TAbstraction, TImplementation>(TImplementation instance, bool replace = false)
+        public void RegisterInstance<TAbstraction, TImplementation>(TImplementation instance, bool replace = false)
             where TImplementation : class, TAbstraction
             => Register<TAbstraction>(new InstanceRegistration(instance), replace);
     }

@@ -5,7 +5,10 @@
     /// <summary>
     ///     An exception for service registration errors.
     /// </summary>
+#if SUPPORTS_SERIALIZABLE
     [Serializable]
+#endif
+
     public sealed class RegistrationException : Exception
     {
         /// <summary>

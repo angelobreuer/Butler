@@ -33,7 +33,7 @@
             Assert.Empty(ServiceRegister.Registrations);
 
             Assert.Throws<InvalidOperationException>(
-                () => ServiceRegister.Register(new DummyServiceRegistration()));
+                () => ServiceRegister.RegisterInstance(new DummyServiceRegistration()));
         }
     }
 }

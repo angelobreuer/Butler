@@ -45,7 +45,7 @@
 
             // insert
             var registration = new DummyServiceRegistration();
-            ServiceRegister.RegisterInstance<object>(registration);
+            ServiceRegister.Register<object>(registration);
 
             // check after insert
             Assert.NotEmpty(ServiceRegister.Registrations);
