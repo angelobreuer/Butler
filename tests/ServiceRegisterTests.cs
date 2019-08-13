@@ -28,7 +28,9 @@
         [Fact]
         public void TestRegisterNull()
         {
-            Assert.Throws<ArgumentNullException>(() => ServiceRegister.Register(null));
+            Assert.Throws<ArgumentNullException>(() => ServiceRegister.Register(null, null));
+            Assert.Throws<ArgumentNullException>(() => ServiceRegister.Register(GetType(), null));
+            Assert.Throws<ArgumentNullException>(() => ServiceRegister.Register(null, new DummyServiceRegistration()));
         }
 
         /// <summary>

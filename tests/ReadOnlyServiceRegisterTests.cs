@@ -1,8 +1,10 @@
 ﻿namespace Butler.Tests
 {
     using Butler.Register;
+    using Butler.Registration;
     using Butler.Tests.Dummy;
     using System;
+    using System.Collections.Generic;
     using Xunit;
 
     /// <summary>
@@ -14,7 +16,7 @@
         ///     Initializes a new instance of the <see cref="ReadOnlyServiceRegisterTests"/> class.
         /// </summary>
         public ReadOnlyServiceRegisterTests()
-            => ServiceRegister = new ReadOnlyServiceRegister(new DummyServiceRegistration[0]);
+            => ServiceRegister = new ReadOnlyServiceRegister(new KeyValuePair<Type, IServiceRegistration>[0]);
 
         /// <summary>
         ///     Gets the service register being tested.
