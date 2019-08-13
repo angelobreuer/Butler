@@ -6,11 +6,26 @@
     using System.Collections;
     using System.Collections.Generic;
 
+#if SUPPORTS_ASYNC_DISPOSABLE
+    using System.Threading.Tasks;
+#endif
+
     /// <summary>
     ///     An inversion of control (IoC) container that supports resolving services.
     /// </summary>
-    public class RootContainer : ServiceRegister, IEnumerable<KeyValuePair<Type, IServiceRegistration>>, IEnumerable, IServiceRegister, IServiceProvider
+    public class RootContainer : ServiceRegister, IRootContainer
     {
+#if !SUPPORTS_ASYNC_DISPOSABLE
+
+        /// <summary>
+        ///     Disposes the root container.
+        /// </summary>
+        public void Dispose()
+        {
+        }
+
+#endif
+
         /// <summary>
         ///     Gets the service registration enumerator.
         /// </summary>
@@ -44,5 +59,16 @@
             // TODO
             return null;
         }
+
+#if SUPPORTS_ASYNC_DISPOSABLE
+        /// <summary>
+        ///     Disposes the root container asynchronously.
+        /// </summary>
+        /// <returns>a task that represents the asynchronous operation.</returns>
+        public ValueTask DisposeAsync()
+        {
+            return default;
+        }
+#endif
     }
 }

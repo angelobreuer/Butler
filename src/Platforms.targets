@@ -1,0 +1,40 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Configuration Defines -->
+  <Choose>
+    <When Condition=" '$(Configuration)'=='Debug' ">
+      <!-- DEBUG Configuration -->
+      <PropertyGroup>
+        <DefineConstants>DEBUG;WALK_PATH;TRACE</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <!-- RELEASE Configuration -->
+      <PropertyGroup>
+        <DefineConstants>RELEASE</DefineConstants>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <!-- Platform-Specific Defines -->
+  <Choose>
+    <When Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
+      <!-- .NET Standard 1.0 -->
+      <PropertyGroup>
+        <DefineConstants></DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+      <!-- .NET Standard 2.0 -->
+      <PropertyGroup>
+        <DefineConstants>SUPPORTS_SERVICE_PROVIDER</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(TargetFramework)' == 'netstandard2.1' ">
+      <!-- .NET Standard 2.1 (Preview) -->
+      <PropertyGroup>
+        <DefineConstants>SUPPORTS_SERVICE_PROVIDER;SUPPORTS_ASYNC_DISPOSABLE</DefineConstants>
+      </PropertyGroup>
+    </When>
+  </Choose>
+</Project>
