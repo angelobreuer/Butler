@@ -7,7 +7,7 @@
     using System.Collections.Generic;
 
     /// <summary>
-    ///     A inversion of control (IoC) container that supports resolving services.
+    ///     An inversion of control (IoC) container that supports resolving services.
     /// </summary>
     public class RootContainer : ServiceRegister, IEnumerable<KeyValuePair<Type, IServiceRegistration>>, IEnumerable, IServiceRegister, IServiceProvider
     {
