@@ -20,14 +20,5 @@
         IDisposable
 #endif // SUPPORTS_ASYNC_DISPOSABLE
     {
-        /// <summary>
-        ///     Resolves a single service.
-        /// </summary>
-        /// <param name="serviceType">the type of the service to resolve</param>
-        /// <returns>the service instance of type <paramref name="serviceType"/></returns>
-        /// <exception cref="ArgumentNullException">
-        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-        /// </exception>
-        object Resolve(Type serviceType);
     }
 }
