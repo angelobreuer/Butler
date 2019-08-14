@@ -5,7 +5,7 @@
     <When Condition=" '$(Configuration)'=='Debug' ">
       <!-- DEBUG Configuration -->
       <PropertyGroup>
-        <DefineConstants>DEBUG;WALK_PATH;TRACE</DefineConstants>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
       </PropertyGroup>
     </When>
     <Otherwise>
