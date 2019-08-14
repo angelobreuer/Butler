@@ -75,7 +75,7 @@
         }
 
         /// <summary>
-        ///     Finds the service registration for the specified <paramref name="type"/>.
+        ///     Finds the service registration for the specified <typeparamref name="TService" />.
         /// </summary>
         /// <typeparam name="TService">the type of the service to find the service for</typeparam>
         /// <returns>the service registration</returns>
@@ -128,7 +128,7 @@
         /// <summary>
         ///     Registers the specified <paramref name="registration"/>.
         /// </summary>
-        /// <typeparam name="T">the type of the registration</typeparam>
+        /// <typeparam name="TService">the type of the registration</typeparam>
         /// <param name="registration">the registration to register</param>
         /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="ArgumentNullException">
@@ -138,43 +138,43 @@
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         /// <exception cref="RegistrationException">
-        ///     thrown if a registration with the specified <paramref name="type"/> already exists
+        ///     thrown if a registration with the specified <typeparamref name="TService" /> already exists
         ///     and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Register<T>(IServiceRegistration registration, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+        public void Register<TService>(IServiceRegistration registration, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
         {
             if (registration is null)
             {
                 throw new ArgumentNullException(nameof(registration));
             }
 
-            RegisterInternal(typeof(T), registration, registrationMode);
+            RegisterInternal(typeof(TService), registration, registrationMode);
         }
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
         /// </summary>
-        /// <typeparam name="T">the type of the registration</typeparam>
+        /// <typeparam name="TService">the type of the registration</typeparam>
         /// <param name="instance">the instance</param>
         /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         /// <exception cref="RegistrationException">
-        ///     thrown if a registration with the specified <paramref name="type"/> already exists
+        ///     thrown if a registration with the specified <typeparamref name="TService" /> already exists
         ///     and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RegisterInstance<T>(T instance, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where T : class
-            => Register<T>(new InstanceRegistration(instance), registrationMode);
+        public void RegisterInstance<TService>(TService instance, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TService : class
+            => Register<TService>(new InstanceRegistration(instance), registrationMode);
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
         /// </summary>
-        /// <typeparam name="TAbstraction">the type of the registration</typeparam>
+        /// <typeparam name="TService">the type of the registration</typeparam>
         /// <typeparam name="TImplementation">the type of the implementation</typeparam>
         /// <param name="instance">the instance</param>
         /// <param name="registrationMode">the service registration mode</param>
@@ -182,14 +182,14 @@
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         /// <exception cref="RegistrationException">
-        ///     thrown if a registration with the specified <paramref name="type"/> already exists
+        ///     thrown if a registration with the specified <typeparamref name="TService" /> already exists
         ///     and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public void RegisterInstance<TAbstraction, TImplementation>(TImplementation instance,
+        public void RegisterInstance<TService, TImplementation>(TImplementation instance,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
-            where TImplementation : class, TAbstraction
-            => Register<TAbstraction>(new InstanceRegistration(instance), registrationMode);
+            where TImplementation : class, TService
+            => Register<TService>(new InstanceRegistration(instance), registrationMode);
 
         private void RegisterInternal(Type type, IServiceRegistration registration, ServiceRegistrationMode registrationMode)
         {

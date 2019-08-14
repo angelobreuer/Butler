@@ -51,7 +51,7 @@
             => _registrations.TryGetValue(type, out var registration) ? registration : null;
 
         /// <summary>
-        ///     Finds the service registration for the specified <paramref name="type"/>.
+        ///     Finds the service registration for the specified <typeparamref name="TService" />.
         /// </summary>
         /// <typeparam name="TService">the type of the service to find the service for</typeparam>
         /// <returns>the service registration</returns>
