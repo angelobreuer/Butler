@@ -9,7 +9,7 @@
     /// <summary>
     ///     Interface for a root container.
     /// </summary>
-    public interface IRootContainer : IEnumerable<KeyValuePair<Type, IServiceRegistration>>, IEnumerable, IServiceRegister,
+    public interface IRootContainer : IEnumerable<KeyValuePair<Type, IServiceRegistration>>, IEnumerable, IServiceRegister, IServiceResolver,
 #if SUPPORTS_SERVICE_PROVIDER
         IServiceProvider,
 #endif // SUPPORTS_SERVICE_PROVIDER

@@ -95,6 +95,7 @@
         /// </summary>
         /// <param name="type">the type of the registration</param>
         /// <param name="registration">the registration to register</param>
+        /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="type"/> is <see langword="null"/>.
         /// </exception>
@@ -106,9 +107,10 @@
         /// </exception>
         /// <exception cref="RegistrationException">
         ///     thrown if a registration with the specified <paramref name="type"/> already exists
-        ///     and replace is <see langword="false"/>.
+        ///     and the specified <paramref name="registrationMode"/> is not
+        ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public void Register(Type type, IServiceRegistration registration, bool replace = false)
+        public void Register(Type type, IServiceRegistration registration, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
         {
             if (type is null)
             {
@@ -120,17 +122,7 @@
                 throw new ArgumentNullException(nameof(registration));
             }
 
-            // acquire lock
-            lock (_registrationsLock)
-            {
-                // check if a service registration already exists for the type
-                if (!replace && _registrations.Remove(type))
-                {
-                    throw new RegistrationException($"A service of type '{type}' has been already registered.");
-                }
-
-                _registrations[type] = registration;
-            }
+            RegisterInternal(type, registration, registrationMode);
         }
 
         /// <summary>
@@ -138,6 +130,7 @@
         /// </summary>
         /// <typeparam name="T">the type of the registration</typeparam>
         /// <param name="registration">the registration to register</param>
+        /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="registration"/> is <see langword="null"/>.
         /// </exception>
@@ -146,27 +139,37 @@
         /// </exception>
         /// <exception cref="RegistrationException">
         ///     thrown if a registration with the specified <paramref name="type"/> already exists
-        ///     and replace is <see langword="false"/>.
+        ///     and the specified <paramref name="registrationMode"/> is not
+        ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Register<T>(IServiceRegistration registration, bool replace = false)
-            => Register(typeof(T), registration, replace);
+        public void Register<T>(IServiceRegistration registration, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+        {
+            if (registration is null)
+            {
+                throw new ArgumentNullException(nameof(registration));
+            }
+
+            RegisterInternal(typeof(T), registration, registrationMode);
+        }
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
         /// </summary>
         /// <typeparam name="T">the type of the registration</typeparam>
         /// <param name="instance">the instance</param>
+        /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         /// <exception cref="RegistrationException">
         ///     thrown if a registration with the specified <paramref name="type"/> already exists
-        ///     and replace is <see langword="false"/>.
+        ///     and the specified <paramref name="registrationMode"/> is not
+        ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RegisterInstance<T>(T instance, bool replace = false) where T : class
-            => Register<T>(new InstanceRegistration(instance), replace);
+        public void RegisterInstance<T>(T instance, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where T : class
+            => Register<T>(new InstanceRegistration(instance), registrationMode);
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
@@ -174,15 +177,41 @@
         /// <typeparam name="TAbstraction">the type of the registration</typeparam>
         /// <typeparam name="TImplementation">the type of the implementation</typeparam>
         /// <param name="instance">the instance</param>
+        /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         /// <exception cref="RegistrationException">
         ///     thrown if a registration with the specified <paramref name="type"/> already exists
-        ///     and replace is <see langword="false"/>.
+        ///     and the specified <paramref name="registrationMode"/> is not
+        ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public void RegisterInstance<TAbstraction, TImplementation>(TImplementation instance, bool replace = false)
+        public void RegisterInstance<TAbstraction, TImplementation>(TImplementation instance,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             where TImplementation : class, TAbstraction
-            => Register<TAbstraction>(new InstanceRegistration(instance), replace);
+            => Register<TAbstraction>(new InstanceRegistration(instance), registrationMode);
+
+        private void RegisterInternal(Type type, IServiceRegistration registration, ServiceRegistrationMode registrationMode)
+        {
+            // acquire lock
+            lock (_registrationsLock)
+            {
+                // check if a service registration already exists for the type
+                if (registrationMode != ServiceRegistrationMode.Replace && _registrations.Remove(type))
+                {
+                    // check if the exception should be suppressed
+                    if (registrationMode == ServiceRegistrationMode.Ignore)
+                    {
+                        return;
+                    }
+
+                    // throw
+                    throw new RegistrationException($"A service of type '{type}' has been already registered.");
+                }
+
+                // register registration
+                _registrations[type] = registration;
+            }
+        }
     }
 }

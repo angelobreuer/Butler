@@ -47,6 +47,7 @@
         /// </summary>
         /// <param name="type">the type of the registration</param>
         /// <param name="registration">the registration to register</param>
+        /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="type"/> is <see langword="null"/>.
         /// </exception>
@@ -58,15 +59,17 @@
         /// </exception>
         /// <exception cref="RegistrationException">
         ///     thrown if a registration with the specified <paramref name="type"/> already exists
-        ///     and replace is <see langword="false"/>.
+        ///     and the specified <paramref name="registrationMode"/> is not
+        ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        void Register(Type type, IServiceRegistration registration, bool replace = false);
+        void Register(Type type, IServiceRegistration registration, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
 
         /// <summary>
         ///     Registers the specified <paramref name="registration"/>.
         /// </summary>
-        /// <typeparam name="T">the type of the registration</typeparam>
+        /// <typeparam name="TService">the type of the registration</typeparam>
         /// <param name="registration">the registration to register</param>
+        /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="registration"/> is <see langword="null"/>.
         /// </exception>
@@ -74,39 +77,44 @@
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         /// <exception cref="RegistrationException">
-        ///     thrown if a registration with the specified <paramref name="type"/> already exists
-        ///     and replace is <see langword="false"/>.
+        ///     thrown if a registration with the specified <typeparamref name="TService"/> already
+        ///     exists and replace is <see langword="false"/>.
         /// </exception>
-        void Register<T>(IServiceRegistration registration, bool replace = false);
+        void Register<TService>(IServiceRegistration registration, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
         /// </summary>
-        /// <typeparam name="T">the type of the registration</typeparam>
+        /// <typeparam name="TService">the type of the registration</typeparam>
         /// <param name="instance">the instance</param>
+        /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         /// <exception cref="RegistrationException">
-        ///     thrown if a registration with the specified <paramref name="type"/> already exists
-        ///     and replace is <see langword="false"/>.
+        ///     thrown if a registration with the specified <typeparamref name="TService"/> already
+        ///     exists and the specified <paramref name="registrationMode"/> is not
+        ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        void RegisterInstance<T>(T instance, bool replace = false) where T : class;
+        void RegisterInstance<TService>(TService instance, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TService : class;
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
         /// </summary>
-        /// <typeparam name="TAbstraction">the type of the registration</typeparam>
+        /// <typeparam name="TService">the type of the registration</typeparam>
         /// <typeparam name="TImplementation">the type of the implementation</typeparam>
         /// <param name="instance">the instance</param>
+        /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         /// <exception cref="RegistrationException">
-        ///     thrown if a registration with the specified <paramref name="type"/> already exists
-        ///     and replace is <see langword="false"/>.
+        ///     thrown if a registration with the specified <typeparamref name="TService"/> already
+        ///     exists and the specified <paramref name="registrationMode"/> is not
+        ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        void RegisterInstance<TAbstraction, TImplementation>(TImplementation instance, bool replace = false)
-            where TImplementation : class, TAbstraction;
+        void RegisterInstance<TService, TImplementation>(TImplementation instance,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+            where TImplementation : class, TService;
     }
 }

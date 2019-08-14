@@ -132,7 +132,7 @@
 
             // replace registration
             var otherInstance = new DummyOtherDerivedClass();
-            ServiceRegister.RegisterInstance<DummyBaseClass>(otherInstance, replace: true);
+            ServiceRegister.RegisterInstance<DummyBaseClass>(otherInstance, ServiceRegistrationMode.Replace);
 
             // try resolve other registration
             var otherRegistration = ServiceRegister.FindRegistration<DummyBaseClass>();

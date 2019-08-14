@@ -5,6 +5,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
 
 #if SUPPORTS_ASYNC_DISPOSABLE
     using System.Threading.Tasks;
@@ -13,7 +14,7 @@
     /// <summary>
     ///     An inversion of control (IoC) container that supports resolving services.
     /// </summary>
-    public class RootContainer : ServiceRegister, IRootContainer
+    public class RootContainer : ServiceRegister, IRootContainer, IServiceResolver
     {
 #if !SUPPORTS_ASYNC_DISPOSABLE
 
@@ -39,20 +40,6 @@
         /// <returns>the service registration enumerator</returns>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-#if SUPPORTS_SERVICE_PROVIDER
-        /// <summary>
-        ///     Resolves a service of the specified <paramref name="serviceType"/>.
-        /// </summary>
-        /// <param name="serviceType">the type to resolve</param>
-        /// <returns>
-        ///     the resolved service; or <see langword="null"/> if the service could not been resolved
-        /// </returns>
-        /// <exception cref="ArgumentNullException">
-        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-        /// </exception>
-        object IServiceProvider.GetService(Type serviceType) => Resolve(serviceType);
-#endif // SUPPORTS_SERVICE_PROVIDER
-
         /// <summary>
         ///     Resolves a single service.
         /// </summary>
@@ -69,6 +56,22 @@
             // TODO TODO TODO
             return registration.Create();
         }
+
+        /// <summary>
+        ///     Resolves a service of the specified <typeparamref name="TService"/>.
+        /// </summary>
+        /// <typeparam name="TService">the type of the service to resolve</typeparam>
+        /// <returns>the resolved service</returns>
+        public TService Resolve<TService>()
+            => (TService)Resolve(typeof(TService));
+
+        /// <summary>
+        ///     Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
+        /// </summary>
+        /// <typeparam name="TService">the type of the service</typeparam>
+        /// <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
+        public Lazy<TService> ResolveLazy<TService>()
+            => new Lazy<TService>(() => Resolve<TService>());
 
 #if SUPPORTS_ASYNC_DISPOSABLE
         /// <summary>
