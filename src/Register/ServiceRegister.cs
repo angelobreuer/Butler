@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Runtime.CompilerServices;
     using Butler.Registration;
@@ -75,7 +76,7 @@
         }
 
         /// <summary>
-        ///     Finds the service registration for the specified <typeparamref name="TService" />.
+        ///     Finds the service registration for the specified <typeparamref name="TService"/>.
         /// </summary>
         /// <typeparam name="TService">the type of the service to find the service for</typeparam>
         /// <returns>the service registration</returns>
@@ -138,8 +139,8 @@
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         /// <exception cref="RegistrationException">
-        ///     thrown if a registration with the specified <typeparamref name="TService" /> already exists
-        ///     and the specified <paramref name="registrationMode"/> is not
+        ///     thrown if a registration with the specified <typeparamref name="TService"/> already
+        ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -154,6 +155,42 @@
         }
 
         /// <summary>
+        ///     Registers a direct parameterless constructor service.
+        /// </summary>
+        /// <typeparam name="TService">the type of the service</typeparam>
+        /// <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+        /// <param name="registrationMode">the service registration mode</param>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <typeparamref name="TService"/> already
+        ///     exists and replace is <see langword="false"/>.
+        /// </exception>
+        public void Register<TService, TImplementation>(ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+            where TImplementation : TService, new()
+            => Register<TService>(new DirectRegistration<TImplementation>(), registrationMode);
+
+        /// <summary>
+        ///     Registers a service factory.
+        /// </summary>
+        /// <typeparam name="TService">the service the factory provides</typeparam>
+        /// <param name="factory">the service factory</param>
+        /// <param name="registrationMode">the service registration mode</param>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <typeparamref name="TService"/> already
+        ///     exists and replace is <see langword="false"/>.
+        /// </exception>
+        public void RegisterFactory<TService>(ServiceFactory<TService> factory, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+            => Register<TService>(new FactoryRegistration<TService>(factory), registrationMode);
+
+        /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
         /// </summary>
         /// <typeparam name="TService">the type of the registration</typeparam>
@@ -163,8 +200,8 @@
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         /// <exception cref="RegistrationException">
-        ///     thrown if a registration with the specified <typeparamref name="TService" /> already exists
-        ///     and the specified <paramref name="registrationMode"/> is not
+        ///     thrown if a registration with the specified <typeparamref name="TService"/> already
+        ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -182,8 +219,8 @@
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>
         /// <exception cref="RegistrationException">
-        ///     thrown if a registration with the specified <typeparamref name="TService" /> already exists
-        ///     and the specified <paramref name="registrationMode"/> is not
+        ///     thrown if a registration with the specified <typeparamref name="TService"/> already
+        ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
         public void RegisterInstance<TService, TImplementation>(TImplementation instance,

@@ -1,6 +1,7 @@
 ﻿namespace Butler
 {
     using System;
+    using Butler.Util;
 
     /// <summary>
     ///     Interface for service resolvers.

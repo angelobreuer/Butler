@@ -36,7 +36,7 @@
         IServiceRegistration FindRegistration(Type type);
 
         /// <summary>
-        ///     Finds the service registration for the specified <typeparamref name="TService" />.
+        ///     Finds the service registration for the specified <typeparamref name="TService"/>.
         /// </summary>
         /// <typeparam name="TService">the type of the service to find the service for</typeparam>
         /// <returns>the service registration</returns>
@@ -81,6 +81,39 @@
         ///     exists and replace is <see langword="false"/>.
         /// </exception>
         void Register<TService>(IServiceRegistration registration, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
+
+        /// <summary>
+        ///     Registers a direct parameterless constructor service.
+        /// </summary>
+        /// <typeparam name="TService">the type of the service</typeparam>
+        /// <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+        /// <param name="registrationMode">the service registration mode</param>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <typeparamref name="TService"/> already
+        ///     exists and replace is <see langword="false"/>.
+        /// </exception>
+        void Register<TService, TImplementation>(ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TImplementation : TService, new();
+
+        /// <summary>
+        ///     Registers a service factory.
+        /// </summary>
+        /// <typeparam name="TService">the service the factory provides</typeparam>
+        /// <param name="factory">the service factory</param>
+        /// <param name="registrationMode">the service registration mode</param>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <typeparamref name="TService"/> already
+        ///     exists and replace is <see langword="false"/>.
+        /// </exception>
+        void RegisterFactory<TService>(ServiceFactory<TService> factory, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.

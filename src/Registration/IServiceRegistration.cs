@@ -8,7 +8,8 @@
         /// <summary>
         ///     Creates the instance.
         /// </summary>
+        /// <param name="resolver">the calling resolver</param>
         /// <returns>the instance</returns>
-        object Create();
+        object Create(IServiceResolver resolver);
     }
 }
