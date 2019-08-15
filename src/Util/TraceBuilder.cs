@@ -37,31 +37,6 @@ namespace Butler.Util
             _entryLock = new object();
         }
 
-        public TraceBuilder AppendResolve(Type serviceType)
-        {
-            if (serviceType is null)
-            {
-                throw new ArgumentNullException(nameof(serviceType));
-            }
-
-            return Append($"Resolving {serviceType}...");
-        }
-
-        public TraceBuilder AppendResolved(Type serviceType, Type implementationType)
-        {
-            if (serviceType is null)
-            {
-                throw new ArgumentNullException(nameof(serviceType));
-            }
-
-            if (implementationType is null)
-            {
-                throw new ArgumentNullException(nameof(implementationType));
-            }
-
-            return Append($"Resolved {serviceType} as {implementationType}.");
-        }
-
         /// <summary>
         ///     Gets the trace elements.
         /// </summary>
@@ -140,6 +115,74 @@ namespace Butler.Util
             }
 
             return this;
+        }
+
+        /// <summary>
+        ///     Appends a trace element that indicates that a service of type
+        ///     <paramref name="serviceType"/> is resolving.
+        /// </summary>
+        /// <param name="serviceType">the type of the service being resolved</param>
+        /// <returns>the <see cref="TraceBuilder"/> instance</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        public TraceBuilder AppendResolve(Type serviceType)
+        {
+            if (serviceType is null)
+            {
+                throw new ArgumentNullException(nameof(serviceType));
+            }
+
+            return Append($"Resolving {serviceType}...");
+        }
+
+        /// <summary>
+        ///     Appends a trace element that indicates that a service was resolved successfully.
+        /// </summary>
+        /// <param name="serviceType">the type of the service being resolved</param>
+        /// <param name="implementationType">the implementation of the service created</param>
+        /// <returns>the <see cref="TraceBuilder"/> instance</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="implementationType"/> is <see langword="null"/>.
+        /// </exception>
+        public TraceBuilder AppendResolved(Type serviceType, Type implementationType)
+        {
+            if (serviceType is null)
+            {
+                throw new ArgumentNullException(nameof(serviceType));
+            }
+
+            if (implementationType is null)
+            {
+                throw new ArgumentNullException(nameof(implementationType));
+            }
+
+            return Append($"Resolved {serviceType} as {implementationType}.");
+        }
+
+        /// <summary>
+        ///     Appends a trace element that indicates that a service resolve failed.
+        /// </summary>
+        /// <param name="serviceType">the type of the service being resolved</param>
+        /// <param name="critical">
+        ///     a value indicating whether the resolve failure is critical (e.g. there are no service
+        ///     alternatives to resolve).
+        /// </param>
+        /// <returns>the <see cref="TraceBuilder"/> instance</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        public TraceBuilder AppendResolveFail(Type serviceType, bool critical = false)
+        {
+            if (serviceType is null)
+            {
+                throw new ArgumentNullException(nameof(serviceType));
+            }
+
+            return Append(critical ? TraceLevel.Error : TraceLevel.Info, $"The resolve of {serviceType} failed!");
         }
 
         /// <summary>

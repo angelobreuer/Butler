@@ -75,6 +75,8 @@
             {
                 // throw resolver exception
 #if DEBUG
+                traceBuilder.AppendResolveFail(serviceType, critical: true);
+
                 throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).", traceBuilder);
 #else // DEBUG
                 throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).");
