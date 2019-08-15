@@ -28,6 +28,7 @@
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
             </exception>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
         </member>
         <member name="M:Butler.BaseServiceResolver.Resolve``1">
             <summary>
@@ -35,6 +36,7 @@
             </summary>
             <typeparam name="TService">the type of the service to resolve</typeparam>
             <returns>the resolved service</returns>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
         </member>
         <member name="M:Butler.BaseServiceResolver.ResolveLazy``1">
             <summary>
@@ -42,6 +44,7 @@
             </summary>
             <typeparam name="TService">the type of the service</typeparam>
             <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
         </member>
         <member name="T:Butler.IRootContainer">
             <summary>
@@ -62,6 +65,7 @@
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
             </exception>
+            <exception cref="!:ResolverException">thrown if the service resolve failed.</exception>
         </member>
         <member name="M:Butler.IServiceResolver.Resolve``1">
             <summary>
@@ -69,6 +73,7 @@
             </summary>
             <typeparam name="TService">the type of the service to resolve</typeparam>
             <returns>the resolved service</returns>
+            <exception cref="!:ResolverException">thrown if the service resolve failed.</exception>
         </member>
         <member name="M:Butler.IServiceResolver.ResolveLazy``1">
             <summary>
@@ -76,6 +81,7 @@
             </summary>
             <typeparam name="TService">the type of the service</typeparam>
             <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
+            <exception cref="!:ResolverException">thrown if the service resolve failed.</exception>
         </member>
         <member name="T:Butler.Register.IServiceRegister">
             <summary>
@@ -553,6 +559,33 @@
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
             </exception>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+        </member>
+        <member name="T:Butler.Util.ResolverException">
+            <summary>
+                Exception for resolver failures.
+            </summary>
+        </member>
+        <member name="M:Butler.Util.ResolverException.#ctor(System.String)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
+            </summary>
+            <param name="message">the message</param>
+        </member>
+        <member name="M:Butler.Util.ResolverException.#ctor(System.String,Butler.Util.TraceBuilder)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
+            </summary>
+            <param name="message">the message</param>
+            <param name="traceBuilder">the associated trace builder</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="traceBuilder"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="P:Butler.Util.ResolverException.TraceBuilder">
+            <summary>
+                Gets the associated trace builder.
+            </summary>
         </member>
         <member name="T:Butler.Util.TraceBuilder">
             <summary>
@@ -615,6 +648,11 @@
                 thrown if the specified <paramref name="element"/> is <see langword="null"/>.
             </exception>
         </member>
+        <member name="M:Butler.Util.TraceBuilder.Clear">
+            <summary>
+                Clears the trace.
+            </summary>
+        </member>
         <member name="M:Butler.Util.TraceBuilder.ToString">
             <summary>
                 Builds a <see cref="T:System.String"/> representation of the object.
@@ -665,6 +703,11 @@
         <member name="F:Butler.Util.TraceLevel.Error">
             <summary>
                 Denotes that an error occurred (e.g. resolve failed, etc.).
+            </summary>
+        </member>
+    </members>
+</doc>
+urred (e.g. resolve failed, etc.).
             </summary>
         </member>
     </members>

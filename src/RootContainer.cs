@@ -1,11 +1,15 @@
 ﻿namespace Butler
 {
-    using Butler.Register;
-    using Butler.Registration;
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
+    using Butler.Registration;
+
+#if DEBUG
+
+    using Butler.Util;
+
+#endif // DEBUG
 
 #if SUPPORTS_ASYNC_DISPOSABLE
     using System.Threading.Tasks;
@@ -14,7 +18,7 @@
     /// <summary>
     ///     An inversion of control (IoC) container that supports resolving services.
     /// </summary>
-    public class RootContainer : ServiceRegister, IRootContainer, IServiceResolver
+    public class RootContainer : BaseServiceResolver, IRootContainer, IServiceResolver
     {
 #if !SUPPORTS_ASYNC_DISPOSABLE
 
@@ -48,30 +52,38 @@
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
-        public object Resolve(Type serviceType)
+        /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
+        public override object Resolve(Type serviceType)
         {
+            // null-check service type
+            if (serviceType is null)
+            {
+                throw new ArgumentNullException(nameof(serviceType), "Could not resolve service of type <null>.");
+            }
+
+#if DEBUG
+            // create trace builder
+            var traceBuilder = new TraceBuilder()
+                .AppendResolve(serviceType);
+#endif // DEBUG
+
             // find registration
             var registration = FindRegistration(serviceType);
+
+            // check if the registration failed
+            if (registration is null)
+            {
+                // throw resolver exception
+#if DEBUG
+                throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).", traceBuilder);
+#else // DEBUG
+                throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).");
+#endif // !DEBUG
+            }
 
             // TODO TODO TODO
             return registration.Create();
         }
-
-        /// <summary>
-        ///     Resolves a service of the specified <typeparamref name="TService"/>.
-        /// </summary>
-        /// <typeparam name="TService">the type of the service to resolve</typeparam>
-        /// <returns>the resolved service</returns>
-        public TService Resolve<TService>()
-            => (TService)Resolve(typeof(TService));
-
-        /// <summary>
-        ///     Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
-        /// </summary>
-        /// <typeparam name="TService">the type of the service</typeparam>
-        /// <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
-        public Lazy<TService> ResolveLazy<TService>()
-            => new Lazy<TService>(() => Resolve<TService>());
 
 #if SUPPORTS_ASYNC_DISPOSABLE
         /// <summary>
