@@ -114,7 +114,8 @@
         /// </exception>
         /// <exception cref="RegistrationException">
         ///     thrown if a registration with the specified <typeparamref name="TService"/> already
-        ///     exists and replace is <see langword="false"/>.
+        ///     exists and the specified <paramref name="registrationMode"/> is not
+        ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
         public void Register<TService, TImplementation>(ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             where TImplementation : TService, new() => ThrowReadOnlyException();
@@ -133,9 +134,55 @@
         /// </exception>
         /// <exception cref="RegistrationException">
         ///     thrown if a registration with the specified <typeparamref name="TService"/> already
-        ///     exists and replace is <see langword="false"/>.
+        ///     exists and the specified <paramref name="registrationMode"/> is not
+        ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
         public void RegisterFactory<TService>(ServiceFactory<TService> factory, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+            => ThrowReadOnlyException();
+
+        /// <summary>
+        ///     Registers a service factory.
+        /// </summary>
+        /// <typeparam name="TService">the service the factory provides</typeparam>
+        /// <typeparam name="TImplementation">type of the service implementation</typeparam>
+        /// <param name="factory">the service factory</param>
+        /// <param name="registrationMode">the service registration mode</param>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <typeparamref name="TService"/> already
+        ///     exists and the specified <paramref name="registrationMode"/> is not
+        ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
+        /// </exception>
+        public void RegisterFactory<TService, TImplementation>(ServiceFactory<TImplementation> factory, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+            => ThrowReadOnlyException();
+
+        /// <summary>
+        ///     Registers a service factory.
+        /// </summary>
+        /// <typeparam name="TImplementation">type of the service implementation</typeparam>
+        /// <param name="serviceType">the type of the service</param>
+        /// <param name="factory">the service factory</param>
+        /// <param name="registrationMode">the service registration mode</param>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <paramref name="serviceType"/> already
+        ///     exists and the specified <paramref name="registrationMode"/> is not
+        ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
+        /// </exception>
+        public void RegisterFactory<TImplementation>(Type serviceType, ServiceFactory<TImplementation> factory, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             => ThrowReadOnlyException();
 
         /// <summary>

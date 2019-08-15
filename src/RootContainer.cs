@@ -84,7 +84,7 @@
             }
 
             // TODO TODO TODO
-            return registration.Create();
+            return registration.Create(this);
         }
 
 #if SUPPORTS_ASYNC_DISPOSABLE
