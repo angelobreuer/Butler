@@ -8,6 +8,52 @@
     /// </summary>
     public sealed class ServiceResolveContext
     {
+#if DEBUG
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ServiceResolveContext"/> class.
+        /// </summary>
+        /// <param name="resolver">the service resolver using the context</param>
+        /// <param name="serviceType">the type of the service being resolved</param>
+        /// <param name="parentType">the type of the parent</param>
+        /// <param name="traceBuilder">
+        ///     the trace builder; if <see langword="null"/> a new instance will be created.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="resolver"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        public ServiceResolveContext(IServiceResolver resolver, Type serviceType, Type parentType = null, TraceBuilder traceBuilder = null)
+        {
+            ParentType = parentType;
+            Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+            ServiceType = serviceType ?? throw new ArgumentNullException(nameof(serviceType));
+            TraceBuilder = traceBuilder ?? new TraceBuilder();
+        }
+
+#else // DEBUG
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ServiceResolveContext"/> class.
+        /// </summary>
+        /// <param name="resolver">the service resolver using the context</param>
+        /// <param name="serviceType">the type of the service being resolved</param>
+        /// <param name="parentType">the type of the parent</param>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="resolver"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        public ServiceResolveContext(IServiceResolver resolver, Type serviceType, Type parentType = null)
+        {
+            ParentType = parentType;
+            Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+            ServiceType = serviceType ?? throw new ArgumentNullException(nameof(serviceType));
+        }
+#endif // !DEBUG
+
         /// <summary>
         ///     Gets the actual resolver depth. If a specific depth is reached an exception is thrown.
         /// </summary>
