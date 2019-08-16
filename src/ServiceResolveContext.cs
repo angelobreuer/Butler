@@ -55,9 +55,39 @@
 #endif // !DEBUG
 
         /// <summary>
+        ///     Initializes a new instance of the <see cref="ServiceResolveContext"/> of the
+        ///     specified <paramref name="parentContext"/>.
+        /// </summary>
+        /// <remarks>The depth automatically increases.</remarks>
+        /// <param name="parentContext">the parent context to take the data from</param>
+        /// <param name="serviceType">the type of the new service being resolved</param>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="parentContext"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        public ServiceResolveContext(ServiceResolveContext parentContext, Type serviceType)
+        {
+            if (parentContext is null)
+            {
+                throw new ArgumentNullException(nameof(parentContext));
+            }
+
+            ParentType = parentContext.ServiceType;
+            Resolver = parentContext.Resolver;
+            ServiceType = serviceType;
+            Depth = parentContext.Depth + 1;
+
+#if DEBUG
+            TraceBuilder = parentContext.TraceBuilder;
+#endif // DEBUG
+        }
+
+        /// <summary>
         ///     Gets the actual resolver depth. If a specific depth is reached an exception is thrown.
         /// </summary>
-        public int Depth { get; internal set; }
+        public int Depth { get; }
 
         /// <summary>
         ///     Gets the type of the parent being resolved (if not <see langword="null"/>, then the

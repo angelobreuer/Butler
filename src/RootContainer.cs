@@ -3,6 +3,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
     using Butler.Registration;
 
 #if DEBUG
@@ -20,13 +21,28 @@
     /// </summary>
     public class RootContainer : BaseServiceResolver, IRootContainer, IServiceResolver
     {
+        /// <summary>
+        ///     A value indicating whether the root container has been disposed.
+        /// </summary>
+        private bool _disposed;
+
 #if !SUPPORTS_ASYNC_DISPOSABLE
+
+        /// <summary>
+        ///     Finalizes the <see cref="RootContainer"/> instance.
+        /// </summary>
+        ~RootContainer()
+        {
+            Dispose(false);
+        }
 
         /// <summary>
         ///     Disposes the root container.
         /// </summary>
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
 #endif // !SUPPORTS_ASYNC_DISPOSABLE
@@ -53,6 +69,7 @@
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
         /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override object Resolve(Type serviceType)
         {
             // null-check service type
@@ -61,10 +78,44 @@
                 throw new ArgumentNullException(nameof(serviceType), "Could not resolve service of type <null>.");
             }
 
+            return ResolveInternal(serviceType);
+        }
+
+#if !SUPPORTS_ASYNC_DISPOSABLE
+
+        /// <summary>
+        ///     Disposes the <see cref="RootContainer"/>.
+        /// </summary>
+        /// <param name="disposing">
+        ///     a value indicating whether managed resources should be disposed.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                // root container already disposed
+                return;
+            }
+
+            if (disposing)
+            {
+                // TODO dispose managed resources
+            }
+
+            // set disposed flag
+            _disposed = true;
+        }
+
+#endif // !SUPPORTS_ASYNC_DISPOSABLE
+
+        private object ResolveInternal(Type serviceType, ServiceResolveContext parentContext = null)
+        {
+            // create a context for this resolve
+            var context = new ServiceResolveContext(parentContext, serviceType);
+
 #if DEBUG
-            // create trace builder
-            var traceBuilder = new TraceBuilder()
-                .AppendResolve(serviceType);
+            // trace resolve
+            context.TraceBuilder.AppendResolve(serviceType);
 #endif // DEBUG
 
             // find registration
@@ -75,16 +126,16 @@
             {
                 // throw resolver exception
 #if DEBUG
-                traceBuilder.AppendResolveFail(serviceType, critical: true);
+                context.TraceBuilder.AppendResolveFail(serviceType, critical: true);
 
-                throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).", traceBuilder);
+                throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).", context.TraceBuilder);
 #else // DEBUG
                 throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).");
 #endif // !DEBUG
             }
 
             // TODO TODO TODO
-            return registration.Create(this);
+            return registration.Create(context);
         }
 
 #if SUPPORTS_ASYNC_DISPOSABLE
