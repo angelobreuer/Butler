@@ -26,8 +26,6 @@
         /// </summary>
         private bool _disposed;
 
-#if !SUPPORTS_ASYNC_DISPOSABLE
-
         /// <summary>
         ///     Finalizes the <see cref="RootContainer"/> instance.
         /// </summary>
@@ -44,8 +42,6 @@
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-#endif // !SUPPORTS_ASYNC_DISPOSABLE
 
         /// <summary>
         ///     Gets the service registration enumerator.
@@ -81,8 +77,6 @@
             return ResolveInternal(serviceType);
         }
 
-#if !SUPPORTS_ASYNC_DISPOSABLE
-
         /// <summary>
         ///     Disposes the <see cref="RootContainer"/>.
         /// </summary>
@@ -105,8 +99,6 @@
             // set disposed flag
             _disposed = true;
         }
-
-#endif // !SUPPORTS_ASYNC_DISPOSABLE
 
         private object ResolveInternal(Type serviceType, ServiceResolveContext parentContext = null)
         {
@@ -145,6 +137,15 @@
         /// <returns>a task that represents the asynchronous operation.</returns>
         public ValueTask DisposeAsync()
         {
+            if (_disposed)
+            {
+                // root container already disposed
+                return;
+            }
+
+            // set disposed flag
+            _disposed = true;
+
             return default;
         }
 #endif // SUPPORTS_ASYNC_DISPOSABLE
