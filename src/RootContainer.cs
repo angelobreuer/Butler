@@ -140,7 +140,7 @@
             if (_disposed)
             {
                 // root container already disposed
-                return;
+                return default;
             }
 
             // set disposed flag
