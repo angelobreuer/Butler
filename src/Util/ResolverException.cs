@@ -34,6 +34,22 @@
         /// </summary>
         public TraceBuilder TraceBuilder { get; }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ResolverException"/> class.
+        /// </summary>
+        public ResolverException()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ResolverException"/> class.
+        /// </summary>
+        /// <param name="message">the message</param>
+        /// <param name="innerException">the inner nested exception</param>
+        public ResolverException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
 #endif
     }
 }
