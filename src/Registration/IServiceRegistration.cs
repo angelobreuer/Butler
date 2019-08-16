@@ -8,8 +8,8 @@
         /// <summary>
         ///     Creates the instance.
         /// </summary>
-        /// <param name="resolver">the calling resolver</param>
+        /// <param name="context">the current resolver context</param>
         /// <returns>the instance</returns>
-        object Create(IServiceResolver resolver);
+        object Create(ServiceResolveContext context);
     }
 }

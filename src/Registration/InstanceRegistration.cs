@@ -25,8 +25,8 @@
         /// <summary>
         ///     Creates the instance.
         /// </summary>
-        /// <param name="resolver">the calling resolver</param>
+        /// <param name="context">the current resolver context</param>
         /// <returns>the instance</returns>
-        public object Create(IServiceResolver resolver) => Instance;
+        public object Create(ServiceResolveContext context) => Instance;
     }
 }
