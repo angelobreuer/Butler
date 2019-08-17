@@ -19,30 +19,42 @@
                 thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
             </exception>
         </member>
-        <member name="M:Butler.BaseServiceResolver.Resolve(System.Type)">
+        <member name="M:Butler.BaseServiceResolver.Resolve(System.Type,Butler.ServiceResolveContext)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
             </summary>
             <param name="serviceType">the type of the service to resolve</param>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.ServiceResolveContext"/> is created.
+            </param>
             <returns>the resolved service</returns>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
             </exception>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
         </member>
-        <member name="M:Butler.BaseServiceResolver.Resolve``1">
+        <member name="M:Butler.BaseServiceResolver.Resolve``1(Butler.ServiceResolveContext)">
             <summary>
                 Resolves a service of the specified <typeparamref name="TService"/>.
             </summary>
             <typeparam name="TService">the type of the service to resolve</typeparam>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.ServiceResolveContext"/> is created.
+            </param>
             <returns>the resolved service</returns>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
         </member>
-        <member name="M:Butler.BaseServiceResolver.ResolveLazy``1">
+        <member name="M:Butler.BaseServiceResolver.ResolveLazy``1(Butler.ServiceResolveContext)">
             <summary>
                 Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
             </summary>
             <typeparam name="TService">the type of the service</typeparam>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.ServiceResolveContext"/> is created.
+            </param>
             <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
         </member>
@@ -56,32 +68,50 @@
                 Interface for service resolvers.
             </summary>
         </member>
-        <member name="M:Butler.IServiceResolver.Resolve(System.Type)">
+        <member name="M:Butler.IServiceResolver.Resolve(System.Type,Butler.ServiceResolveContext)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
             </summary>
             <param name="serviceType">the type of the service to resolve</param>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.ServiceResolveContext"/> is created.
+            </param>
             <returns>the resolved service</returns>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
             </exception>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
         </member>
-        <member name="M:Butler.IServiceResolver.Resolve``1">
+        <member name="M:Butler.IServiceResolver.Resolve``1(Butler.ServiceResolveContext)">
             <summary>
                 Resolves a service of the specified <typeparamref name="TService"/>.
             </summary>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.ServiceResolveContext"/> is created.
+            </param>
             <typeparam name="TService">the type of the service to resolve</typeparam>
             <returns>the resolved service</returns>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
         </member>
-        <member name="M:Butler.IServiceResolver.ResolveLazy``1">
+        <member name="M:Butler.IServiceResolver.ResolveLazy``1(Butler.ServiceResolveContext)">
             <summary>
                 Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
             </summary>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.ServiceResolveContext"/> is created.
+            </param>
             <typeparam name="TService">the type of the service</typeparam>
             <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+        </member>
+        <member name="T:Butler.PreferConstructorAttribute">
+            <summary>
+                An attribute that controls the selector choice of a service resolver. When applied to a
+                constructor the constructor is preferred to be used for service resolve.
+            </summary>
         </member>
         <member name="T:Butler.Register.IServiceRegister">
             <summary>
@@ -158,10 +188,27 @@
             </exception>
             <exception cref="T:Butler.Register.RegistrationException">
                 thrown if a registration with the specified <typeparamref name="TService"/> already
-                exists and replace is <see langword="false"/>.
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
         <member name="M:Butler.Register.IServiceRegister.Register``2(Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers a service registration for the specified <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">the type of the service</typeparam>
+            <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+            <param name="registrationMode">the service registration mode</param>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.IServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:Butler.Register.RegistrationException">
+                thrown if a registration with the specified <typeparamref name="TService"/> already
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Register.IServiceRegister.RegisterDirect``2(Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a direct parameterless constructor service.
             </summary>
@@ -173,7 +220,70 @@
             </exception>
             <exception cref="T:Butler.Register.RegistrationException">
                 thrown if a registration with the specified <typeparamref name="TService"/> already
-                exists and replace is <see langword="false"/>.
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``1(Butler.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers a service factory.
+            </summary>
+            <typeparam name="TService">the service the factory provides</typeparam>
+            <param name="factory">the service factory</param>
+            <param name="registrationMode">the service registration mode</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.IServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:Butler.Register.RegistrationException">
+                thrown if a registration with the specified <typeparamref name="TService"/> already
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``2(Butler.ServiceFactory{``1},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers a service factory.
+            </summary>
+            <typeparam name="TService">the service the factory provides</typeparam>
+            <typeparam name="TImplementation">type of the service implementation</typeparam>
+            <param name="factory">the service factory</param>
+            <param name="registrationMode">the service registration mode</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.IServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:Butler.Register.RegistrationException">
+                thrown if a registration with the specified <typeparamref name="TService"/> already
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``1(System.Type,Butler.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers a service factory.
+            </summary>
+            <typeparam name="TImplementation">type of the service implementation</typeparam>
+            <param name="serviceType">the type of the service</param>
+            <param name="factory">the service factory</param>
+            <param name="registrationMode">the service registration mode</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.IServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:Butler.Register.RegistrationException">
+                thrown if a registration with the specified <paramref name="serviceType"/> already
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
         <member name="M:Butler.Register.IServiceRegister.RegisterInstance``1(``0,Butler.Register.ServiceRegistrationMode)">
@@ -258,6 +368,22 @@
             <typeparam name="TService">the type of the service to find the service for</typeparam>
             <returns>the service registration</returns>
         </member>
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.Register``2(Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers a service registration for the specified <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">the type of the service</typeparam>
+            <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+            <param name="registrationMode">the service registration mode</param>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ReadOnlyServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:Butler.Register.RegistrationException">
+                thrown if a registration with the specified <typeparamref name="TService"/> already
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
+            </exception>
+        </member>
         <member name="M:Butler.Register.ReadOnlyServiceRegister.Register(System.Type,Butler.Registration.IServiceRegistration,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers the specified <paramref name="registration"/>.
@@ -298,7 +424,7 @@
                 exists and replace is <see langword="false"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ReadOnlyServiceRegister.Register``2(Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterDirect``2(Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a direct parameterless constructor service.
             </summary>
@@ -310,7 +436,70 @@
             </exception>
             <exception cref="T:Butler.Register.RegistrationException">
                 thrown if a registration with the specified <typeparamref name="TService"/> already
-                exists and replace is <see langword="false"/>.
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``1(Butler.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers a service factory.
+            </summary>
+            <typeparam name="TService">the service the factory provides</typeparam>
+            <param name="factory">the service factory</param>
+            <param name="registrationMode">the service registration mode</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ReadOnlyServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:Butler.Register.RegistrationException">
+                thrown if a registration with the specified <typeparamref name="TService"/> already
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``2(Butler.ServiceFactory{``1},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers a service factory.
+            </summary>
+            <typeparam name="TService">the service the factory provides</typeparam>
+            <typeparam name="TImplementation">type of the service implementation</typeparam>
+            <param name="factory">the service factory</param>
+            <param name="registrationMode">the service registration mode</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ReadOnlyServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:Butler.Register.RegistrationException">
+                thrown if a registration with the specified <typeparamref name="TService"/> already
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``1(System.Type,Butler.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers a service factory.
+            </summary>
+            <typeparam name="TImplementation">type of the service implementation</typeparam>
+            <param name="serviceType">the type of the service</param>
+            <param name="factory">the service factory</param>
+            <param name="registrationMode">the service registration mode</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ReadOnlyServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:Butler.Register.RegistrationException">
+                thrown if a registration with the specified <paramref name="serviceType"/> already
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
         <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterInstance``1(``0,Butler.Register.ServiceRegistrationMode)">
@@ -406,6 +595,22 @@
             <typeparam name="TService">the type of the service to find the service for</typeparam>
             <returns>the service registration</returns>
         </member>
+        <member name="M:Butler.Register.ServiceRegister.Register``2(Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers a service registration for the specified <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">the type of the service</typeparam>
+            <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+            <param name="registrationMode">the service registration mode</param>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:Butler.Register.RegistrationException">
+                thrown if a registration with the specified <typeparamref name="TService"/> already
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
+            </exception>
+        </member>
         <member name="M:Butler.Register.ServiceRegister.Register(System.Type,Butler.Registration.IServiceRegistration,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers the specified <paramref name="registration"/>.
@@ -447,7 +652,7 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ServiceRegister.Register``2(Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ServiceRegister.RegisterDirect``2(Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a direct parameterless constructor service.
             </summary>
@@ -460,6 +665,68 @@
             <exception cref="T:Butler.Register.RegistrationException">
                 thrown if a registration with the specified <typeparamref name="TService"/> already
                 exists and replace is <see langword="false"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``1(Butler.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers a service factory.
+            </summary>
+            <typeparam name="TService">the service the factory provides</typeparam>
+            <param name="factory">the service factory</param>
+            <param name="registrationMode">the service registration mode</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:Butler.Register.RegistrationException">
+                thrown if a registration with the specified <typeparamref name="TService"/> already
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``2(Butler.ServiceFactory{``1},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers a service factory.
+            </summary>
+            <typeparam name="TService">the service the factory provides</typeparam>
+            <typeparam name="TImplementation">type of the service implementation</typeparam>
+            <param name="factory">the service factory</param>
+            <param name="registrationMode">the service registration mode</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:Butler.Register.RegistrationException">
+                thrown if a registration with the specified <typeparamref name="TService"/> already
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``1(System.Type,Butler.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers a service factory.
+            </summary>
+            <typeparam name="TImplementation">type of the service implementation</typeparam>
+            <param name="serviceType">the type of the service</param>
+            <param name="factory">the service factory</param>
+            <param name="registrationMode">the service registration mode</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:Butler.Register.RegistrationException">
+                thrown if a registration with the specified <paramref name="serviceType"/> already
+                exists and the specified <paramref name="registrationMode"/> is not
+                <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
         <member name="M:Butler.Register.ServiceRegister.RegisterInstance``1(``0,Butler.Register.ServiceRegistrationMode)">
@@ -523,10 +790,38 @@
             </summary>
             <typeparam name="TImplementation">the service implementation</typeparam>
         </member>
-        <member name="M:Butler.Registration.DirectRegistration`1.Create">
+        <member name="M:Butler.Registration.DirectRegistration`1.Create(Butler.ServiceResolveContext)">
             <summary>
                 Creates the instance.
             </summary>
+            <param name="context">the current resolver context</param>
+            <returns>the instance</returns>
+        </member>
+        <member name="T:Butler.Registration.FactoryRegistration`1">
+            <summary>
+                Provides a factory registration.
+            </summary>
+            <typeparam name="TService">the service type</typeparam>
+        </member>
+        <member name="M:Butler.Registration.FactoryRegistration`1.#ctor(Butler.ServiceFactory{`0})">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Registration.FactoryRegistration`1"/> class.
+            </summary>
+            <param name="factory">the service factory delegate</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="P:Butler.Registration.FactoryRegistration`1.Factory">
+            <summary>
+                Gets the service factory.
+            </summary>
+        </member>
+        <member name="M:Butler.Registration.FactoryRegistration`1.Create(Butler.ServiceResolveContext)">
+            <summary>
+                Creates the instance.
+            </summary>
+            <param name="context">the current resolver context</param>
             <returns>the instance</returns>
         </member>
         <member name="T:Butler.Registration.InstanceRegistration">
@@ -548,10 +843,11 @@
                 Gets the static instance.
             </summary>
         </member>
-        <member name="M:Butler.Registration.InstanceRegistration.Create">
+        <member name="M:Butler.Registration.InstanceRegistration.Create(Butler.ServiceResolveContext)">
             <summary>
                 Creates the instance.
             </summary>
+            <param name="context">the current resolver context</param>
             <returns>the instance</returns>
         </member>
         <member name="T:Butler.Registration.IServiceRegistration">
@@ -559,10 +855,11 @@
                 Interface for basic service registrations.
             </summary>
         </member>
-        <member name="M:Butler.Registration.IServiceRegistration.Create">
+        <member name="M:Butler.Registration.IServiceRegistration.Create(Butler.ServiceResolveContext)">
             <summary>
                 Creates the instance.
             </summary>
+            <param name="context">the current resolver context</param>
             <returns>the instance</returns>
         </member>
         <member name="T:Butler.Registration.RegistrationType">
@@ -585,9 +882,37 @@
                 Denotes that each resolve the instance is created new.
             </summary>
         </member>
+        <member name="T:Butler.Registration.ServiceRegistration`1">
+            <summary>
+                Basic service registration.
+            </summary>
+            <typeparam name="TImplementation">the type of the implementation</typeparam>
+        </member>
+        <member name="M:Butler.Registration.ServiceRegistration`1.Create(Butler.ServiceResolveContext)">
+            <summary>
+                Creates the instance.
+            </summary>
+            <param name="context">the current resolver context</param>
+            <returns>the instance</returns>
+        </member>
         <member name="T:Butler.RootContainer">
             <summary>
                 An inversion of control (IoC) container that supports resolving services.
+            </summary>
+        </member>
+        <member name="F:Butler.RootContainer._disposed">
+            <summary>
+                A value indicating whether the root container has been disposed.
+            </summary>
+        </member>
+        <member name="M:Butler.RootContainer.Finalize">
+            <summary>
+                Finalizes the <see cref="T:Butler.RootContainer"/> instance.
+            </summary>
+        </member>
+        <member name="M:Butler.RootContainer.Dispose">
+            <summary>
+                Disposes the root container.
             </summary>
         </member>
         <member name="M:Butler.RootContainer.GetEnumerator">
@@ -602,22 +927,168 @@
             </summary>
             <returns>the service registration enumerator</returns>
         </member>
-        <member name="M:Butler.RootContainer.Resolve(System.Type)">
+        <member name="M:Butler.RootContainer.Resolve(System.Type,Butler.ServiceResolveContext)">
             <summary>
                 Resolves a single service.
             </summary>
             <param name="serviceType">the type of the service to resolve</param>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.ServiceResolveContext"/> is created.
+            </param>
             <returns>the service instance of type <paramref name="serviceType"/></returns>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
             </exception>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
         </member>
+        <member name="M:Butler.RootContainer.Dispose(System.Boolean)">
+            <summary>
+                Disposes the <see cref="T:Butler.RootContainer"/>.
+            </summary>
+            <param name="disposing">
+                a value indicating whether managed resources should be disposed.
+            </param>
+        </member>
         <member name="M:Butler.RootContainer.DisposeAsync">
             <summary>
                 Disposes the root container asynchronously.
             </summary>
             <returns>a task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="F:Butler.ServiceConstructionMode.PreferParameterlessConstructor">
+            <summary>
+                Denotes that the parameter-less constructor should be preferred.
+            </summary>
+        </member>
+        <member name="F:Butler.ServiceConstructionMode.PreferComplexConstructor">
+            <summary>
+                Denotes that the most complex constructor should be searched that can be created with
+                the current registrations.
+            </summary>
+        </member>
+        <member name="F:Butler.ServiceConstructionMode.Mixed">
+            <summary>
+                Denotes that the constructor with the <see cref="T:Butler.PreferConstructorAttribute"/> should
+                be used. If no constructor has the <see cref="T:Butler.PreferConstructorAttribute"/> then the
+                same behavior as <see cref="F:Butler.ServiceConstructionMode.PreferComplexConstructor"/> is used.
+            </summary>
+        </member>
+        <member name="T:Butler.ServiceFactory`1">
+            <summary>
+                Delegate for service factories.
+            </summary>
+            <typeparam name="T">the type of the implementation the factory provides</typeparam>
+            <param name="resolver">the current resolver context</param>
+            <returns>the service instance</returns>
+        </member>
+        <member name="T:Butler.ServiceResolveContext">
+            <summary>
+                A compound of required information while resolving a service.
+            </summary>
+        </member>
+        <member name="M:Butler.ServiceResolveContext.#ctor(Butler.IServiceResolver,Butler.Register.IServiceRegister,System.Type,System.Type,Butler.Util.TraceBuilder)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.ServiceResolveContext"/> class.
+            </summary>
+            <param name="resolver">the service resolver using the context</param>
+            <param name="register">the service register</param>
+            <param name="serviceType">the type of the service being resolved</param>
+            <param name="parentType">the type of the parent</param>
+            <param name="traceBuilder">
+                the trace builder; if <see langword="null"/> a new instance will be created.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="resolver"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="register"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.ServiceResolveContext.#ctor(Butler.ServiceResolveContext,System.Type)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.ServiceResolveContext"/> of the
+                specified <paramref name="parentContext"/>.
+            </summary>
+            <remarks>The depth automatically increases.</remarks>
+            <param name="parentContext">the parent context to take the data from</param>
+            <param name="serviceType">the type of the new service being resolved</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="parentContext"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="P:Butler.ServiceResolveContext.Depth">
+            <summary>
+                Gets the actual resolver depth. If a specific depth is reached an exception is thrown.
+            </summary>
+        </member>
+        <member name="P:Butler.ServiceResolveContext.ParentType">
+            <summary>
+                Gets the type of the parent being resolved (if not <see langword="null"/>, then the
+                <see cref="P:Butler.ServiceResolveContext.ServiceType"/> is required to resolved as a dependency for the
+                <see cref="P:Butler.ServiceResolveContext.ParentType"/> service, <see langword="null"/> if the service is being
+                resolved directly).
+            </summary>
+        </member>
+        <member name="P:Butler.ServiceResolveContext.Resolver">
+            <summary>
+                Gets the resolver that was used to resolve the service.
+            </summary>
+        </member>
+        <member name="P:Butler.ServiceResolveContext.Register">
+            <summary>
+                Gets the corresponding service register to resolve from.
+            </summary>
+        </member>
+        <member name="P:Butler.ServiceResolveContext.ServiceType">
+            <summary>
+                Gets the type of the service being service.
+            </summary>
+        </member>
+        <member name="P:Butler.ServiceResolveContext.TraceBuilder">
+            <summary>
+                Gets the trace builder used for useful output on resolve failures to make it easier
+                to find resolution errors and their cause.
+            </summary>
+            <remarks>
+                Please note that this property is only available when the Debug configuration is used.
+            </remarks>
+        </member>
+        <member name="T:Butler.Util.Reflector">
+            <summary>
+                An utility class for resolving a service with dependencies from an <see cref="T:Butler.IServiceResolver"/>.
+            </summary>
+        </member>
+        <member name="M:Butler.Util.Reflector.Resolve``1(Butler.ServiceResolveContext)">
+            <summary>
+                Creates a new instance of the specified service type (in <paramref name="context"/>).
+            </summary>
+            <typeparam name="TImplementation">the type of the implementation to construct</typeparam>
+            <param name="context">the resolve context</param>
+            <returns>the service instance</returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="context"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Util.Reflector.Resolve(System.Type,Butler.ServiceResolveContext)">
+            <summary>
+                Creates a new instance of the specified service type (in <paramref name="context"/>).
+            </summary>
+            <param name="implementationType">the type of the implementation to construct</param>
+            <param name="context">the resolve context</param>
+            <returns>the service instance</returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="implementationType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="context"/> is <see langword="null"/>.
+            </exception>
         </member>
         <member name="T:Butler.Util.ResolverException">
             <summary>
@@ -645,10 +1116,17 @@
                 Gets the associated trace builder.
             </summary>
         </member>
-        <member name="T:Butler.Util.ServiceRegisterDebuggerProxy">
+        <member name="M:Butler.Util.ResolverException.#ctor">
             <summary>
-                Debugger proxy for an <see cref="T:Butler.Register.IServiceRegister"/>.
+                Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
             </summary>
+        </member>
+        <member name="M:Butler.Util.ResolverException.#ctor(System.String,System.Exception)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
+            </summary>
+            <param name="message">the message</param>
+            <param name="innerException">the inner nested exception</param>
         </member>
         <member name="T:Butler.Util.TraceBuilder">
             <summary>
@@ -709,6 +1187,21 @@
             <returns>the <see cref="T:Butler.Util.TraceBuilder"/> instance</returns>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="element"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Util.TraceBuilder.AppendConstructorResolve(System.Type,System.Reflection.ConstructorInfo)">
+            <summary>
+                Appends a trace element that indicates that a service of type
+                <paramref name="serviceType"/> is tried to resolve using the specified <paramref name="constructor"/>.
+            </summary>
+            <param name="serviceType">the type of the service being resolved</param>
+            <param name="constructor">the constructor</param>
+            <returns>the <see cref="T:Butler.Util.TraceBuilder"/> instance</returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="constructor"/> is <see langword="null"/>.
             </exception>
         </member>
         <member name="M:Butler.Util.TraceBuilder.AppendResolve(System.Type)">
