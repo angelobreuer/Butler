@@ -60,6 +60,23 @@
             => FindRegistration(typeof(TService));
 
         /// <summary>
+        ///     Registers a service registration for the specified <typeparamref name="TService"/>.
+        /// </summary>
+        /// <typeparam name="TService">the type of the service</typeparam>
+        /// <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+        /// <param name="registrationMode">the service registration mode</param>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        /// <exception cref="RegistrationException">
+        ///     thrown if a registration with the specified <typeparamref name="TService"/> already
+        ///     exists and the specified <paramref name="registrationMode"/> is not
+        ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
+        /// </exception>
+        public void Register<TService, TImplementation>(ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TImplementation : class, TService
+            => ThrowReadOnlyException();
+
+        /// <summary>
         ///     Registers the specified <paramref name="registration"/>.
         /// </summary>
         /// <param name="type">the type of the registration</param>
@@ -117,7 +134,7 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public void Register<TService, TImplementation>(ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+        public void RegisterDirect<TService, TImplementation>(ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             where TImplementation : TService, new() => ThrowReadOnlyException();
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿namespace Butler
 {
     using System;
+    using Butler.Register;
     using Butler.Util;
 
     /// <summary>
@@ -14,6 +15,7 @@
         ///     Initializes a new instance of the <see cref="ServiceResolveContext"/> class.
         /// </summary>
         /// <param name="resolver">the service resolver using the context</param>
+        /// <param name="register">the service register</param>
         /// <param name="serviceType">the type of the service being resolved</param>
         /// <param name="parentType">the type of the parent</param>
         /// <param name="traceBuilder">
@@ -23,12 +25,16 @@
         ///     thrown if the specified <paramref name="resolver"/> is <see langword="null"/>.
         /// </exception>
         /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="register"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
-        public ServiceResolveContext(IServiceResolver resolver, Type serviceType, Type parentType = null, TraceBuilder traceBuilder = null)
+        public ServiceResolveContext(IServiceResolver resolver, IServiceRegister register, Type serviceType, Type parentType = null, TraceBuilder traceBuilder = null)
         {
             ParentType = parentType;
             Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+            Register = register ?? throw new ArgumentNullException(nameof(register));
             ServiceType = serviceType ?? throw new ArgumentNullException(nameof(serviceType));
             TraceBuilder = traceBuilder ?? new TraceBuilder();
         }
@@ -38,18 +44,23 @@
         ///     Initializes a new instance of the <see cref="ServiceResolveContext"/> class.
         /// </summary>
         /// <param name="resolver">the service resolver using the context</param>
+        /// <param name="register">the service register</param>
         /// <param name="serviceType">the type of the service being resolved</param>
         /// <param name="parentType">the type of the parent</param>
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="resolver"/> is <see langword="null"/>.
         /// </exception>
         /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="register"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
-        public ServiceResolveContext(IServiceResolver resolver, Type serviceType, Type parentType = null)
+        public ServiceResolveContext(IServiceResolver resolver, IServiceRegister register, Type serviceType, Type parentType = null)
         {
             ParentType = parentType;
             Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+            Register = register ?? throw new ArgumentNullException(nameof(register));
             ServiceType = serviceType ?? throw new ArgumentNullException(nameof(serviceType));
         }
 #endif // !DEBUG
@@ -101,6 +112,11 @@
         ///     Gets the resolver that was used to resolve the service.
         /// </summary>
         public IServiceResolver Resolver { get; }
+
+        /// <summary>
+        ///     Gets the corresponding service register to resolve from.
+        /// </summary>
+        public IServiceRegister Register { get; }
 
         /// <summary>
         ///     Gets the type of the service being service.

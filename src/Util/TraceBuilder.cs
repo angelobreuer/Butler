@@ -9,6 +9,7 @@ namespace Butler.Util
     using System.Diagnostics;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
 
     /// <summary>
     ///     An utility class that is useful for building traces when resolving or registering services.
@@ -115,6 +116,36 @@ namespace Butler.Util
             }
 
             return this;
+        }
+
+        /// <summary>
+        ///     Appends a trace element that indicates that a service of type
+        ///     <paramref name="serviceType"/> is tried to resolve using the specified <paramref name="constructor"/>.
+        /// </summary>
+        /// <param name="serviceType">the type of the service being resolved</param>
+        /// <param name="constructor">the constructor</param>
+        /// <returns>the <see cref="TraceBuilder"/> instance</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="constructor"/> is <see langword="null"/>.
+        /// </exception>
+        public TraceBuilder AppendConstructorResolve(Type serviceType, ConstructorInfo constructor)
+        {
+            if (serviceType is null)
+            {
+                throw new ArgumentNullException(nameof(serviceType));
+            }
+
+            if (constructor is null)
+            {
+                throw new ArgumentNullException(nameof(constructor));
+            }
+
+            // build message and append
+            var message = $"Trying to resolve service '{serviceType}' with {serviceType.Name}#{constructor.ToString()}";
+            return Append(TraceLevel.Info, message);
         }
 
         /// <summary>

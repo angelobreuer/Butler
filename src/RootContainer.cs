@@ -60,13 +60,17 @@
         ///     Resolves a single service.
         /// </summary>
         /// <param name="serviceType">the type of the service to resolve</param>
+        /// <param name="context">
+        ///     the parent resolve context; if <see langword="null"/> a new
+        ///     <see cref="ServiceResolveContext"/> is created.
+        /// </param>
         /// <returns>the service instance of type <paramref name="serviceType"/></returns>
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
         /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override object Resolve(Type serviceType)
+        public override object Resolve(Type serviceType, ServiceResolveContext context = null)
         {
             // null-check service type
             if (serviceType is null)
@@ -74,7 +78,7 @@
                 throw new ArgumentNullException(nameof(serviceType), "Could not resolve service of type <null>.");
             }
 
-            return ResolveInternal(serviceType);
+            return ResolveInternal(serviceType, context);
         }
 
         /// <summary>
@@ -103,8 +107,9 @@
         private object ResolveInternal(Type serviceType, ServiceResolveContext parentContext = null)
         {
             // create a context for this resolve
-            var context = new ServiceResolveContext(parentContext, serviceType);
-
+            var context = parentContext == null ?
+                new ServiceResolveContext(this, this, serviceType) :
+                new ServiceResolveContext(parentContext, serviceType);
 #if DEBUG
             // trace resolve
             context.TraceBuilder.AppendResolve(serviceType);
