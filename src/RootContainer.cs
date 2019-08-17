@@ -15,7 +15,6 @@
 
 #if SUPPORTS_ASYNC_DISPOSABLE
     using System.Threading.Tasks;
-    using Butler.Resolver;
 #endif // SUPPORTS_ASYNC_DISPOSABLE
 
     /// <summary>
