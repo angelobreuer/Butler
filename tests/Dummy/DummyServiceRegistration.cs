@@ -5,6 +5,6 @@
 
     internal sealed class DummyServiceRegistration : IServiceRegistration
     {
-        public object Create() => throw new NotImplementedException();
+        public object Create(ServiceResolveContext context) => throw new NotImplementedException();
     }
 }
