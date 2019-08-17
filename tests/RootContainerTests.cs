@@ -29,6 +29,20 @@
         }
 
         [Fact]
+        public void TestTrackingTransients()
+        {
+            Container.RegisterDirect<DummyDisposeTracker, DummyDisposeTracker>();
+
+            var disposeTracker = Container.Resolve<DummyDisposeTracker>();
+
+            Assert.False(disposeTracker.IsDisposed);
+
+            Container.Dispose();
+
+            Assert.True(disposeTracker.IsDisposed);
+        }
+
+        [Fact]
         public void TestTryResolveUnregisteredService()
         {
             Assert.Throws<ResolverException>(() => Container.Resolve<int>());
