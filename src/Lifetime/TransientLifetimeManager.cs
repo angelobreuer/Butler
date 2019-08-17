@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
 
 #if SUPPORTS_ASYNC_DISPOSABLE
     using System.Threading.Tasks;
@@ -25,6 +26,11 @@
         ///     <see cref="IDisposable"/> are not tracked.
         /// </summary>
         private readonly IList<object> _tracker;
+
+        /// <summary>
+        ///     A <see cref="SemaphoreSlim"/> for the <see cref="_tracker"/>.
+        /// </summary>
+        private readonly SemaphoreSlim _trackerLock;
 #else // SUPPORTS_ASYNC_DISPOSABLE
         /// <summary>
         ///     A list holding all disposable instances the lifetime created. The list only holds
@@ -32,7 +38,18 @@
         /// </summary>
         private readonly IList<IDisposable> _tracker;
 
+        /// <summary>
+        ///     A lock <see cref="object"/> for the <see cref="_tracker"/>.
+        /// </summary>
+        private readonly object _trackerLock;
+
 #endif // !SUPPORTS_ASYNC_DISPOSABLE
+
+        /// <summary>
+        ///     A value indicating whether the lifetime manager was disposed (
+        ///     <see langword="true"/>); otherwise <see langword="false"/>.
+        /// </summary>
+        private bool _disposed;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TransientLifetimeManager"/> class.
@@ -44,6 +61,8 @@
 #else // SUPPORTS_ASYNC_DISPOSABLE
             _tracker = new List<IDisposable>();
 #endif //!SUPPORTS_ASYNC_DISPOSABLE
+
+            _trackerLock = new SemaphoreSlim(1, 1);
         }
 
 #if SUPPORTS_ASYNC_DISPOSABLE
@@ -52,23 +71,47 @@
         /// </summary>
         public async ValueTask DisposeAsync()
         {
-            // iterate through all tracked objects
-            foreach (var instance in _tracker)
+            if (_disposed)
             {
-                // check if the instance implements IAsyncDisposable
-                if (instance is IAsyncDisposable asyncDisposable)
-                {
-                    // dispose instance asynchronously
-                    await asyncDisposable.DisposeAsync();
-                }
+                // the lifetime manager has been already disposed
+                return;
+            }
 
-                // check if the instance implements IDisposable
-                else if (instance is IDisposable disposable)
+            // set disposed flag
+            _disposed = true;
+
+            // acquire lock
+            await _trackerLock.WaitAsync();
+
+            // ensure the lock is released even if an exception is thrown
+            try
+            {
+                // iterate through all tracked objects
+                foreach (var instance in _tracker)
                 {
-                    // dispose instance
-                    disposable.Dispose();
+                    // check if the instance implements IAsyncDisposable
+                    if (instance is IAsyncDisposable asyncDisposable)
+                    {
+                        // dispose instance asynchronously
+                        await asyncDisposable.DisposeAsync();
+                    }
+
+                    // check if the instance implements IDisposable
+                    else if (instance is IDisposable disposable)
+                    {
+                        // dispose instance
+                        disposable.Dispose();
+                    }
                 }
             }
+            finally
+            {
+                // release lock
+                _trackerLock.Release();
+            }
+
+            // dispose lock
+            _trackerLock.Dispose();
         }
 #else // SUPPORTS_ASYNC_DISPOSABLE
 
@@ -77,11 +120,24 @@
         /// </summary>
         public void Dispose()
         {
-            // iterate through all tracked objects
-            foreach (var instance in _tracker)
+            // check if the lifetime manager was already disposed
+            if (_disposed)
             {
-                // dispose instance
-                instance.Dispose();
+                return;
+            }
+
+            // set disposed flag
+            _disposed = true;
+
+            // acquire lock
+            lock (_trackerLock)
+            {
+                // iterate through all tracked objects
+                foreach (var instance in _tracker)
+                {
+                    // dispose instance
+                    instance.Dispose();
+                }
             }
         }
 
@@ -111,16 +167,34 @@
         {
             // The instances in the lifetime are tracked to dispose them, so we need only to track
             // disposable / asynchronously disposable objects.
+
 #if SUPPORTS_ASYNC_DISPOSABLE
-            if (instance is IDisposable || instance is IAsyncDisposable)
+            // acquire lock
+            _trackerLock.Wait();
+
+            // ensure the lock is released even if an exception is thrown
+            try
             {
-                _tracker.Add(instance);
+                // check if the instance inherits from IDisposable or IAsyncDisposable
+                if (instance is IDisposable || instance is IAsyncDisposable)
+                {
+                    // track instance
+                    _tracker.Add(instance);
+                }
+            }
+            finally
+            {
+                // release lock and let other threads continue
+                _trackerLock.Release();
             }
 #else // SUPPORTS_ASYNC_DISPOSABLE
             if (instance is IDisposable disposable)
             {
-                // add instance to tracking list
-                _tracker.Add(disposable);
+                lock (_trackerLock)
+                {
+                    // add instance to tracking list
+                    _tracker.Add(disposable);
+                }
             }
 #endif // !SUPPORTS_ASYNC_DISPOSABLE
         }
