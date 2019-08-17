@@ -1,5 +1,6 @@
 ﻿namespace Butler.Registration
 {
+    using Butler.Lifetime;
     using Butler.Resolver;
 
     /// <summary>
@@ -13,5 +14,10 @@
         /// <param name="context">the current resolver context</param>
         /// <returns>the instance</returns>
         object Create(ServiceResolveContext context);
+
+        /// <summary>
+        ///     Gets the lifetime of the service.
+        /// </summary>
+        IServiceLifetime ServiceLifetime { get; }
     }
 }

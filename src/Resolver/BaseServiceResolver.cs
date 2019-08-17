@@ -107,6 +107,10 @@
         ///     Resolves a service of the specified <paramref name="serviceType"/>.
         /// </summary>
         /// <param name="serviceType">the type of the service to resolve</param>
+        /// <param name="scopeKey">
+        ///     the scope key for resolving the service; if <see langword="null"/> the global scope
+        ///     is used.
+        /// </param>
         /// <param name="context">
         ///     the parent resolve context; if <see langword="null"/> a new
         ///     <see cref="ServiceResolveContext"/> is created.
@@ -120,16 +124,21 @@
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
         /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
+        /// <exception cref="ObjectDisposedException">thrown if the container is disposed.</exception>
         /// <exception cref="InvalidOperationException">
         ///     thrown if the maximum service resolve depth was exceeded.
         /// </exception>
-        public abstract object Resolve(Type serviceType, ServiceResolveContext context = null,
+        public abstract object Resolve(Type serviceType, object scopeKey = null, ServiceResolveContext context = null,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default);
 
         /// <summary>
         ///     Resolves a service of the specified <typeparamref name="TService"/>.
         /// </summary>
         /// <typeparam name="TService">the type of the service to resolve</typeparam>
+        /// <param name="scopeKey">
+        ///     the scope key for resolving the service; if <see langword="null"/> the global scope
+        ///     is used.
+        /// </param>
         /// <param name="context">
         ///     the parent resolve context; if <see langword="null"/> a new
         ///     <see cref="ServiceResolveContext"/> is created.
@@ -140,18 +149,23 @@
         /// </param>
         /// <returns>the resolved service</returns>
         /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
+        /// <exception cref="ObjectDisposedException">thrown if the container is disposed.</exception>
         /// <exception cref="InvalidOperationException">
         ///     thrown if the maximum service resolve depth was exceeded.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public TService Resolve<TService>(ServiceResolveContext context = null,
+        public TService Resolve<TService>(object scopeKey = null, ServiceResolveContext context = null,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
-            => (TService)Resolve(typeof(TService), context);
+            => (TService)Resolve(typeof(TService), scopeKey, context, constructionMode);
 
         /// <summary>
         ///     Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
         /// </summary>
         /// <typeparam name="TService">the type of the service</typeparam>
+        /// <param name="scopeKey">
+        ///     the scope key for resolving the service; if <see langword="null"/> the global scope
+        ///     is used.
+        /// </param>
         /// <param name="context">
         ///     the parent resolve context; if <see langword="null"/> a new
         ///     <see cref="ServiceResolveContext"/> is created.
@@ -162,11 +176,12 @@
         /// </param>
         /// <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
         /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
+        /// <exception cref="ObjectDisposedException">thrown if the container is disposed.</exception>
         /// <exception cref="InvalidOperationException">
         ///     thrown if the maximum service resolve depth was exceeded.
         /// </exception>
-        public Lazy<TService> ResolveLazy<TService>(ServiceResolveContext context = null,
+        public Lazy<TService> ResolveLazy<TService>(object scopeKey = null, ServiceResolveContext context = null,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
-            => new Lazy<TService>(() => Resolve<TService>(context));
+            => new Lazy<TService>(() => Resolve<TService>(scopeKey, context, constructionMode));
     }
 }
