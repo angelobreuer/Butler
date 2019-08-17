@@ -155,7 +155,7 @@
                 if (constructor.Key is null)
                 {
                     // throw exception: No constructor was found for the type.
-                    throw new ResolverException($"Could not find a passable constructor for '{implementationType}'."); // TODO pass trace builder
+                    throw new ResolverException($"Could not find a passable constructor for '{implementationType}'.", context);
                 }
 
                 return constructor.Key;
@@ -171,7 +171,7 @@
                 if (constructor is null)
                 {
                     // throw exception: No parameter-less constructor
-                    throw new ResolverException($"Could not find a parameter-less constructor for '{implementationType}'."); // TODO pass trace builder
+                    throw new ResolverException($"Could not find a parameter-less constructor for '{implementationType}'.", context);
                 }
 
                 return constructor;

@@ -124,11 +124,9 @@
                 // throw resolver exception
 #if DEBUG
                 context.TraceBuilder.AppendResolveFail(serviceType, critical: true);
+#endif // DEBUG
 
-                throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).", context.TraceBuilder);
-#else // DEBUG
-                throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).");
-#endif // !DEBUG
+                throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).", context);
             }
 
             // TODO TODO TODO
