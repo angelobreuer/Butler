@@ -1129,31 +1129,34 @@
                 Exception for resolver failures.
             </summary>
         </member>
+        <member name="F:Butler.Util.ResolverException.UnknownErrorMessage">
+            <summary>
+                The message used when no message is set explicitly.
+            </summary>
+        </member>
         <member name="M:Butler.Util.ResolverException.#ctor(System.String)">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
             </summary>
             <param name="message">the message</param>
         </member>
-        <member name="M:Butler.Util.ResolverException.#ctor(System.String,Butler.Util.TraceBuilder)">
+        <member name="M:Butler.Util.ResolverException.#ctor(System.String,Butler.ServiceResolveContext)">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
             </summary>
             <param name="message">the message</param>
-            <param name="traceBuilder">the associated trace builder</param>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="traceBuilder"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="P:Butler.Util.ResolverException.TraceBuilder">
-            <summary>
-                Gets the associated trace builder.
-            </summary>
+            <param name="context">the current resolver context</param>
         </member>
         <member name="M:Butler.Util.ResolverException.#ctor">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
             </summary>
+        </member>
+        <member name="M:Butler.Util.ResolverException.#ctor(Butler.ServiceResolveContext)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
+            </summary>
+            <param name="context">the current resolver context</param>
         </member>
         <member name="M:Butler.Util.ResolverException.#ctor(System.String,System.Exception)">
             <summary>
@@ -1161,6 +1164,28 @@
             </summary>
             <param name="message">the message</param>
             <param name="innerException">the inner nested exception</param>
+        </member>
+        <member name="M:Butler.Util.ResolverException.#ctor(System.String,Butler.ServiceResolveContext,System.Exception)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
+            </summary>
+            <param name="message">the message</param>
+            <param name="context">the current resolver context</param>
+            <param name="innerException">the inner nested exception</param>
+        </member>
+        <member name="P:Butler.Util.ResolverException.Context">
+            <summary>
+                Gets the associated resolve context (may be <see langword="null"/>).
+            </summary>
+        </member>
+        <member name="M:Butler.Util.ResolverException.BuildMessage(System.String,Butler.ServiceResolveContext)">
+            <summary>
+                Builds the message for the specified <paramref name="context"/>.
+            </summary>
+            <remarks>All parameters are optional.</remarks>
+            <param name="message">the base message</param>
+            <param name="context">the current resolver context</param>
+            <returns>the message build</returns>
         </member>
         <member name="T:Butler.Util.TraceBuilder">
             <summary>
