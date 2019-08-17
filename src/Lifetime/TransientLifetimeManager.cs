@@ -34,6 +34,18 @@
 
 #endif // !SUPPORTS_ASYNC_DISPOSABLE
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="TransientLifetimeManager"/> class.
+        /// </summary>
+        public TransientLifetimeManager()
+        {
+#if SUPPORTS_ASYNC_DISPOSABLE
+            _tracker = new List<object>();
+#else // SUPPORTS_ASYNC_DISPOSABLE
+            _tracker = new List<IDisposable>();
+#endif //!SUPPORTS_ASYNC_DISPOSABLE
+        }
+
 #if SUPPORTS_ASYNC_DISPOSABLE
         /// <summary>
         ///     Disposes all tracked objects asynchronously.
