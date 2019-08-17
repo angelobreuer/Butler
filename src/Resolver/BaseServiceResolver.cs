@@ -1,6 +1,7 @@
 ﻿namespace Butler.Resolver
 {
     using System;
+    using System.Diagnostics;
     using System.Runtime.CompilerServices;
     using Butler.Register;
     using Butler.Util;
@@ -35,11 +36,17 @@
         /// <summary>
         ///     The current <see cref="MaximumDepth"/>.
         /// </summary>
+#if DEBUG
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#endif // DEBUG
         private int _maximumDepth = DefaultMaximumDepth;
 
         /// <summary>
         ///     The current <see cref="ServiceConstructionMode"/>.
         /// </summary>
+#if DEBUG
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#endif // DEBUG
         private ServiceConstructionMode _serviceConstructionMode = DefaultServiceConstructionMode;
 
         /// <summary>

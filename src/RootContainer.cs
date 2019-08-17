@@ -3,14 +3,13 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
     using Butler.Registration;
     using Butler.Resolver;
 
 #if DEBUG
-
+    using System.Diagnostics;
     using Butler.Util;
-
+    using Butler.Util.Debug;
 #endif // DEBUG
 
 #if SUPPORTS_ASYNC_DISPOSABLE
@@ -20,11 +19,18 @@
     /// <summary>
     ///     An inversion of control (IoC) container that supports resolving services.
     /// </summary>
+#if DEBUG
+
+    [DebuggerTypeProxy(typeof(RootContainerProxy))]
+#endif // DEBUG
     public class RootContainer : BaseServiceResolver, IRootContainer, IServiceResolver
     {
         /// <summary>
         ///     A value indicating whether the root container has been disposed.
         /// </summary>
+#if DEBUG
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#endif // DEBUG
         private bool _disposed;
 
         /// <summary>

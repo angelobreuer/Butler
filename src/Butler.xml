@@ -453,6 +453,16 @@
                 A class that manages service registrations.
             </summary>
         </member>
+        <member name="F:Butler.Register.ServiceRegister._registrations">
+            <summary>
+                The registrations keyed by the service type.
+            </summary>
+        </member>
+        <member name="F:Butler.Register.ServiceRegister._registrationsLock">
+            <summary>
+                Lock used for accessing the <see cref="F:Butler.Register.ServiceRegister._registrations"/> thread-safe.
+            </summary>
+        </member>
         <member name="M:Butler.Register.ServiceRegister.#ctor">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Register.ServiceRegister"/> class.
@@ -1189,11 +1199,93 @@
                 a value indicating whether managed resources should be disposed.
             </param>
         </member>
-        <member name="M:Butler.RootContainer.DisposeAsync">
+        <member name="T:Butler.Util.Debug.RegistrationProxy">
             <summary>
-                Disposes the root container asynchronously.
+                An union of a service registration alias ( <see cref="P:Butler.Util.Debug.RegistrationProxy.Name"/>), a service type (
+                <see cref="P:Butler.Util.Debug.RegistrationProxy.ServiceType"/>) and a service registration ( <see cref="P:Butler.Util.Debug.RegistrationProxy.Registration"/>) used
+                for advanced debugging views.
             </summary>
-            <returns>a task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:Butler.Util.Debug.RegistrationProxy.#ctor(System.String,System.Type,Butler.Registration.IServiceRegistration)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Util.Debug.RegistrationProxy"/> class.
+            </summary>
+            <param name="name">the name / alias of the registration</param>
+            <param name="serviceType">the type of the service</param>
+            <param name="registration">the registration</param>
+        </member>
+        <member name="P:Butler.Util.Debug.RegistrationProxy.Name">
+            <summary>
+                Gets the key.
+            </summary>
+        </member>
+        <member name="P:Butler.Util.Debug.RegistrationProxy.Registration">
+            <summary>
+                Gets the associated value.
+            </summary>
+        </member>
+        <member name="P:Butler.Util.Debug.RegistrationProxy.ServiceType">
+            <summary>
+                Gets the item.
+            </summary>
+        </member>
+        <member name="T:Butler.Util.Debug.ResolverSettingsProxy">
+            <summary>
+                A class for wrapping the resolver settings into a category.
+            </summary>
+        </member>
+        <member name="M:Butler.Util.Debug.ResolverSettingsProxy.#ctor(Butler.Resolver.IServiceResolver)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Util.Debug.ResolverSettingsProxy"/> class.
+            </summary>
+            <param name="serviceResolver">the service resolver bound to</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceResolver"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="P:Butler.Util.Debug.ResolverSettingsProxy.ServiceResolver">
+            <summary>
+                Gets the service resolver bound to.
+            </summary>
+        </member>
+        <member name="P:Butler.Util.Debug.ResolverSettingsProxy.MaximumDepth">
+            <summary>
+                Gets or sets the maximum depth of the <see cref="P:Butler.Util.Debug.ResolverSettingsProxy.ServiceResolver"/>.
+            </summary>
+        </member>
+        <member name="P:Butler.Util.Debug.ResolverSettingsProxy.ServiceConstructionMode">
+            <summary>
+                Gets or sets the service construction mode of the <see cref="P:Butler.Util.Debug.ResolverSettingsProxy.ServiceResolver"/>.
+            </summary>
+        </member>
+        <member name="T:Butler.Util.Debug.RootContainerProxy">
+            <summary>
+                Debugger type proxy for the <see cref="P:Butler.Util.Debug.RootContainerProxy.RootContainer"/> type.
+            </summary>
+        </member>
+        <member name="M:Butler.Util.Debug.RootContainerProxy.#ctor(Butler.IRootContainer)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Util.Debug.RootContainerProxy"/> class.
+            </summary>
+            <param name="rootContainer">the root container bound to</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="rootContainer"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="P:Butler.Util.Debug.RootContainerProxy.Settings">
+            <summary>
+                Gets a proxy holding debugger information of settings for the root container.
+            </summary>
+        </member>
+        <member name="P:Butler.Util.Debug.RootContainerProxy.Registrations">
+            <summary>
+                Gets the container registrations.
+            </summary>
+        </member>
+        <member name="P:Butler.Util.Debug.RootContainerProxy.RootContainer">
+            <summary>
+                Gets the root container bound to.
+            </summary>
         </member>
         <member name="T:Butler.Util.Reflector">
             <summary>

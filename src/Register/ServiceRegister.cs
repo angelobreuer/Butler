@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Runtime.CompilerServices;
     using Butler.Registration;
@@ -12,7 +13,20 @@
     /// </summary>
     public class ServiceRegister : IServiceRegister
     {
+        /// <summary>
+        ///     The registrations keyed by the service type.
+        /// </summary>
+#if DEBUG
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#endif // DEBUG
         private readonly Dictionary<Type, IServiceRegistration> _registrations;
+
+        /// <summary>
+        ///     Lock used for accessing the <see cref="_registrations"/> thread-safe.
+        /// </summary>
+#if DEBUG
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#endif // DEBUG
         private readonly object _registrationsLock;
 
         /// <summary>
