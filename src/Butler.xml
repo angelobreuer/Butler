@@ -4,113 +4,9 @@
         <name>Butler</name>
     </assembly>
     <members>
-        <member name="T:Butler.BaseServiceResolver">
-            <summary>
-                Base implementation of an <see cref="T:Butler.IServiceResolver"/>.
-            </summary>
-        </member>
-        <member name="M:Butler.BaseServiceResolver.System#IServiceProvider#GetService(System.Type)">
-            <summary>
-                Resolves a service of the specified <paramref name="serviceType"/>.
-            </summary>
-            <param name="serviceType">the type of the service to resolve</param>
-            <returns>the resolved service</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Butler.BaseServiceResolver.Resolve(System.Type,Butler.ServiceResolveContext)">
-            <summary>
-                Resolves a service of the specified <paramref name="serviceType"/>.
-            </summary>
-            <param name="serviceType">the type of the service to resolve</param>
-            <param name="context">
-                the parent resolve context; if <see langword="null"/> a new
-                <see cref="T:Butler.ServiceResolveContext"/> is created.
-            </param>
-            <returns>the resolved service</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
-        </member>
-        <member name="M:Butler.BaseServiceResolver.Resolve``1(Butler.ServiceResolveContext)">
-            <summary>
-                Resolves a service of the specified <typeparamref name="TService"/>.
-            </summary>
-            <typeparam name="TService">the type of the service to resolve</typeparam>
-            <param name="context">
-                the parent resolve context; if <see langword="null"/> a new
-                <see cref="T:Butler.ServiceResolveContext"/> is created.
-            </param>
-            <returns>the resolved service</returns>
-            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
-        </member>
-        <member name="M:Butler.BaseServiceResolver.ResolveLazy``1(Butler.ServiceResolveContext)">
-            <summary>
-                Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
-            </summary>
-            <typeparam name="TService">the type of the service</typeparam>
-            <param name="context">
-                the parent resolve context; if <see langword="null"/> a new
-                <see cref="T:Butler.ServiceResolveContext"/> is created.
-            </param>
-            <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
-            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
-        </member>
         <member name="T:Butler.IRootContainer">
             <summary>
                 Interface for a root container.
-            </summary>
-        </member>
-        <member name="T:Butler.IServiceResolver">
-            <summary>
-                Interface for service resolvers.
-            </summary>
-        </member>
-        <member name="M:Butler.IServiceResolver.Resolve(System.Type,Butler.ServiceResolveContext)">
-            <summary>
-                Resolves a service of the specified <paramref name="serviceType"/>.
-            </summary>
-            <param name="serviceType">the type of the service to resolve</param>
-            <param name="context">
-                the parent resolve context; if <see langword="null"/> a new
-                <see cref="T:Butler.ServiceResolveContext"/> is created.
-            </param>
-            <returns>the resolved service</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
-        </member>
-        <member name="M:Butler.IServiceResolver.Resolve``1(Butler.ServiceResolveContext)">
-            <summary>
-                Resolves a service of the specified <typeparamref name="TService"/>.
-            </summary>
-            <param name="context">
-                the parent resolve context; if <see langword="null"/> a new
-                <see cref="T:Butler.ServiceResolveContext"/> is created.
-            </param>
-            <typeparam name="TService">the type of the service to resolve</typeparam>
-            <returns>the resolved service</returns>
-            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
-        </member>
-        <member name="M:Butler.IServiceResolver.ResolveLazy``1(Butler.ServiceResolveContext)">
-            <summary>
-                Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
-            </summary>
-            <param name="context">
-                the parent resolve context; if <see langword="null"/> a new
-                <see cref="T:Butler.ServiceResolveContext"/> is created.
-            </param>
-            <typeparam name="TService">the type of the service</typeparam>
-            <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
-            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
-        </member>
-        <member name="T:Butler.PreferConstructorAttribute">
-            <summary>
-                An attribute that controls the selector choice of a service resolver. When applied to a
-                constructor the constructor is preferred to be used for service resolve.
             </summary>
         </member>
         <member name="T:Butler.Register.IServiceRegister">
@@ -224,7 +120,7 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``1(Butler.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``1(Butler.Resolver.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
@@ -243,7 +139,7 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``2(Butler.ServiceFactory{``1},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``2(Butler.Resolver.ServiceFactory{``1},Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
@@ -263,7 +159,7 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``1(System.Type,Butler.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``1(System.Type,Butler.Resolver.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
@@ -440,7 +336,7 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``1(Butler.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``1(Butler.Resolver.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
@@ -459,7 +355,7 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``2(Butler.ServiceFactory{``1},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``2(Butler.Resolver.ServiceFactory{``1},Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
@@ -479,7 +375,7 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``1(System.Type,Butler.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``1(System.Type,Butler.Resolver.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
@@ -667,7 +563,7 @@
                 exists and replace is <see langword="false"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``1(Butler.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``1(Butler.Resolver.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
@@ -686,7 +582,7 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``2(Butler.ServiceFactory{``1},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``2(Butler.Resolver.ServiceFactory{``1},Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
@@ -706,7 +602,7 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``1(System.Type,Butler.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``1(System.Type,Butler.Resolver.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
@@ -790,7 +686,7 @@
             </summary>
             <typeparam name="TImplementation">the service implementation</typeparam>
         </member>
-        <member name="M:Butler.Registration.DirectRegistration`1.Create(Butler.ServiceResolveContext)">
+        <member name="M:Butler.Registration.DirectRegistration`1.Create(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates the instance.
             </summary>
@@ -803,7 +699,7 @@
             </summary>
             <typeparam name="TService">the service type</typeparam>
         </member>
-        <member name="M:Butler.Registration.FactoryRegistration`1.#ctor(Butler.ServiceFactory{`0})">
+        <member name="M:Butler.Registration.FactoryRegistration`1.#ctor(Butler.Resolver.ServiceFactory{`0})">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Registration.FactoryRegistration`1"/> class.
             </summary>
@@ -817,7 +713,7 @@
                 Gets the service factory.
             </summary>
         </member>
-        <member name="M:Butler.Registration.FactoryRegistration`1.Create(Butler.ServiceResolveContext)">
+        <member name="M:Butler.Registration.FactoryRegistration`1.Create(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates the instance.
             </summary>
@@ -843,7 +739,7 @@
                 Gets the static instance.
             </summary>
         </member>
-        <member name="M:Butler.Registration.InstanceRegistration.Create(Butler.ServiceResolveContext)">
+        <member name="M:Butler.Registration.InstanceRegistration.Create(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates the instance.
             </summary>
@@ -855,7 +751,7 @@
                 Interface for basic service registrations.
             </summary>
         </member>
-        <member name="M:Butler.Registration.IServiceRegistration.Create(Butler.ServiceResolveContext)">
+        <member name="M:Butler.Registration.IServiceRegistration.Create(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates the instance.
             </summary>
@@ -888,12 +784,348 @@
             </summary>
             <typeparam name="TImplementation">the type of the implementation</typeparam>
         </member>
-        <member name="M:Butler.Registration.ServiceRegistration`1.Create(Butler.ServiceResolveContext)">
+        <member name="M:Butler.Registration.ServiceRegistration`1.Create(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates the instance.
             </summary>
             <param name="context">the current resolver context</param>
             <returns>the instance</returns>
+        </member>
+        <member name="T:Butler.Resolver.BaseServiceResolver">
+            <summary>
+                Base implementation of an <see cref="T:Butler.Resolver.IServiceResolver"/>.
+            </summary>
+        </member>
+        <member name="M:Butler.Resolver.BaseServiceResolver.System#IServiceProvider#GetService(System.Type)">
+            <summary>
+                Resolves a service of the specified <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">the type of the service to resolve</param>
+            <returns>the resolved service</returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="F:Butler.Resolver.BaseServiceResolver.DefaultMaximumDepth">
+            <summary>
+                The default value for the <see cref="P:Butler.Resolver.BaseServiceResolver.MaximumDepth"/> property.
+            </summary>
+        </member>
+        <member name="F:Butler.Resolver.BaseServiceResolver.DefaultServiceConstructionMode">
+            <summary>
+                The default value for the <see cref="P:Butler.Resolver.BaseServiceResolver.ServiceConstructionMode"/> property.
+            </summary>
+        </member>
+        <member name="F:Butler.Resolver.BaseServiceResolver._maximumDepth">
+            <summary>
+                The current <see cref="P:Butler.Resolver.BaseServiceResolver.MaximumDepth"/>.
+            </summary>
+        </member>
+        <member name="F:Butler.Resolver.BaseServiceResolver._serviceConstructionMode">
+            <summary>
+                The current <see cref="P:Butler.Resolver.BaseServiceResolver.ServiceConstructionMode"/>.
+            </summary>
+        </member>
+        <member name="P:Butler.Resolver.BaseServiceResolver.MaximumDepth">
+            <summary>
+                Gets or sets the maximum service resolve depth (used to detect self-referencing loops).
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is zero or negative.
+            </exception>
+        </member>
+        <member name="P:Butler.Resolver.BaseServiceResolver.ServiceConstructionMode">
+            <summary>
+                Gets or sets the resolver's <see cref="P:Butler.Resolver.BaseServiceResolver.ServiceConstructionMode"/>.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is not defined in the
+                <see cref="P:Butler.Resolver.BaseServiceResolver.ServiceConstructionMode"/> enumeration.
+            </exception>
+            <exception cref="T:System.ArgumentException">thrown if the specified value is <see cref="F:Butler.Resolver.ServiceConstructionMode.Default"/></exception>
+        </member>
+        <member name="M:Butler.Resolver.BaseServiceResolver.Resolve(System.Type,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+            <summary>
+                Resolves a service of the specified <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">the type of the service to resolve</param>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <returns>the resolved service</returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
+        <member name="M:Butler.Resolver.BaseServiceResolver.Resolve``1(Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+            <summary>
+                Resolves a service of the specified <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">the type of the service to resolve</typeparam>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <returns>the resolved service</returns>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
+        <member name="M:Butler.Resolver.BaseServiceResolver.ResolveLazy``1(Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+            <summary>
+                Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">the type of the service</typeparam>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
+        <member name="T:Butler.Resolver.IServiceResolver">
+            <summary>
+                Interface for service resolvers.
+            </summary>
+        </member>
+        <member name="P:Butler.Resolver.IServiceResolver.MaximumDepth">
+            <summary>
+                Gets or sets the maximum service resolve depth (used to detect self-referencing loops).
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is zero or negative.
+            </exception>
+        </member>
+        <member name="P:Butler.Resolver.IServiceResolver.ServiceConstructionMode">
+            <summary>
+                Gets or sets the resolvers's <see cref="P:Butler.Resolver.IServiceResolver.ServiceConstructionMode"/>.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is not defined in the
+                <see cref="P:Butler.Resolver.IServiceResolver.ServiceConstructionMode"/> enumeration.
+            </exception>
+            <exception cref="T:System.ArgumentException">thrown if the specified value is <see cref="F:Butler.Resolver.ServiceConstructionMode.Default"/></exception>
+        </member>
+        <member name="M:Butler.Resolver.IServiceResolver.Resolve(System.Type,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+            <summary>
+                Resolves a service of the specified <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">the type of the service to resolve</param>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <returns>the resolved service</returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
+        <member name="M:Butler.Resolver.IServiceResolver.Resolve``1(Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+            <summary>
+                Resolves a service of the specified <typeparamref name="TService"/>.
+            </summary>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <typeparam name="TService">the type of the service to resolve</typeparam>
+            <returns>the resolved service</returns>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
+        <member name="M:Butler.Resolver.IServiceResolver.ResolveLazy``1(Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+            <summary>
+                Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
+            </summary>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <typeparam name="TService">the type of the service</typeparam>
+            <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
+        <member name="T:Butler.Resolver.PreferConstructorAttribute">
+            <summary>
+                An attribute that controls the selector choice of a service resolver. When applied to a
+                constructor the constructor is preferred to be used for service resolve.
+            </summary>
+        </member>
+        <member name="T:Butler.Resolver.ServiceConstructionMode">
+            <summary>
+                A set of different service construction modes.
+            </summary>
+        </member>
+        <member name="F:Butler.Resolver.ServiceConstructionMode.Default">
+            <summary>
+                Denotes that the default <see cref="T:Butler.Resolver.ServiceConstructionMode"/> should be used for the
+                current context.
+            </summary>
+        </member>
+        <member name="F:Butler.Resolver.ServiceConstructionMode.Parent">
+            <summary>
+                Denotes that the <see cref="T:Butler.Resolver.ServiceConstructionMode"/> should be inherited from the
+                parent resolve, e.g. when resolving a dependency of a service and the parent mode is
+                set, then the <see cref="T:Butler.Resolver.ServiceConstructionMode"/> of the parent resolve is used. If
+                the service is resolved directly and <see cref="F:Butler.Resolver.ServiceConstructionMode.Parent"/> is set then
+                <see cref="F:Butler.Resolver.ServiceConstructionMode.Default"/> is used.
+            </summary>
+        </member>
+        <member name="F:Butler.Resolver.ServiceConstructionMode.PreferParameterlessConstructor">
+            <summary>
+                Denotes that the parameter-less constructor should be preferred.
+            </summary>
+        </member>
+        <member name="F:Butler.Resolver.ServiceConstructionMode.PreferComplexConstructor">
+            <summary>
+                Denotes that the most complex constructor should be searched that can be created with
+                the current registrations.
+            </summary>
+        </member>
+        <member name="F:Butler.Resolver.ServiceConstructionMode.Mixed">
+            <summary>
+                Denotes that the constructor with the <see cref="T:Butler.Resolver.PreferConstructorAttribute"/> should
+                be used. If no constructor has the <see cref="T:Butler.Resolver.PreferConstructorAttribute"/> then the
+                same behavior as <see cref="F:Butler.Resolver.ServiceConstructionMode.PreferComplexConstructor"/> is used.
+            </summary>
+        </member>
+        <member name="T:Butler.Resolver.ServiceFactory`1">
+            <summary>
+                Delegate for service factories.
+            </summary>
+            <typeparam name="T">the type of the implementation the factory provides</typeparam>
+            <param name="resolver">the current resolver context</param>
+            <returns>the service instance</returns>
+        </member>
+        <member name="T:Butler.Resolver.ServiceResolveContext">
+            <summary>
+                A compound of required information while resolving a service.
+            </summary>
+        </member>
+        <member name="M:Butler.Resolver.ServiceResolveContext.#ctor(Butler.Resolver.IServiceResolver,Butler.Register.IServiceRegister,Butler.Resolver.ServiceConstructionMode,System.Type,System.Type,Butler.Util.TraceBuilder)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Resolver.ServiceResolveContext"/> class.
+            </summary>
+            <param name="resolver">the service resolver using the context</param>
+            <param name="register">the service register</param>
+            <param name="constructionMode">the service construction mode for the resolve</param>
+            <param name="serviceType">the type of the service being resolved</param>
+            <param name="parentType">the type of the parent</param>
+            <param name="traceBuilder">
+                the trace builder; if <see langword="null"/> a new instance will be created.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="resolver"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="register"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Resolver.ServiceResolveContext.#ctor(Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode,System.Type)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Resolver.ServiceResolveContext"/> of the
+                specified <paramref name="parentContext"/>.
+            </summary>
+            <remarks>The depth automatically increases.</remarks>
+            <param name="parentContext">the parent context to take the data from</param>
+            <param name="constructionMode"></param>
+            <param name="serviceType">the type of the new service being resolved</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="parentContext"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
+        <member name="P:Butler.Resolver.ServiceResolveContext.ConstructionMode">
+            <summary>
+                Gets the service construction mode for the resolve.
+            </summary>
+        </member>
+        <member name="P:Butler.Resolver.ServiceResolveContext.Depth">
+            <summary>
+                Gets the actual resolver depth. If a specific depth is reached an exception is thrown.
+            </summary>
+        </member>
+        <member name="P:Butler.Resolver.ServiceResolveContext.ParentType">
+            <summary>
+                Gets the type of the parent being resolved (if not <see langword="null"/>, then the
+                <see cref="P:Butler.Resolver.ServiceResolveContext.ServiceType"/> is required to resolved as a dependency for the
+                <see cref="P:Butler.Resolver.ServiceResolveContext.ParentType"/> service, <see langword="null"/> if the service is being
+                resolved directly).
+            </summary>
+        </member>
+        <member name="P:Butler.Resolver.ServiceResolveContext.Register">
+            <summary>
+                Gets the corresponding service register to resolve from.
+            </summary>
+        </member>
+        <member name="P:Butler.Resolver.ServiceResolveContext.Resolver">
+            <summary>
+                Gets the resolver that was used to resolve the service.
+            </summary>
+        </member>
+        <member name="P:Butler.Resolver.ServiceResolveContext.ServiceType">
+            <summary>
+                Gets the type of the service being service.
+            </summary>
+        </member>
+        <member name="P:Butler.Resolver.ServiceResolveContext.TraceBuilder">
+            <summary>
+                Gets the trace builder used for useful output on resolve failures to make it easier
+                to find resolution errors and their cause.
+            </summary>
+            <remarks>
+                Please note that this property is only available when the Debug configuration is used.
+            </remarks>
         </member>
         <member name="T:Butler.RootContainer">
             <summary>
@@ -927,20 +1159,27 @@
             </summary>
             <returns>the service registration enumerator</returns>
         </member>
-        <member name="M:Butler.RootContainer.Resolve(System.Type,Butler.ServiceResolveContext)">
+        <member name="M:Butler.RootContainer.Resolve(System.Type,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
             <summary>
-                Resolves a single service.
+                Resolves a service of the specified <paramref name="serviceType"/>.
             </summary>
             <param name="serviceType">the type of the service to resolve</param>
-            <param name="context">
+            <param name="parentContext">
                 the parent resolve context; if <see langword="null"/> a new
-                <see cref="T:Butler.ServiceResolveContext"/> is created.
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
             </param>
-            <returns>the service instance of type <paramref name="serviceType"/></returns>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <returns>the resolved service</returns>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
             </exception>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
         </member>
         <member name="M:Butler.RootContainer.Dispose(System.Boolean)">
             <summary>
@@ -956,113 +1195,9 @@
             </summary>
             <returns>a task that represents the asynchronous operation.</returns>
         </member>
-        <member name="F:Butler.ServiceConstructionMode.PreferParameterlessConstructor">
-            <summary>
-                Denotes that the parameter-less constructor should be preferred.
-            </summary>
-        </member>
-        <member name="F:Butler.ServiceConstructionMode.PreferComplexConstructor">
-            <summary>
-                Denotes that the most complex constructor should be searched that can be created with
-                the current registrations.
-            </summary>
-        </member>
-        <member name="F:Butler.ServiceConstructionMode.Mixed">
-            <summary>
-                Denotes that the constructor with the <see cref="T:Butler.PreferConstructorAttribute"/> should
-                be used. If no constructor has the <see cref="T:Butler.PreferConstructorAttribute"/> then the
-                same behavior as <see cref="F:Butler.ServiceConstructionMode.PreferComplexConstructor"/> is used.
-            </summary>
-        </member>
-        <member name="T:Butler.ServiceFactory`1">
-            <summary>
-                Delegate for service factories.
-            </summary>
-            <typeparam name="T">the type of the implementation the factory provides</typeparam>
-            <param name="resolver">the current resolver context</param>
-            <returns>the service instance</returns>
-        </member>
-        <member name="T:Butler.ServiceResolveContext">
-            <summary>
-                A compound of required information while resolving a service.
-            </summary>
-        </member>
-        <member name="M:Butler.ServiceResolveContext.#ctor(Butler.IServiceResolver,Butler.Register.IServiceRegister,System.Type,System.Type,Butler.Util.TraceBuilder)">
-            <summary>
-                Initializes a new instance of the <see cref="T:Butler.ServiceResolveContext"/> class.
-            </summary>
-            <param name="resolver">the service resolver using the context</param>
-            <param name="register">the service register</param>
-            <param name="serviceType">the type of the service being resolved</param>
-            <param name="parentType">the type of the parent</param>
-            <param name="traceBuilder">
-                the trace builder; if <see langword="null"/> a new instance will be created.
-            </param>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="resolver"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="register"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Butler.ServiceResolveContext.#ctor(Butler.ServiceResolveContext,System.Type)">
-            <summary>
-                Initializes a new instance of the <see cref="T:Butler.ServiceResolveContext"/> of the
-                specified <paramref name="parentContext"/>.
-            </summary>
-            <remarks>The depth automatically increases.</remarks>
-            <param name="parentContext">the parent context to take the data from</param>
-            <param name="serviceType">the type of the new service being resolved</param>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="parentContext"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="P:Butler.ServiceResolveContext.Depth">
-            <summary>
-                Gets the actual resolver depth. If a specific depth is reached an exception is thrown.
-            </summary>
-        </member>
-        <member name="P:Butler.ServiceResolveContext.ParentType">
-            <summary>
-                Gets the type of the parent being resolved (if not <see langword="null"/>, then the
-                <see cref="P:Butler.ServiceResolveContext.ServiceType"/> is required to resolved as a dependency for the
-                <see cref="P:Butler.ServiceResolveContext.ParentType"/> service, <see langword="null"/> if the service is being
-                resolved directly).
-            </summary>
-        </member>
-        <member name="P:Butler.ServiceResolveContext.Resolver">
-            <summary>
-                Gets the resolver that was used to resolve the service.
-            </summary>
-        </member>
-        <member name="P:Butler.ServiceResolveContext.Register">
-            <summary>
-                Gets the corresponding service register to resolve from.
-            </summary>
-        </member>
-        <member name="P:Butler.ServiceResolveContext.ServiceType">
-            <summary>
-                Gets the type of the service being service.
-            </summary>
-        </member>
-        <member name="P:Butler.ServiceResolveContext.TraceBuilder">
-            <summary>
-                Gets the trace builder used for useful output on resolve failures to make it easier
-                to find resolution errors and their cause.
-            </summary>
-            <remarks>
-                Please note that this property is only available when the Debug configuration is used.
-            </remarks>
-        </member>
         <member name="T:Butler.Util.Reflector">
             <summary>
-                An utility class for resolving a service with dependencies from an <see cref="T:Butler.IServiceResolver"/>.
+                An utility class for resolving a service with dependencies from an <see cref="T:Butler.Resolver.IServiceResolver"/>.
             </summary>
         </member>
         <member name="M:Butler.Util.Reflector.CanUseConstructor(Butler.Register.IServiceRegister,System.Collections.Generic.IEnumerable{System.Reflection.ParameterInfo})">
@@ -1077,7 +1212,7 @@
                 resolved using the specified <paramref name="register"/>
             </returns>
         </member>
-        <member name="M:Butler.Util.Reflector.Resolve``1(Butler.ServiceResolveContext)">
+        <member name="M:Butler.Util.Reflector.Resolve``1(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates a new instance of the specified service type (in <paramref name="context"/>).
             </summary>
@@ -1088,7 +1223,7 @@
                 thrown if the specified <paramref name="context"/> is <see langword="null"/>.
             </exception>
         </member>
-        <member name="M:Butler.Util.Reflector.Resolve(System.Type,Butler.ServiceResolveContext)">
+        <member name="M:Butler.Util.Reflector.Resolve(System.Type,Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates a new instance of the specified service type (in <paramref name="context"/>).
             </summary>
@@ -1102,7 +1237,7 @@
                 thrown if the specified <paramref name="context"/> is <see langword="null"/>.
             </exception>
         </member>
-        <member name="M:Butler.Util.Reflector.ResolveConstructor(Butler.ServiceResolveContext,System.Collections.Generic.IEnumerable{System.Reflection.ConstructorInfo},System.Type,Butler.ServiceConstructionMode)">
+        <member name="M:Butler.Util.Reflector.ResolveConstructor(Butler.Resolver.ServiceResolveContext,System.Collections.Generic.IEnumerable{System.Reflection.ConstructorInfo},System.Type,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves the matching constructor for the specified
                 <paramref name="implementationType"/> with respecting the specified <paramref name="constructionMode"/>.
@@ -1118,7 +1253,7 @@
             <returns>the constructor chosen fro the specified <paramref name="implementationType"/></returns>
             <exception cref="T:System.ArgumentOutOfRangeException">
                 thrown if the specified <paramref name="constructionMode"/> is unsupported or not
-                defined in the <see cref="T:Butler.ServiceConstructionMode"/> enumeration.
+                defined in the <see cref="T:Butler.Resolver.ServiceConstructionMode"/> enumeration.
             </exception>
             <exception cref="T:Butler.Util.ResolverException">
                 thrown if no passable constructor was found for the specified <paramref name="implementationType"/>
@@ -1140,7 +1275,7 @@
             </summary>
             <param name="message">the message</param>
         </member>
-        <member name="M:Butler.Util.ResolverException.#ctor(System.String,Butler.ServiceResolveContext)">
+        <member name="M:Butler.Util.ResolverException.#ctor(System.String,Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
             </summary>
@@ -1152,7 +1287,7 @@
                 Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
             </summary>
         </member>
-        <member name="M:Butler.Util.ResolverException.#ctor(Butler.ServiceResolveContext)">
+        <member name="M:Butler.Util.ResolverException.#ctor(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
             </summary>
@@ -1165,7 +1300,7 @@
             <param name="message">the message</param>
             <param name="innerException">the inner nested exception</param>
         </member>
-        <member name="M:Butler.Util.ResolverException.#ctor(System.String,Butler.ServiceResolveContext,System.Exception)">
+        <member name="M:Butler.Util.ResolverException.#ctor(System.String,Butler.Resolver.ServiceResolveContext,System.Exception)">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
             </summary>
@@ -1178,7 +1313,7 @@
                 Gets the associated resolve context (may be <see langword="null"/>).
             </summary>
         </member>
-        <member name="M:Butler.Util.ResolverException.BuildMessage(System.String,Butler.ServiceResolveContext)">
+        <member name="M:Butler.Util.ResolverException.BuildMessage(System.String,Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Builds the message for the specified <paramref name="context"/>.
             </summary>
