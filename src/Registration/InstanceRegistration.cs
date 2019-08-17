@@ -1,6 +1,7 @@
 ﻿namespace Butler.Registration
 {
     using System;
+    using Butler.Lifetime;
     using Butler.Resolver;
 
     /// <summary>
@@ -17,6 +18,11 @@
         /// </exception>
         public InstanceRegistration(object instance)
             => Instance = instance ?? throw new ArgumentNullException(nameof(instance));
+
+        /// <summary>
+        ///     Gets the lifetime of the service.
+        /// </summary>
+        public IServiceLifetime ServiceLifetime { get; } = Lifetime.Transient;
 
         /// <summary>
         ///     Gets the static instance.

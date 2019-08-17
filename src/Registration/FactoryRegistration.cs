@@ -1,6 +1,7 @@
 ﻿namespace Butler.Registration
 {
     using System;
+    using Butler.Lifetime;
     using Butler.Resolver;
 
     /// <summary>
@@ -17,14 +18,12 @@
         ///     thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
         /// </exception>
         public FactoryRegistration(ServiceFactory<TService> factory)
-        {
-            if (factory is null)
-            {
-                throw new ArgumentNullException(nameof(factory));
-            }
+            => Factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
-            Factory = factory;
-        }
+        /// <summary>
+        ///     Gets the lifetime of the service.
+        /// </summary>
+        public IServiceLifetime ServiceLifetime { get; } = Lifetime.Transient;
 
         /// <summary>
         ///     Gets the service factory.
