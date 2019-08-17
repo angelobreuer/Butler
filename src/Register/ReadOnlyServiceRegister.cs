@@ -74,8 +74,8 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public void Register<TService, TImplementation>(ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TImplementation : class, TService
-            => ThrowReadOnlyException();
+        public ServiceRegistration<TImplementation> Register<TService, TImplementation>(ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+            where TImplementation : class, TService => throw ThrowReadOnlyException();
 
         /// <summary>
         ///     Registers the specified <paramref name="registration"/>.
@@ -97,9 +97,9 @@
         ///     and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public void Register(Type type, IServiceRegistration registration,
+        public IServiceRegistration Register(Type type, IServiceRegistration registration,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
-            => ThrowReadOnlyException();
+            => throw ThrowReadOnlyException();
 
         /// <summary>
         ///     Registers the specified <paramref name="registration"/>.
@@ -117,9 +117,9 @@
         ///     thrown if a registration with the specified <typeparamref name="TService"/> already
         ///     exists and replace is <see langword="false"/>.
         /// </exception>
-        public void Register<TService>(IServiceRegistration registration,
+        public IServiceRegistration Register<TService>(IServiceRegistration registration,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
-            => ThrowReadOnlyException();
+            => throw ThrowReadOnlyException();
 
         /// <summary>
         ///     Registers a direct parameterless constructor service.
@@ -135,8 +135,9 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public void RegisterDirect<TService, TImplementation>(ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
-            where TImplementation : TService, new() => ThrowReadOnlyException();
+        public IServiceRegistration RegisterDirect<TService, TImplementation>(
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+            where TImplementation : TService, new() => throw ThrowReadOnlyException();
 
         /// <summary>
         ///     Registers a service factory.
@@ -155,8 +156,9 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public void RegisterFactory<TService>(ServiceFactory<TService> factory, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
-            => ThrowReadOnlyException();
+        public IServiceRegistration RegisterFactory<TService>(ServiceFactory<TService> factory,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+            => throw ThrowReadOnlyException();
 
         /// <summary>
         ///     Registers a service factory.
@@ -176,8 +178,9 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public void RegisterFactory<TService, TImplementation>(ServiceFactory<TImplementation> factory, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
-            => ThrowReadOnlyException();
+        public IServiceRegistration RegisterFactory<TService, TImplementation>(ServiceFactory<TImplementation> factory,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+            => throw ThrowReadOnlyException();
 
         /// <summary>
         ///     Registers a service factory.
@@ -200,8 +203,10 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public void RegisterFactory<TImplementation>(Type serviceType, ServiceFactory<TImplementation> factory, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
-            => ThrowReadOnlyException();
+        public IServiceRegistration RegisterFactory<TImplementation>(Type serviceType,
+            ServiceFactory<TImplementation> factory,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+            => throw ThrowReadOnlyException();
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
@@ -217,9 +222,9 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public void RegisterInstance<TService>(TService instance,
+        public IServiceRegistration RegisterInstance<TService>(TService instance,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
-            where TService : class => ThrowReadOnlyException();
+            where TService : class => throw ThrowReadOnlyException();
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
@@ -236,16 +241,15 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public void RegisterInstance<TService, TImplementation>(TImplementation instance,
+        public IServiceRegistration RegisterInstance<TService, TImplementation>(TImplementation instance,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
-            where TImplementation : class, TService
-            => ThrowReadOnlyException();
+            where TImplementation : class, TService => throw ThrowReadOnlyException();
 
         /// <summary>
         ///     Throws an exception that indicates that the service register is read-only.
         /// </summary>
         /// <exception cref="InvalidOperationException">always thrown</exception>
-        private void ThrowReadOnlyException()
+        private InvalidOperationException ThrowReadOnlyException()
             => throw new InvalidOperationException("The register is read-only. No registrations are allowed.");
     }
 }

@@ -42,6 +42,14 @@
 #endif // DEBUG
         private volatile bool _disposed;
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="RootContainer"/> class.
+        /// </summary>
+        public RootContainer()
+        {
+            _lifetimes = new Dictionary<IServiceLifetime, ILifetimeManager>();
+        }
+
 #if !SUPPORTS_ASYNC_DISPOSABLE
 
         /// <summary>
