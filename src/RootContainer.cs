@@ -74,6 +74,9 @@
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
         /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the maximum service resolve depth was exceeded.
+        /// </exception>
         public override object Resolve(Type serviceType, ServiceResolveContext parentContext = null,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
         {

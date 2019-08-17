@@ -32,7 +32,8 @@
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
         public ServiceResolveContext(IServiceResolver resolver, IServiceRegister register,
-            ServiceConstructionMode constructionMode, Type serviceType, Type parentType = null, TraceBuilder traceBuilder = null)
+            ServiceConstructionMode constructionMode, Type serviceType, Type parentType = null,
+            TraceBuilder traceBuilder = null)
         {
             ParentType = parentType;
             ConstructionMode = GetServiceConstructionMode(constructionMode, resolver);
@@ -60,8 +61,8 @@
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
-        public ServiceResolveContext(IServiceResolver resolver, IServiceRegister register,
-            ServiceConstructionMode constructionMode, Type serviceType, Type parentType = null)
+        public ServiceResolveContext(IServiceResolver resolver, IServiceRegister register, ServiceConstructionMode constructionMode,
+            Type serviceType, Type parentType = null)
         {
             ParentType = parentType;
             ConstructionMode = GetServiceConstructionMode(constructionMode, resolver);
@@ -85,7 +86,11 @@
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
-        public ServiceResolveContext(ServiceResolveContext parentContext, ServiceConstructionMode constructionMode, Type serviceType)
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the maximum service resolve depth was exceeded.
+        /// </exception>
+        public ServiceResolveContext(ServiceResolveContext parentContext, ServiceConstructionMode constructionMode,
+            Type serviceType)
         {
             if (parentContext is null)
             {
@@ -95,16 +100,63 @@
             ParentType = parentContext.ServiceType;
             Resolver = parentContext.Resolver;
             ServiceType = serviceType;
-            Depth = parentContext.Depth + 1;
             ConstructionMode = GetServiceConstructionMode(constructionMode, parentContext.Resolver, parentContext);
+
+            // increase resolve depth and check if it was exceeded
+            if ((Depth = parentContext.Depth + 1) >= parentContext.Resolver.MaximumDepth)
+            {
+                throw new InvalidOperationException($"The maximum service resolve depth ({Depth}) was exceeded.");
+            }
 
 #if DEBUG
             TraceBuilder = parentContext.TraceBuilder;
 #endif // DEBUG
         }
 
+        /// <summary>
+        ///     Gets the service construction mode for the resolve.
+        /// </summary>
+        public ServiceConstructionMode ConstructionMode { get; }
+
+        /// <summary>
+        ///     Gets the actual resolver depth. If a specific depth is reached an exception is thrown.
+        /// </summary>
+        public int Depth { get; }
+
+        /// <summary>
+        ///     Gets the type of the parent being resolved (if not <see langword="null"/>, then the
+        ///     <see cref="ServiceType"/> is required to resolved as a dependency for the
+        ///     <see cref="ParentType"/> service, <see langword="null"/> if the service is being
+        ///     resolved directly).
+        /// </summary>
+        public Type ParentType { get; }
+
+        /// <summary>
+        ///     Gets the corresponding service register to resolve from.
+        /// </summary>
+        public IServiceRegister Register { get; }
+
+        /// <summary>
+        ///     Gets the resolver that was used to resolve the service.
+        /// </summary>
+        public IServiceResolver Resolver { get; }
+
+        /// <summary>
+        ///     Gets the type of the service being service.
+        /// </summary>
+        public Type ServiceType { get; }
+
+        /// <summary>
+        ///     Gets the trace builder used for useful output on resolve failures to make it easier
+        ///     to find resolution errors and their cause.
+        /// </summary>
+        /// <remarks>
+        ///     Please note that this property is only available when the Debug configuration is used.
+        /// </remarks>
+        public TraceBuilder TraceBuilder { get; }
+
         private static ServiceConstructionMode GetServiceConstructionMode(ServiceConstructionMode mode,
-            IServiceResolver resolver, ServiceResolveContext parentContext = null)
+                                                                    IServiceResolver resolver, ServiceResolveContext parentContext = null)
         {
             // check if the mode is parent and the parent context is available
             if (mode == ServiceConstructionMode.Parent && parentContext != null)
@@ -123,50 +175,7 @@
             return resolver.ServiceConstructionMode;
         }
 
-        /// <summary>
-        ///     Gets the actual resolver depth. If a specific depth is reached an exception is thrown.
-        /// </summary>
-        public int Depth { get; }
-
-        /// <summary>
-        ///     Gets the type of the parent being resolved (if not <see langword="null"/>, then the
-        ///     <see cref="ServiceType"/> is required to resolved as a dependency for the
-        ///     <see cref="ParentType"/> service, <see langword="null"/> if the service is being
-        ///     resolved directly).
-        /// </summary>
-        public Type ParentType { get; }
-
-        /// <summary>
-        ///     Gets the resolver that was used to resolve the service.
-        /// </summary>
-        public IServiceResolver Resolver { get; }
-
-        /// <summary>
-        ///     Gets the corresponding service register to resolve from.
-        /// </summary>
-        public IServiceRegister Register { get; }
-
-        /// <summary>
-        ///     Gets the service construction mode for the resolve.
-        /// </summary>
-        public ServiceConstructionMode ConstructionMode { get; }
-
-        /// <summary>
-        ///     Gets the type of the service being service.
-        /// </summary>
-        public Type ServiceType { get; }
-
 #if DEBUG
-
-        /// <summary>
-        ///     Gets the trace builder used for useful output on resolve failures to make it easier
-        ///     to find resolution errors and their cause.
-        /// </summary>
-        /// <remarks>
-        ///     Please note that this property is only available when the Debug configuration is used.
-        /// </remarks>
-        public TraceBuilder TraceBuilder { get; }
-
 #endif // DEBUG
     }
 }

@@ -23,14 +23,47 @@
 #endif
 
         /// <summary>
+        ///     The default value for the <see cref="MaximumDepth"/> property.
+        /// </summary>
+        public const int DefaultMaximumDepth = 10;
+
+        /// <summary>
         ///     The default value for the <see cref="ServiceConstructionMode"/> property.
         /// </summary>
         public const ServiceConstructionMode DefaultServiceConstructionMode = ServiceConstructionMode.Mixed;
 
         /// <summary>
+        ///     The current <see cref="MaximumDepth"/>.
+        /// </summary>
+        private int _maximumDepth = DefaultMaximumDepth;
+
+        /// <summary>
         ///     The current <see cref="ServiceConstructionMode"/>.
         /// </summary>
         private ServiceConstructionMode _serviceConstructionMode = DefaultServiceConstructionMode;
+
+        /// <summary>
+        ///     Gets or sets the maximum service resolve depth (used to detect self-referencing loops).
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     thrown if the specified value is zero or negative.
+        /// </exception>
+        public int MaximumDepth
+        {
+            get => _maximumDepth;
+
+            set
+            {
+                // ensure the value is not zero or negative
+                if (value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), value,
+                        "The specified value can not be zero or negative!");
+                }
+
+                _maximumDepth = value;
+            }
+        }
 
         /// <summary>
         ///     Gets or sets the resolver's <see cref="ServiceConstructionMode"/>.
@@ -80,6 +113,9 @@
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
         /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the maximum service resolve depth was exceeded.
+        /// </exception>
         public abstract object Resolve(Type serviceType, ServiceResolveContext context = null,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default);
 
@@ -97,6 +133,9 @@
         /// </param>
         /// <returns>the resolved service</returns>
         /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the maximum service resolve depth was exceeded.
+        /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TService Resolve<TService>(ServiceResolveContext context = null,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
@@ -116,6 +155,9 @@
         /// </param>
         /// <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
         /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the maximum service resolve depth was exceeded.
+        /// </exception>
         public Lazy<TService> ResolveLazy<TService>(ServiceResolveContext context = null,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
             => new Lazy<TService>(() => Resolve<TService>(context));
