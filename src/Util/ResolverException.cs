@@ -27,9 +27,7 @@
         /// <param name="message">the message</param>
         /// <param name="context">the current resolver context</param>
         public ResolverException(string message, ServiceResolveContext context)
-            : this(BuildMessage(message, context))
-        {
-        }
+            : this(BuildMessage(message, context)) => Context = context;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ResolverException"/> class.
@@ -44,8 +42,7 @@
         /// <param name="context">the current resolver context</param>
         public ResolverException(ServiceResolveContext context)
             : this(BuildMessage(UnknownErrorMessage, context))
-        {
-        }
+            => Context = context;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ResolverException"/> class.
@@ -64,9 +61,7 @@
         /// <param name="context">the current resolver context</param>
         /// <param name="innerException">the inner nested exception</param>
         public ResolverException(string message, ServiceResolveContext context, Exception innerException)
-            : base(BuildMessage(message, context), innerException)
-        {
-        }
+            : base(BuildMessage(message, context), innerException) => Context = context;
 
         /// <summary>
         ///     Gets the associated resolve context (may be <see langword="null"/>).
