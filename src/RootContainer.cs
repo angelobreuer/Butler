@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
     using Butler.Registration;
+    using Butler.Resolver;
 
 #if DEBUG
 
@@ -14,6 +15,7 @@
 
 #if SUPPORTS_ASYNC_DISPOSABLE
     using System.Threading.Tasks;
+    using Butler.Resolver;
 #endif // SUPPORTS_ASYNC_DISPOSABLE
 
     /// <summary>

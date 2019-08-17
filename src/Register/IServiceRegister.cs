@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Butler.Registration;
+    using Butler.Resolver;
 
     /// <summary>
     ///     Interface for a service register.

@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using Butler.Register;
     using Butler.Registration;
+    using Butler.Resolver;
 
     /// <summary>
     ///     Interface for a root container.

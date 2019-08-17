@@ -2,6 +2,7 @@
 {
     using System;
     using System.Runtime.CompilerServices;
+    using Butler.Resolver;
 
     /// <summary>
     ///     Exception for resolver failures.

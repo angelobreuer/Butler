@@ -1,4 +1,6 @@
-﻿namespace Butler.Registration
+﻿using Butler.Resolver;
+
+namespace Butler.Registration
 {
     /// <summary>
     ///     Provides an <see cref="IServiceRegistration"/> for direct parameterless constructors.

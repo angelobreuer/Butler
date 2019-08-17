@@ -1,4 +1,4 @@
-﻿namespace Butler
+﻿namespace Butler.Resolver
 {
     using System;
     using Butler.Register;

@@ -1,6 +1,7 @@
 ﻿namespace Butler.Registration
 {
     using System;
+    using Butler.Resolver;
 
     /// <summary>
     ///     Provides a factory registration.

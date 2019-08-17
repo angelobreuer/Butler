@@ -1,4 +1,4 @@
-﻿namespace Butler
+﻿namespace Butler.Resolver
 {
     /// <summary>
     ///     Delegate for service factories.

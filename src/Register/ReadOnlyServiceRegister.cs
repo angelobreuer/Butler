@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
     using Butler.Registration;
+    using Butler.Resolver;
 
     /// <summary>
     ///     A class that provides a read-only service register.

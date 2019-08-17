@@ -1,6 +1,7 @@
 ﻿namespace Butler.Registration
 {
     using System;
+    using Butler.Resolver;
 
     /// <summary>
     ///     Registration of a static instance.

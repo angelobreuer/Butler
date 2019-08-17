@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Butler
+﻿namespace Butler.Resolver
 {
+    /// <summary>
+    ///     A set of different service construction modes.
+    /// </summary>
     public enum ServiceConstructionMode
     {
         /// <summary>

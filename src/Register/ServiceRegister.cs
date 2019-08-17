@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Runtime.CompilerServices;
     using Butler.Registration;
+    using Butler.Resolver;
 
     /// <summary>
     ///     A class that manages service registrations.

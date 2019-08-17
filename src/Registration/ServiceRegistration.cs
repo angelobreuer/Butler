@@ -1,5 +1,6 @@
 ﻿namespace Butler.Registration
 {
+    using Butler.Resolver;
     using Butler.Util;
 
     /// <summary>

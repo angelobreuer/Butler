@@ -6,6 +6,7 @@
     using System.Reflection;
     using System.Runtime.CompilerServices;
     using Butler.Register;
+    using Butler.Resolver;
 
     /// <summary>
     ///     An utility class for resolving a service with dependencies from an <see cref="IServiceResolver"/>.
