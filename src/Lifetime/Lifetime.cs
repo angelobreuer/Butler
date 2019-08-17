@@ -6,17 +6,17 @@
     /// <summary>
     ///     Basic implementation of an <see cref="IServiceLifetime"/>.
     /// </summary>
-    public sealed class ServiceLifetime : IServiceLifetime
+    public sealed class Lifetime : IServiceLifetime
     {
         /// <summary>
         ///     Gets a singleton instance of the transient <see cref="IServiceLifetime"/>. This
         ///     <see cref="IServiceLifetime"/> creates a new instance of the service each request.
         /// </summary>
         public static IServiceLifetime Transient { get; }
-            = new ServiceLifetime("Transient", resolver => new TransientLifetimeManager());
+            = new Lifetime("Transient", resolver => new TransientLifetimeManager());
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ServiceLifetime"/> class.
+        ///     Initializes a new instance of the <see cref="Lifetime"/> class.
         /// </summary>
         /// <param name="name">
         ///     the friendly, human-readable name of the service lifetime (e.g. <c>"Transient"</c>,
@@ -33,7 +33,7 @@
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="managerFactory"/> is <see langword="null"/>.
         /// </exception>
-        public ServiceLifetime(string name, LifetimeManagerFactory managerFactory)
+        public Lifetime(string name, LifetimeManagerFactory managerFactory)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
