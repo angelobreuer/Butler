@@ -87,7 +87,7 @@
             // try resolve registration
             var registration = ServiceRegister.FindRegistration<DummyBaseClass>();
             Assert.NotNull(registration);
-            Assert.Same(instance, registration.Create());
+            Assert.Same(instance, registration.Create(null));
         }
 
         /// <summary>
@@ -128,7 +128,7 @@
             // try resolve registration
             var registration = ServiceRegister.FindRegistration<DummyBaseClass>();
             Assert.NotNull(registration);
-            Assert.Same(instance, registration.Create());
+            Assert.Same(instance, registration.Create(null));
 
             // replace registration
             var otherInstance = new DummyOtherDerivedClass();
@@ -139,7 +139,7 @@
             Assert.NotEmpty(ServiceRegister.Registrations);
             Assert.Single(ServiceRegister.Registrations);
             Assert.NotNull(otherRegistration);
-            Assert.Same(otherInstance, otherRegistration.Create());
+            Assert.Same(otherInstance, otherRegistration.Create(null));
         }
     }
 }

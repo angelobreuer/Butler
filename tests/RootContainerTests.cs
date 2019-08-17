@@ -1,6 +1,7 @@
 ﻿namespace Butler.Tests
 {
     using System;
+    using Butler.Tests.Dummy;
     using Butler.Util;
     using Xunit;
 
@@ -14,6 +15,18 @@
         /// </summary>
         public RootContainerTests()
             => Container = new RootContainer();
+
+        [Fact]
+        public void TestTransientRegistration()
+        {
+            Container.Register<IDummyService, DummyService>().AsTransient();
+
+            var dummyService1 = Container.Resolve<IDummyService>();
+            var dummyService2 = Container.Resolve<IDummyService>();
+
+            Assert.False(ReferenceEquals(dummyService1, dummyService2),
+                "Expected that transient services do not have the same reference.");
+        }
 
         [Fact]
         public void TestTryResolveUnregisteredService()
