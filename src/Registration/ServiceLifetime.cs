@@ -1,9 +1,9 @@
 ﻿namespace Butler.Registration
 {
     /// <summary>
-    ///     A set of different registration types.
+    ///     A set of different service lifetimes.
     /// </summary>
-    public enum RegistrationType : byte
+    public enum ServiceLifetime : byte
     {
         /// <summary>
         ///     Denotes that each resolve the same instance is used.
