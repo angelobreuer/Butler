@@ -1065,6 +1065,18 @@
                 An utility class for resolving a service with dependencies from an <see cref="T:Butler.IServiceResolver"/>.
             </summary>
         </member>
+        <member name="M:Butler.Util.Reflector.CanUseConstructor(Butler.Register.IServiceRegister,System.Collections.Generic.IEnumerable{System.Reflection.ParameterInfo})">
+            <summary>
+                Gets a value indicating whether the specified <paramref name="parameters"/> can be
+                resolved using the specified <paramref name="register"/>.
+            </summary>
+            <param name="register">the register to use</param>
+            <param name="parameters">the service implementation type constructor parameters</param>
+            <returns>
+                a value indicating whether the specified <paramref name="parameters"/> can be
+                resolved using the specified <paramref name="register"/>
+            </returns>
+        </member>
         <member name="M:Butler.Util.Reflector.Resolve``1(Butler.ServiceResolveContext)">
             <summary>
                 Creates a new instance of the specified service type (in <paramref name="context"/>).
@@ -1088,6 +1100,28 @@
             </exception>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="context"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Util.Reflector.ResolveConstructor(Butler.ServiceResolveContext,System.Collections.Generic.IEnumerable{System.Reflection.ConstructorInfo},System.Type,Butler.ServiceConstructionMode)">
+            <summary>
+                Resolves the matching constructor for the specified
+                <paramref name="implementationType"/> with respecting the specified <paramref name="constructionMode"/>.
+            </summary>
+            <param name="context">the current resolver context</param>
+            <param name="availableConstructors">
+                an enumerable that enumerates through the available constructors for the specified <paramref name="implementationType"/>.
+            </param>
+            <param name="implementationType">
+                the type of the service implementation to resolve the constructor for
+            </param>
+            <param name="constructionMode">the service construction mode.</param>
+            <returns>the constructor chosen fro the specified <paramref name="implementationType"/></returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified <paramref name="constructionMode"/> is unsupported or not
+                defined in the <see cref="T:Butler.ServiceConstructionMode"/> enumeration.
+            </exception>
+            <exception cref="T:Butler.Util.ResolverException">
+                thrown if no passable constructor was found for the specified <paramref name="implementationType"/>
             </exception>
         </member>
         <member name="T:Butler.Util.ResolverException">
