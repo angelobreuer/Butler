@@ -9,6 +9,138 @@
                 Interface for a root container.
             </summary>
         </member>
+        <member name="T:Butler.Lifetime.ILifetimeManager">
+            <summary>
+                Interface for lifetime managers.
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.ILifetimeManager.Resolve(System.Type,System.Object)">
+            <summary>
+                Tries to resolve an object from the manager.
+            </summary>
+            <param name="serviceType">the type of the service being resolved</param>
+            <param name="scope">
+                the service scope; if <see langword="null"/> then the scope is global
+            </param>
+            <returns>the resolved service; or default if the service could not be resolved</returns>
+        </member>
+        <member name="M:Butler.Lifetime.ILifetimeManager.TrackInstance(System.Type,System.Object,System.Object)">
+            <summary>
+                Tracks the specified <paramref name="instance"/> for disposation.
+            </summary>
+            <param name="serviceType">the type of the service</param>
+            <param name="scope">the <paramref name="scope"/> the instance was created for</param>
+            <param name="instance">the instance to track</param>
+        </member>
+        <member name="T:Butler.Lifetime.IServiceLifetime">
+            <summary>
+                Interface for service lifetimes.
+            </summary>
+        </member>
+        <member name="P:Butler.Lifetime.IServiceLifetime.Name">
+            <summary>
+                Gets the friendly, human-readable name of the service lifetime (e.g.
+                <c>"Transient"</c>, <c>"Singleton"</c>, etc).
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.IServiceLifetime.CreateManager(Butler.Resolver.IServiceResolver)">
+            <summary>
+                Creates a lifetime manager for the service lifetime.
+            </summary>
+            <param name="resolver">the calling resolver</param>
+            <returns>the <see cref="T:Butler.Lifetime.ILifetimeManager"/> instance</returns>
+        </member>
+        <member name="T:Butler.Lifetime.Lifetime">
+            <summary>
+                Basic implementation of an <see cref="T:Butler.Lifetime.IServiceLifetime"/>.
+            </summary>
+        </member>
+        <member name="P:Butler.Lifetime.Lifetime.Transient">
+            <summary>
+                Gets a singleton instance of the transient <see cref="T:Butler.Lifetime.IServiceLifetime"/>. This
+                <see cref="T:Butler.Lifetime.IServiceLifetime"/> creates a new instance of the service each request.
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.Lifetime.#ctor(System.String,Butler.Lifetime.LifetimeManagerFactory)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Lifetime.Lifetime"/> class.
+            </summary>
+            <param name="name">
+                the friendly, human-readable name of the service lifetime (e.g. <c>"Transient"</c>,
+                <c>"Singleton"</c>, etc)
+            </param>
+            <param name="managerFactory">
+                the <see cref="T:Butler.Lifetime.LifetimeManagerFactory"/> used to create
+                <see cref="T:Butler.Lifetime.ILifetimeManager"/> instances
+            </param>
+            <exception cref="T:System.ArgumentException">
+                thrown if the specified <paramref name="name"/> is <see langword="null"/>, empty or
+                only consists of whitespaces.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="managerFactory"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="P:Butler.Lifetime.Lifetime.ManagerFactory">
+            <summary>
+                Gets the <see cref="T:Butler.Lifetime.LifetimeManagerFactory"/> used to create
+                <see cref="T:Butler.Lifetime.ILifetimeManager"/> instances.
+            </summary>
+        </member>
+        <member name="P:Butler.Lifetime.Lifetime.Name">
+            <summary>
+                Gets the friendly, human-readable name of the service lifetime (e.g.
+                <c>"Transient"</c>, <c>"Singleton"</c>, etc).
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.Lifetime.CreateManager(Butler.Resolver.IServiceResolver)">
+            <summary>
+                Creates a lifetime manager for the service lifetime.
+            </summary>
+            <param name="resolver">the calling resolver</param>
+            <returns>the <see cref="T:Butler.Lifetime.ILifetimeManager"/> instance</returns>
+        </member>
+        <member name="T:Butler.Lifetime.LifetimeManagerFactory">
+            <summary>
+                A delegate for <see cref="T:Butler.Lifetime.ILifetimeManager"/> factories.
+            </summary>
+            <param name="resolver">the calling resolver</param>
+            <returns>the lifetime manager</returns>
+        </member>
+        <member name="T:Butler.Lifetime.TransientLifetimeManager">
+            <summary>
+                Implementation of an <see cref="T:Butler.Lifetime.ILifetimeManager"/> that re-creates services each call.
+            </summary>
+        </member>
+        <member name="F:Butler.Lifetime.TransientLifetimeManager._tracker">
+            <summary>
+                A list holding all disposable instances the lifetime created. The list only holds
+                <see cref="T:System.IDisposable"/> instances.
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.TransientLifetimeManager.Dispose">
+            <summary>
+                Disposes all tracked objects.
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.TransientLifetimeManager.Resolve(System.Type,System.Object)">
+            <summary>
+                Tries to resolve an object from the manager.
+            </summary>
+            <param name="serviceType">the type of the service being resolved</param>
+            <param name="scope">
+                the service scope; if <see langword="null"/> then the scope is global
+            </param>
+            <returns>the resolved service; or default if the service could not be resolved</returns>
+        </member>
+        <member name="M:Butler.Lifetime.TransientLifetimeManager.TrackInstance(System.Type,System.Object,System.Object)">
+            <summary>
+                Tracks the specified <paramref name="instance"/> for disposation.
+            </summary>
+            <param name="serviceType">the type of the service</param>
+            <param name="scope">the <paramref name="scope"/> the instance was created for</param>
+            <param name="instance">the instance to track</param>
+        </member>
         <member name="T:Butler.Register.IServiceRegister">
             <summary>
                 Interface for a service register.
@@ -478,6 +610,11 @@
                 Gets all copy of the service registrations in the register.
             </summary>
         </member>
+        <member name="P:Butler.Register.ServiceRegister.DefaultServiceLifetime">
+            <summary>
+                Gets or sets the default service lifetime when no specific lifetime was specified.
+            </summary>
+        </member>
         <member name="M:Butler.Register.ServiceRegister.AsReadOnly">
             <summary>
                 Creates a read-only instance of the service register.
@@ -546,6 +683,7 @@
             <typeparam name="TService">the type of the registration</typeparam>
             <param name="registration">the registration to register</param>
             <param name="registrationMode">the service registration mode</param>
+            <returns>the service registration added</returns>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="registration"/> is <see langword="null"/>.
             </exception>
@@ -696,6 +834,11 @@
             </summary>
             <typeparam name="TImplementation">the service implementation</typeparam>
         </member>
+        <member name="P:Butler.Registration.DirectRegistration`1.ServiceLifetime">
+            <summary>
+                Gets the lifetime of the service.
+            </summary>
+        </member>
         <member name="M:Butler.Registration.DirectRegistration`1.Create(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates the instance.
@@ -717,6 +860,11 @@
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
             </exception>
+        </member>
+        <member name="P:Butler.Registration.FactoryRegistration`1.ServiceLifetime">
+            <summary>
+                Gets the lifetime of the service.
+            </summary>
         </member>
         <member name="P:Butler.Registration.FactoryRegistration`1.Factory">
             <summary>
@@ -744,6 +892,11 @@
                 thrown if the specified <paramref name="instance"/> is <see langword="null"/>.
             </exception>
         </member>
+        <member name="P:Butler.Registration.InstanceRegistration.ServiceLifetime">
+            <summary>
+                Gets the lifetime of the service.
+            </summary>
+        </member>
         <member name="P:Butler.Registration.InstanceRegistration.Instance">
             <summary>
                 Gets the static instance.
@@ -768,22 +921,27 @@
             <param name="context">the current resolver context</param>
             <returns>the instance</returns>
         </member>
-        <member name="T:Butler.Registration.RegistrationType">
+        <member name="P:Butler.Registration.IServiceRegistration.ServiceLifetime">
             <summary>
-                A set of different registration types.
+                Gets the lifetime of the service.
             </summary>
         </member>
-        <member name="F:Butler.Registration.RegistrationType.Singleton">
+        <member name="T:Butler.Registration.ServiceLifetime">
+            <summary>
+                A set of different service lifetimes.
+            </summary>
+        </member>
+        <member name="F:Butler.Registration.ServiceLifetime.Singleton">
             <summary>
                 Denotes that each resolve the same instance is used.
             </summary>
         </member>
-        <member name="F:Butler.Registration.RegistrationType.Scoped">
+        <member name="F:Butler.Registration.ServiceLifetime.Scoped">
             <summary>
                 Denotes that each resolve in the same scope is created new.
             </summary>
         </member>
-        <member name="F:Butler.Registration.RegistrationType.Transient">
+        <member name="F:Butler.Registration.ServiceLifetime.Transient">
             <summary>
                 Denotes that each resolve the instance is created new.
             </summary>
@@ -794,12 +952,26 @@
             </summary>
             <typeparam name="TImplementation">the type of the implementation</typeparam>
         </member>
+        <member name="M:Butler.Registration.ServiceRegistration`1.#ctor(Butler.Lifetime.IServiceLifetime)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Registration.ServiceRegistration`1"/> class.
+            </summary>
+            <param name="serviceLifetime">the initial service lifetime to use</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceLifetime"/> is <see langword="null"/>.
+            </exception>
+        </member>
         <member name="M:Butler.Registration.ServiceRegistration`1.Create(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates the instance.
             </summary>
             <param name="context">the current resolver context</param>
             <returns>the instance</returns>
+        </member>
+        <member name="P:Butler.Registration.ServiceRegistration`1.ServiceLifetime">
+            <summary>
+                Gets the lifetime of the service.
+            </summary>
         </member>
         <member name="T:Butler.Resolver.BaseServiceResolver">
             <summary>
@@ -854,11 +1026,15 @@
             </exception>
             <exception cref="T:System.ArgumentException">thrown if the specified value is <see cref="F:Butler.Resolver.ServiceConstructionMode.Default"/></exception>
         </member>
-        <member name="M:Butler.Resolver.BaseServiceResolver.Resolve(System.Type,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.Resolver.BaseServiceResolver.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
             </summary>
             <param name="serviceType">the type of the service to resolve</param>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
+            </param>
             <param name="context">
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
@@ -872,15 +1048,20 @@
                 thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
             </exception>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
         </member>
-        <member name="M:Butler.Resolver.BaseServiceResolver.Resolve``1(Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.Resolver.BaseServiceResolver.Resolve``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <typeparamref name="TService"/>.
             </summary>
             <typeparam name="TService">the type of the service to resolve</typeparam>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
+            </param>
             <param name="context">
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
@@ -891,15 +1072,20 @@
             </param>
             <returns>the resolved service</returns>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
         </member>
-        <member name="M:Butler.Resolver.BaseServiceResolver.ResolveLazy``1(Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.Resolver.BaseServiceResolver.ResolveLazy``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
             </summary>
             <typeparam name="TService">the type of the service</typeparam>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
+            </param>
             <param name="context">
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
@@ -910,6 +1096,7 @@
             </param>
             <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
@@ -937,10 +1124,14 @@
             </exception>
             <exception cref="T:System.ArgumentException">thrown if the specified value is <see cref="F:Butler.Resolver.ServiceConstructionMode.Default"/></exception>
         </member>
-        <member name="M:Butler.Resolver.IServiceResolver.Resolve(System.Type,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.Resolver.IServiceResolver.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
             </summary>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
+            </param>
             <param name="serviceType">the type of the service to resolve</param>
             <param name="context">
                 the parent resolve context; if <see langword="null"/> a new
@@ -955,14 +1146,19 @@
                 thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
             </exception>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
         </member>
-        <member name="M:Butler.Resolver.IServiceResolver.Resolve``1(Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.Resolver.IServiceResolver.Resolve``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <typeparamref name="TService"/>.
             </summary>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
+            </param>
             <param name="context">
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
@@ -974,17 +1170,22 @@
             <typeparam name="TService">the type of the service to resolve</typeparam>
             <returns>the resolved service</returns>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
         </member>
-        <member name="M:Butler.Resolver.IServiceResolver.ResolveLazy``1(Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.Resolver.IServiceResolver.ResolveLazy``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
             </summary>
             <param name="context">
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
             </param>
             <param name="constructionMode">
                 the service construction mode; which defines the behavior for resolving constructors
@@ -993,6 +1194,7 @@
             <typeparam name="TService">the type of the service</typeparam>
             <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
@@ -1142,14 +1344,19 @@
                 An inversion of control (IoC) container that supports resolving services.
             </summary>
         </member>
+        <member name="F:Butler.RootContainer._lifetimes">
+            <summary>
+                A dictionary containing service lifetimes storing an <see cref="T:Butler.Lifetime.ILifetimeManager"/> class.
+            </summary>
+        </member>
         <member name="F:Butler.RootContainer._disposed">
             <summary>
                 A value indicating whether the root container has been disposed.
             </summary>
         </member>
-        <member name="M:Butler.RootContainer.Finalize">
+        <member name="M:Butler.RootContainer.#ctor">
             <summary>
-                Finalizes the <see cref="T:Butler.RootContainer"/> instance.
+                Initializes a new instance of the <see cref="T:Butler.RootContainer"/> class.
             </summary>
         </member>
         <member name="M:Butler.RootContainer.Dispose">
@@ -1169,11 +1376,15 @@
             </summary>
             <returns>the service registration enumerator</returns>
         </member>
-        <member name="M:Butler.RootContainer.Resolve(System.Type,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.RootContainer.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
             </summary>
             <param name="serviceType">the type of the service to resolve</param>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
+            </param>
             <param name="parentContext">
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
@@ -1187,17 +1398,10 @@
                 thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
             </exception>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
-        </member>
-        <member name="M:Butler.RootContainer.Dispose(System.Boolean)">
-            <summary>
-                Disposes the <see cref="T:Butler.RootContainer"/>.
-            </summary>
-            <param name="disposing">
-                a value indicating whether managed resources should be disposed.
-            </param>
         </member>
         <member name="T:Butler.Util.Debug.RegistrationProxy">
             <summary>
