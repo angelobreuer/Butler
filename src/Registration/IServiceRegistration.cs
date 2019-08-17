@@ -1,7 +1,7 @@
-﻿using Butler.Resolver;
-
-namespace Butler.Registration
+﻿namespace Butler.Registration
 {
+    using Butler.Resolver;
+
     /// <summary>
     ///     Interface for basic service registrations.
     /// </summary>

@@ -16,6 +16,7 @@
         /// </summary>
         /// <param name="resolver">the service resolver using the context</param>
         /// <param name="register">the service register</param>
+        /// <param name="constructionMode">the service construction mode for the resolve</param>
         /// <param name="serviceType">the type of the service being resolved</param>
         /// <param name="parentType">the type of the parent</param>
         /// <param name="traceBuilder">
@@ -30,9 +31,11 @@
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
-        public ServiceResolveContext(IServiceResolver resolver, IServiceRegister register, Type serviceType, Type parentType = null, TraceBuilder traceBuilder = null)
+        public ServiceResolveContext(IServiceResolver resolver, IServiceRegister register,
+            ServiceConstructionMode constructionMode, Type serviceType, Type parentType = null, TraceBuilder traceBuilder = null)
         {
             ParentType = parentType;
+            ConstructionMode = GetServiceConstructionMode(constructionMode, resolver);
             Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
             Register = register ?? throw new ArgumentNullException(nameof(register));
             ServiceType = serviceType ?? throw new ArgumentNullException(nameof(serviceType));
@@ -45,6 +48,7 @@
         /// </summary>
         /// <param name="resolver">the service resolver using the context</param>
         /// <param name="register">the service register</param>
+        /// <param name="constructionMode">the service construction mode for the resolve</param>
         /// <param name="serviceType">the type of the service being resolved</param>
         /// <param name="parentType">the type of the parent</param>
         /// <exception cref="ArgumentNullException">
@@ -56,9 +60,11 @@
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
-        public ServiceResolveContext(IServiceResolver resolver, IServiceRegister register, Type serviceType, Type parentType = null)
+        public ServiceResolveContext(IServiceResolver resolver, IServiceRegister register,
+            ServiceConstructionMode constructionMode, Type serviceType, Type parentType = null)
         {
             ParentType = parentType;
+            ConstructionMode = GetServiceConstructionMode(constructionMode, resolver);
             Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
             Register = register ?? throw new ArgumentNullException(nameof(register));
             ServiceType = serviceType ?? throw new ArgumentNullException(nameof(serviceType));
@@ -71,6 +77,7 @@
         /// </summary>
         /// <remarks>The depth automatically increases.</remarks>
         /// <param name="parentContext">the parent context to take the data from</param>
+        /// <param name="constructionMode"></param>
         /// <param name="serviceType">the type of the new service being resolved</param>
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="parentContext"/> is <see langword="null"/>.
@@ -78,7 +85,7 @@
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
-        public ServiceResolveContext(ServiceResolveContext parentContext, Type serviceType)
+        public ServiceResolveContext(ServiceResolveContext parentContext, ServiceConstructionMode constructionMode, Type serviceType)
         {
             if (parentContext is null)
             {
@@ -89,10 +96,31 @@
             Resolver = parentContext.Resolver;
             ServiceType = serviceType;
             Depth = parentContext.Depth + 1;
+            ConstructionMode = GetServiceConstructionMode(constructionMode, parentContext.Resolver, parentContext);
 
 #if DEBUG
             TraceBuilder = parentContext.TraceBuilder;
 #endif // DEBUG
+        }
+
+        private static ServiceConstructionMode GetServiceConstructionMode(ServiceConstructionMode mode,
+            IServiceResolver resolver, ServiceResolveContext parentContext = null)
+        {
+            // check if the mode is parent and the parent context is available
+            if (mode == ServiceConstructionMode.Parent && parentContext != null)
+            {
+                return parentContext.ConstructionMode;
+            }
+
+            // check if not the default mode is used
+            if (mode != ServiceConstructionMode.Default)
+            {
+                // use selected mode
+                return mode;
+            }
+
+            // use default construction mode
+            return resolver.ServiceConstructionMode;
         }
 
         /// <summary>
@@ -117,6 +145,11 @@
         ///     Gets the corresponding service register to resolve from.
         /// </summary>
         public IServiceRegister Register { get; }
+
+        /// <summary>
+        ///     Gets the service construction mode for the resolve.
+        /// </summary>
+        public ServiceConstructionMode ConstructionMode { get; }
 
         /// <summary>
         ///     Gets the type of the service being service.

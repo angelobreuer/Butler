@@ -6,6 +6,21 @@
     public enum ServiceConstructionMode
     {
         /// <summary>
+        ///     Denotes that the default <see cref="ServiceConstructionMode"/> should be used for the
+        ///     current context.
+        /// </summary>
+        Default,
+
+        /// <summary>
+        ///     Denotes that the <see cref="ServiceConstructionMode"/> should be inherited from the
+        ///     parent resolve, e.g. when resolving a dependency of a service and the parent mode is
+        ///     set, then the <see cref="ServiceConstructionMode"/> of the parent resolve is used. If
+        ///     the service is resolved directly and <see cref="Parent"/> is set then
+        ///     <see cref="Default"/> is used.
+        /// </summary>
+        Parent,
+
+        /// <summary>
         ///     Denotes that the parameter-less constructor should be preferred.
         /// </summary>
         PreferParameterlessConstructor,

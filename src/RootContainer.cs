@@ -58,20 +58,24 @@
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary>
-        ///     Resolves a single service.
+        ///     Resolves a service of the specified <paramref name="serviceType"/>.
         /// </summary>
         /// <param name="serviceType">the type of the service to resolve</param>
-        /// <param name="context">
+        /// <param name="parentContext">
         ///     the parent resolve context; if <see langword="null"/> a new
         ///     <see cref="ServiceResolveContext"/> is created.
         /// </param>
-        /// <returns>the service instance of type <paramref name="serviceType"/></returns>
+        /// <param name="constructionMode">
+        ///     the service construction mode; which defines the behavior for resolving constructors
+        ///     for a service implementation type.
+        /// </param>
+        /// <returns>the resolved service</returns>
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
         /// </exception>
         /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override object Resolve(Type serviceType, ServiceResolveContext context = null)
+        public override object Resolve(Type serviceType, ServiceResolveContext parentContext = null,
+            ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
         {
             // null-check service type
             if (serviceType is null)
@@ -79,7 +83,31 @@
                 throw new ArgumentNullException(nameof(serviceType), "Could not resolve service of type <null>.");
             }
 
-            return ResolveInternal(serviceType, context);
+            // create a context for this resolve
+            var context = parentContext == null ?
+                new ServiceResolveContext(this, this, constructionMode, serviceType) :
+                new ServiceResolveContext(parentContext, constructionMode, serviceType);
+#if DEBUG
+            // trace resolve
+            context.TraceBuilder.AppendResolve(serviceType);
+#endif // DEBUG
+
+            // find registration
+            var registration = FindRegistration(serviceType);
+
+            // check if the registration failed
+            if (registration is null)
+            {
+                // throw resolver exception
+#if DEBUG
+                context.TraceBuilder.AppendResolveFail(serviceType, critical: true);
+#endif // DEBUG
+
+                throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).", context);
+            }
+
+            // TODO TODO TODO
+            return registration.Create(context);
         }
 
         /// <summary>
@@ -103,35 +131,6 @@
 
             // set disposed flag
             _disposed = true;
-        }
-
-        private object ResolveInternal(Type serviceType, ServiceResolveContext parentContext = null)
-        {
-            // create a context for this resolve
-            var context = parentContext == null ?
-                new ServiceResolveContext(this, this, serviceType) :
-                new ServiceResolveContext(parentContext, serviceType);
-#if DEBUG
-            // trace resolve
-            context.TraceBuilder.AppendResolve(serviceType);
-#endif // DEBUG
-
-            // find registration
-            var registration = FindRegistration(serviceType);
-
-            // check if the registration failed
-            if (registration is null)
-            {
-                // throw resolver exception
-#if DEBUG
-                context.TraceBuilder.AppendResolveFail(serviceType, critical: true);
-#endif // DEBUG
-
-                throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).", context);
-            }
-
-            // TODO TODO TODO
-            return registration.Create(context);
         }
 
 #if SUPPORTS_ASYNC_DISPOSABLE

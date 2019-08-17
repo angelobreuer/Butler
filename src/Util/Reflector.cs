@@ -73,7 +73,7 @@
 #endif // !SUPPORTS_REFLECTION
 
             // resolve constructor for the type
-            var constructor = ResolveConstructor(context, availableConstructors, implementationType, ServiceConstructionMode.Mixed);
+            var constructor = ResolveConstructor(context, availableConstructors, implementationType);
 
 #if DEBUG
             // trace output
@@ -129,7 +129,7 @@
             }
 
             // check whether the mode is mixed
-            if (constructionMode == ServiceConstructionMode.Mixed)
+            if (context.ConstructionMode == ServiceConstructionMode.Mixed)
             {
                 // iterate through all constructors
                 foreach (var constructor in availableConstructors)
@@ -144,7 +144,8 @@
             }
 
             // search complexest constructor
-            if (constructionMode == ServiceConstructionMode.PreferComplexConstructor || constructionMode == ServiceConstructionMode.Mixed)
+            if (context.ConstructionMode == ServiceConstructionMode.PreferComplexConstructor
+                || context.ConstructionMode == ServiceConstructionMode.Mixed)
             {
                 // iterate through all available constructors and find the complexest
                 var constructor = availableConstructors
@@ -163,7 +164,7 @@
             }
 
             // search parameter-less constructor
-            if (constructionMode == ServiceConstructionMode.PreferParameterlessConstructor)
+            if (context.ConstructionMode == ServiceConstructionMode.PreferParameterlessConstructor)
             {
                 // iterate through all available constructors and find a parameter-less
                 var constructor = availableConstructors.FirstOrDefault(s => s.GetParameters().Length == 0);
