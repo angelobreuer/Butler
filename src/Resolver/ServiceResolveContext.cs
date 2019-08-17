@@ -99,6 +99,7 @@
 
             ParentType = parentContext.ServiceType;
             Resolver = parentContext.Resolver;
+            Register = parentContext.Register;
             ServiceType = serviceType;
             ConstructionMode = GetServiceConstructionMode(constructionMode, parentContext.Resolver, parentContext);
 
