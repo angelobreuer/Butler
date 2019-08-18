@@ -1841,6 +1841,13 @@
             <param name="context">the current resolver context</param>
             <returns>the message build</returns>
         </member>
+        <member name="M:Butler.Util.ResolverException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Util.ResolverException"/> class.
+            </summary>
+            <param name="serializationInfo">the serialization information</param>
+            <param name="streamingContext">the streaming context</param>
+        </member>
         <member name="T:Butler.Util.TraceBuilder">
             <summary>
                 An utility class that is useful for building traces when resolving or registering services.
