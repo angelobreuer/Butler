@@ -147,6 +147,8 @@
         /// </summary>
         public Type ServiceType { get; }
 
+#if DEBUG
+
         /// <summary>
         ///     Gets the trace builder used for useful output on resolve failures to make it easier
         ///     to find resolution errors and their cause.
@@ -155,6 +157,8 @@
         ///     Please note that this property is only available when the Debug configuration is used.
         /// </remarks>
         public TraceBuilder TraceBuilder { get; }
+
+#endif // DEBUG
 
         private static ServiceConstructionMode GetServiceConstructionMode(ServiceConstructionMode mode,
                                                                     IServiceResolver resolver, ServiceResolveContext parentContext = null)
@@ -175,8 +179,5 @@
             // use default construction mode
             return resolver.ServiceConstructionMode;
         }
-
-#if DEBUG
-#endif // DEBUG
     }
 }
