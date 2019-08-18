@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Threading;
+    using Butler.Resolver;
 
 #if SUPPORTS_ASYNC_DISPOSABLE
     using System.Threading.Tasks;
@@ -152,25 +153,29 @@
         /// <summary>
         ///     Tries to resolve an object from the manager.
         /// </summary>
-        /// <param name="serviceType">the type of the service being resolved</param>
-        /// <param name="scope">
-        ///     the service scope; if <see langword="null"/> then the scope is global
+        /// <param name="resolveContext">the current resolver context</param>
+        /// <param name="scopeKey">
+        ///     the <paramref name="scopeKey"/> the instance was created for; if
+        ///     <see langword="null"/> then the scope is global.
         /// </param>
         /// <returns>the resolved service; or default if the service could not be resolved</returns>
-        public object Resolve(Type serviceType, object scope = null)
+        public object Resolve(ServiceResolveContext resolveContext, object scopeKey = null)
         {
             // create the key for resolving the type from the scope
-            var key = new KeyValuePair<Type, object>(serviceType, scope);
+            var key = new KeyValuePair<Type, object>(resolveContext.ParentType, scopeKey);
             return _services.TryGetValue(key, out var service) ? service : default;
         }
 
         /// <summary>
         ///     Tracks the specified <paramref name="instance"/> for disposation.
         /// </summary>
-        /// <param name="serviceType">the type of the service</param>
-        /// <param name="scope">the <paramref name="scope"/> the instance was created for</param>
+        /// <param name="resolveContext">the resolver context from which the service was resolved</param>
         /// <param name="instance">the instance to track</param>
-        public void TrackInstance(Type serviceType, object scope, object instance)
+        /// <param name="scopeKey">
+        ///     the <paramref name="scopeKey"/> the instance was created for; if
+        ///     <see langword="null"/> then the scope is global.
+        /// </param>
+        public void TrackInstance(ServiceResolveContext resolveContext, object instance, object scopeKey = null)
         {
 #if SUPPORTS_ASYNC_DISPOSABLE
             // acquire lock
@@ -180,7 +185,7 @@
             try
             {
                 // track instance
-                _services.Add(new KeyValuePair<Type, object>(serviceType, scope), instance);
+                _services.Add(new KeyValuePair<Type, object>(resolveContext.ServiceType, scopeKey), instance);
             }
             finally
             {
@@ -191,7 +196,7 @@
             lock (_serviceLock)
             {
                 // add instance to tracking list
-                _services.Add(new KeyValuePair<Type, object>(serviceType, scope), instance);
+                _services.Add(new KeyValuePair<Type, object>(resolveContext.ServiceType, scopeKey), instance);
             }
 #endif // !SUPPORTS_ASYNC_DISPOSABLE
         }

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Threading;
+    using Butler.Resolver;
 
 #if SUPPORTS_ASYNC_DISPOSABLE
     using System.Threading.Tasks;
@@ -149,12 +150,13 @@
         /// <summary>
         ///     Tries to resolve an object from the manager.
         /// </summary>
-        /// <param name="serviceType">the type of the service being resolved</param>
-        /// <param name="scope">
-        ///     the service scope; if <see langword="null"/> then the scope is global
+        /// <param name="resolveContext">the current resolver context</param>
+        /// <param name="scopeKey">
+        ///     the <paramref name="scopeKey"/> the instance was created for; if
+        ///     <see langword="null"/> then the scope is global.
         /// </param>
         /// <returns>the resolved service; or default if the service could not be resolved</returns>
-        public object Resolve(Type serviceType, object scope = null)
+        public object Resolve(ServiceResolveContext resolveContext, object scopeKey = null)
         {
             // The transient lifetime always re-creates services.
             return null;
@@ -163,10 +165,13 @@
         /// <summary>
         ///     Tracks the specified <paramref name="instance"/> for disposation.
         /// </summary>
-        /// <param name="serviceType">the type of the service</param>
-        /// <param name="scope">the <paramref name="scope"/> the instance was created for</param>
+        /// <param name="resolveContext">the resolver context from which the service was resolved</param>
         /// <param name="instance">the instance to track</param>
-        public void TrackInstance(Type serviceType, object scope, object instance)
+        /// <param name="scopeKey">
+        ///     the <paramref name="scopeKey"/> the instance was created for; if
+        ///     <see langword="null"/> then the scope is global.
+        /// </param>
+        public void TrackInstance(ServiceResolveContext resolveContext, object instance, object scopeKey = null)
         {
             // The instances in the lifetime are tracked to dispose them, so we need only to track
             // disposable / asynchronously disposable objects.

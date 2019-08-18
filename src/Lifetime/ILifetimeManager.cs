@@ -1,6 +1,7 @@
 ﻿namespace Butler.Lifetime
 {
     using System;
+    using Butler.Resolver;
 
     /// <summary>
     ///     Interface for lifetime managers.
@@ -15,19 +16,23 @@
         /// <summary>
         ///     Tries to resolve an object from the manager.
         /// </summary>
-        /// <param name="serviceType">the type of the service being resolved</param>
-        /// <param name="scope">
-        ///     the service scope; if <see langword="null"/> then the scope is global
+        /// <param name="resolveContext">the current resolver context</param>
+        /// <param name="scopeKey">
+        ///     the <paramref name="scopeKey"/> the instance was created for; if
+        ///     <see langword="null"/> then the scope is global.
         /// </param>
         /// <returns>the resolved service; or default if the service could not be resolved</returns>
-        object Resolve(Type serviceType, object scope = null);
+        object Resolve(ServiceResolveContext resolveContext, object scopeKey = null);
 
         /// <summary>
         ///     Tracks the specified <paramref name="instance"/> for disposation.
         /// </summary>
-        /// <param name="serviceType">the type of the service</param>
-        /// <param name="scope">the <paramref name="scope"/> the instance was created for</param>
+        /// <param name="resolveContext">the resolver context from which the service was resolved</param>
         /// <param name="instance">the instance to track</param>
-        void TrackInstance(Type serviceType, object scope, object instance);
+        /// <param name="scopeKey">
+        ///     the <paramref name="scopeKey"/> the instance was created for; if
+        ///     <see langword="null"/> then the scope is global.
+        /// </param>
+        void TrackInstance(ServiceResolveContext resolveContext, object instance, object scopeKey = null);
     }
 }
