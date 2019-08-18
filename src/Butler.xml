@@ -68,7 +68,13 @@
         <member name="P:Butler.Lifetime.Lifetime.Scoped">
             <summary>
                 Gets a singleton instance of the scoped <see cref="T:Butler.Lifetime.IServiceLifetime"/>. This
-                <see cref="T:Butler.Lifetime.IServiceLifetime"/> creates for each scope key a new instance..
+                <see cref="T:Butler.Lifetime.IServiceLifetime"/> creates for each scope key a new instance.
+            </summary>
+        </member>
+        <member name="P:Butler.Lifetime.Lifetime.Singleton">
+            <summary>
+                Gets a singleton instance of the singleton <see cref="T:Butler.Lifetime.IServiceLifetime"/>. This
+                <see cref="T:Butler.Lifetime.IServiceLifetime"/> creates a service only once.
             </summary>
         </member>
         <member name="M:Butler.Lifetime.Lifetime.#ctor(System.String,Butler.Lifetime.LifetimeManagerFactory)">
@@ -163,6 +169,60 @@
             <returns>the resolved service; or default if the service could not be resolved</returns>
         </member>
         <member name="M:Butler.Lifetime.ScopedLifetimeManager.TrackInstance(Butler.Resolver.ServiceResolveContext,System.Object,System.Object)">
+            <summary>
+                Tracks the specified <paramref name="instance"/> for disposation.
+            </summary>
+            <param name="resolveContext">the resolver context from which the service was resolved</param>
+            <param name="instance">the instance to track</param>
+            <param name="scopeKey">
+                the <paramref name="scopeKey"/> the instance was created for; if
+                <see langword="null"/> then the scope is global.
+            </param>
+        </member>
+        <member name="T:Butler.Lifetime.SingletonLifetimeManager">
+            <summary>
+                Implementation of an <see cref="T:Butler.Lifetime.ILifetimeManager"/> that creates a service only once
+                regardless of the request scope.
+            </summary>
+        </member>
+        <member name="F:Butler.Lifetime.SingletonLifetimeManager._services">
+            <summary>
+                A dictionary containing the service instance keyed by the service type.
+            </summary>
+        </member>
+        <member name="F:Butler.Lifetime.SingletonLifetimeManager._trackerLock">
+            <summary>
+                A <see cref="T:System.Threading.SemaphoreSlim"/> for the <see cref="F:Butler.Lifetime.SingletonLifetimeManager._services"/>.
+            </summary>
+        </member>
+        <member name="F:Butler.Lifetime.SingletonLifetimeManager._disposed">
+            <summary>
+                A value indicating whether the lifetime manager was disposed (
+                <see langword="true"/>); otherwise <see langword="false"/>.
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.SingletonLifetimeManager.#ctor">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Lifetime.SingletonLifetimeManager"/> class.
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.SingletonLifetimeManager.DisposeAsync">
+            <summary>
+                Disposes all tracked objects asynchronously.
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.SingletonLifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
+            <summary>
+                Tries to resolve an object from the manager.
+            </summary>
+            <param name="resolveContext">the current resolver context</param>
+            <param name="scopeKey">
+                the <paramref name="scopeKey"/> the instance was created for; if
+                <see langword="null"/> then the scope is global.
+            </param>
+            <returns>the resolved service; or default if the service could not be resolved</returns>
+        </member>
+        <member name="M:Butler.Lifetime.SingletonLifetimeManager.TrackInstance(Butler.Resolver.ServiceResolveContext,System.Object,System.Object)">
             <summary>
                 Tracks the specified <paramref name="instance"/> for disposation.
             </summary>
