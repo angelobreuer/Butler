@@ -162,7 +162,7 @@
         public object Resolve(ServiceResolveContext resolveContext, object scopeKey = null)
         {
             // create the key for resolving the type from the scope
-            var key = new KeyValuePair<Type, object>(resolveContext.ParentType, scopeKey);
+            var key = new KeyValuePair<Type, object>(resolveContext.ServiceType, scopeKey);
             return _services.TryGetValue(key, out var service) ? service : default;
         }
 
