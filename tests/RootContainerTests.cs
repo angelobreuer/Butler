@@ -29,7 +29,64 @@
         }
 
         [Fact]
-        public void TestTrackingTransients()
+        public void TestTrackingScoped()
+        {
+            Container.Register<DummyDisposeTracker, DummyDisposeTracker>().AsScoped();
+
+            var dummyService1 = Container.Resolve<DummyDisposeTracker>(scopeKey: null);
+            var dummyService2 = Container.Resolve<DummyDisposeTracker>(scopeKey: new object());
+
+            Assert.False(ReferenceEquals(dummyService1, dummyService2),
+                "Expected that resolving using different scopes does not returns the same service.");
+
+            Assert.NotNull(dummyService1);
+            Assert.NotNull(dummyService2);
+
+            Container.Dispose();
+
+            Assert.True(dummyService1.IsDisposed, "Expected that scoped service is disposed when disposing container (global scope).");
+            Assert.True(dummyService2.IsDisposed, "Expected that scoped service is disposed when disposing container (non-global scope).");
+        }
+
+        [Fact]
+        public void TestScopedRegistration()
+        {
+            var globalScope = default(object);
+            var myScope = new object();
+
+            Container.Register<IDummyService, DummyService>().AsScoped();
+
+            var dummyService1 = Container.Resolve<IDummyService>(globalScope);
+            var dummyService2 = Container.Resolve<IDummyService>(globalScope);
+            var dummyService3 = Container.Resolve<IDummyService>(myScope);
+            var dummyService4 = Container.Resolve<IDummyService>(myScope);
+
+            Assert.NotNull(dummyService1);
+            Assert.NotNull(dummyService2);
+            Assert.NotNull(dummyService3);
+            Assert.NotNull(dummyService4);
+
+            Assert.True(ReferenceEquals(dummyService1, dummyService2),
+                "Expected that resolving using the same scope returns the same service. (global scope)");
+
+            Assert.True(ReferenceEquals(dummyService3, dummyService4),
+                "Expected that resolving using the same scope returns the same service. (non-global scope)");
+
+            Assert.False(ReferenceEquals(dummyService1, dummyService3),
+                "Expected that resolving using different scopes does not returns the same service.");
+
+            Assert.False(ReferenceEquals(dummyService2, dummyService4),
+                "Expected that resolving using different scopes does not returns the same service.");
+
+            Assert.False(ReferenceEquals(dummyService1, dummyService4),
+                "Expected that resolving using different scopes does not returns the same service.");
+
+            Assert.False(ReferenceEquals(dummyService2, dummyService3),
+                "Expected that resolving using different scopes does not returns the same service.");
+        }
+
+        [Fact]
+        public void TestTrackingTransient()
         {
             Container.RegisterDirect<DummyDisposeTracker, DummyDisposeTracker>();
 
