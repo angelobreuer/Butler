@@ -172,9 +172,6 @@
         /// <param name="instance">the instance to track</param>
         public void TrackInstance(Type serviceType, object scope, object instance)
         {
-            // The instances in the lifetime are tracked to dispose them, so we need only to track
-            // disposable / asynchronously disposable objects.
-
 #if SUPPORTS_ASYNC_DISPOSABLE
             // acquire lock
             _trackerLock.Wait();
@@ -182,12 +179,8 @@
             // ensure the lock is released even if an exception is thrown
             try
             {
-                // check if the instance inherits from IDisposable or IAsyncDisposable
-                if (instance is IDisposable || instance is IAsyncDisposable)
-                {
-                    // track instance
-                    _services.Add(new KeyValuePair<Type, object>(serviceType, scope), instance);
-                }
+                // track instance
+                _services.Add(new KeyValuePair<Type, object>(serviceType, scope), instance);
             }
             finally
             {
@@ -195,13 +188,10 @@
                 _trackerLock.Release();
             }
 #else // SUPPORTS_ASYNC_DISPOSABLE
-            if (instance is IDisposable disposable)
+            lock (_serviceLock)
             {
-                lock (_serviceLock)
-                {
-                    // add instance to tracking list
-                    _services.Add(new KeyValuePair<Type, object>(serviceType, scope), disposable);
-                }
+                // add instance to tracking list
+                _services.Add(new KeyValuePair<Type, object>(serviceType, scope), instance);
             }
 #endif // !SUPPORTS_ASYNC_DISPOSABLE
         }
