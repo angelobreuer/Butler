@@ -51,7 +51,10 @@ designed for performance, low-memory consumption and easy integrability.
 <span>&nbsp;&nbsp;&nbsp;</span>*and a lot more...*
 
 ### Minimum Requirements
-- .NET Core 1.0, .NET Framework 4.5 or Mono 4.6 (.NET Standard 1.0)
+- .NET Core 1.0, .NET Framework 2.0*, .NET Standard 1.0 or Mono 4.6
+
+*Note: .NET Framework 2.0 does not support full 
+reflection, since .NET Framework 3.5 all features of Butler are supported.*
 
 ### Quick Start
 
