@@ -188,6 +188,11 @@
             ServiceResolveMode resolveMode = ServiceResolveMode.Default,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
         {
+            if (serviceType is null)
+            {
+                throw new ArgumentNullException(nameof(serviceType));
+            }
+
 #if !NO_REFLECTION
 #if SUPPORTS_REFLECTION
             // handle lazy resolving
