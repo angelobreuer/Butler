@@ -64,8 +64,7 @@
         <member name="P:Butler.Lifetime.Lifetime.Scoped">
             <summary>
                 Gets a singleton instance of the scoped <see cref="T:Butler.Lifetime.IServiceLifetime"/>. This
-                <see cref="T:Butler.Lifetime.IServiceLifetime"/> creates for each scope key a new instance. The default
-                scope key is <see cref="!:ServiceScope.Global"/>.
+                <see cref="T:Butler.Lifetime.IServiceLifetime"/> creates for each scope key a new instance..
             </summary>
         </member>
         <member name="M:Butler.Lifetime.Lifetime.#ctor(System.String,Butler.Lifetime.LifetimeManagerFactory)">
