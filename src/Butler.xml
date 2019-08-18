@@ -1106,6 +1106,29 @@
                 thrown if the specified <paramref name="serviceLifetime"/> is <see langword="null"/>.
             </exception>
         </member>
+        <member name="P:Butler.Registration.ServiceRegistration`1.ServiceLifetime">
+            <summary>
+                Gets the lifetime of the service.
+            </summary>
+        </member>
+        <member name="M:Butler.Registration.ServiceRegistration`1.AsScoped">
+            <summary>
+                Registers the service with the <see cref="P:Butler.Lifetime.Lifetime.Scoped"/> lifetime.
+            </summary>
+            <returns>the <see cref="T:Butler.Registration.ServiceRegistration`1"/> instance</returns>
+        </member>
+        <member name="M:Butler.Registration.ServiceRegistration`1.AsSingleton">
+            <summary>
+                Registers the service with the <see cref="P:Butler.Lifetime.Lifetime.Singleton"/> lifetime.
+            </summary>
+            <returns>the <see cref="T:Butler.Registration.ServiceRegistration`1"/> instance</returns>
+        </member>
+        <member name="M:Butler.Registration.ServiceRegistration`1.AsTransient">
+            <summary>
+                Registers the service with the <see cref="P:Butler.Lifetime.Lifetime.Transient"/> lifetime.
+            </summary>
+            <returns>the <see cref="T:Butler.Registration.ServiceRegistration`1"/> instance</returns>
+        </member>
         <member name="M:Butler.Registration.ServiceRegistration`1.Create(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates the instance.
@@ -1113,10 +1136,12 @@
             <param name="context">the current resolver context</param>
             <returns>the instance</returns>
         </member>
-        <member name="P:Butler.Registration.ServiceRegistration`1.ServiceLifetime">
+        <member name="M:Butler.Registration.ServiceRegistration`1.WithLifetime(Butler.Lifetime.IServiceLifetime)">
             <summary>
-                Gets the lifetime of the service.
+                Registers the service with the specified <paramref name="lifetime"/>.
             </summary>
+            <param name="lifetime">the service lifetime</param>
+            <returns>the <see cref="T:Butler.Registration.ServiceRegistration`1"/> instance</returns>
         </member>
         <member name="T:Butler.Resolver.BaseServiceResolver">
             <summary>
@@ -1205,6 +1230,38 @@
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
         </member>
+        <member name="M:Butler.Resolver.BaseServiceResolver.ResolveService(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+            <summary>
+                Resolves a service of the specified <paramref name="serviceType"/>.
+            </summary>
+            <remarks>
+                This method is directly resolving services, the
+                <see cref="M:Butler.Resolver.BaseServiceResolver.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)"/>
+                handles the creation of lazy, function, etc. wrappers.
+            </remarks>
+            <param name="serviceType">the type of the service to resolve</param>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
+            </param>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <returns>the resolved service</returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
         <member name="M:Butler.Resolver.BaseServiceResolver.Resolve``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <typeparamref name="TService"/>.
@@ -1252,6 +1309,12 @@
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
+        </member>
+        <member name="F:Butler.Resolver.BaseServiceResolver._resolveLazyMethod">
+            <summary>
+                The method information of the
+                <see cref="M:Butler.Resolver.BaseServiceResolver.ResolveLazy``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)"/> method.
+            </summary>
         </member>
         <member name="T:Butler.Resolver.IServiceResolver">
             <summary>
@@ -1530,7 +1593,7 @@
             </summary>
             <returns>the service registration enumerator</returns>
         </member>
-        <member name="M:Butler.RootContainer.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.RootContainer.ResolveService(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
             </summary>
