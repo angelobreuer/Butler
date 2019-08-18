@@ -43,5 +43,7 @@
         public ServiceRegistration<TImplementation> AsTransient() => WithLifetime(Transient);
 
         public ServiceRegistration<TImplementation> AsScoped() => WithLifetime(Scoped);
+
+        public ServiceRegistration<TImplementation> AsSingleton() => WithLifetime(Singleton);
     }
 }
