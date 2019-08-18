@@ -61,6 +61,13 @@
                 <see cref="T:Butler.Lifetime.IServiceLifetime"/> creates a new instance of the service each request.
             </summary>
         </member>
+        <member name="P:Butler.Lifetime.Lifetime.Scoped">
+            <summary>
+                Gets a singleton instance of the scoped <see cref="T:Butler.Lifetime.IServiceLifetime"/>. This
+                <see cref="T:Butler.Lifetime.IServiceLifetime"/> creates for each scope key a new instance. The default
+                scope key is <see cref="!:ServiceScope.Global"/>.
+            </summary>
+        </member>
         <member name="M:Butler.Lifetime.Lifetime.#ctor(System.String,Butler.Lifetime.LifetimeManagerFactory)">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Lifetime.Lifetime"/> class.
@@ -107,6 +114,58 @@
             <param name="resolver">the calling resolver</param>
             <returns>the lifetime manager</returns>
         </member>
+        <member name="T:Butler.Lifetime.ScopedLifetimeManager">
+            <summary>
+                Implementation of an <see cref="T:Butler.Lifetime.ILifetimeManager"/> that re-creates services for each new
+                service scope.
+            </summary>
+        </member>
+        <member name="F:Butler.Lifetime.ScopedLifetimeManager._services">
+            <summary>
+                A dictionary containing the service instance keyed by a key-value pair which key is
+                the type of the service (not the service implementation) and the value is the service
+                scope key.
+            </summary>
+        </member>
+        <member name="F:Butler.Lifetime.ScopedLifetimeManager._trackerLock">
+            <summary>
+                A <see cref="T:System.Threading.SemaphoreSlim"/> for the <see cref="F:Butler.Lifetime.ScopedLifetimeManager._services"/>.
+            </summary>
+        </member>
+        <member name="F:Butler.Lifetime.ScopedLifetimeManager._disposed">
+            <summary>
+                A value indicating whether the lifetime manager was disposed (
+                <see langword="true"/>); otherwise <see langword="false"/>.
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.ScopedLifetimeManager.#ctor">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Lifetime.ScopedLifetimeManager"/> class.
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.ScopedLifetimeManager.DisposeAsync">
+            <summary>
+                Disposes all tracked objects asynchronously.
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.ScopedLifetimeManager.Resolve(System.Type,System.Object)">
+            <summary>
+                Tries to resolve an object from the manager.
+            </summary>
+            <param name="serviceType">the type of the service being resolved</param>
+            <param name="scope">
+                the service scope; if <see langword="null"/> then the scope is global
+            </param>
+            <returns>the resolved service; or default if the service could not be resolved</returns>
+        </member>
+        <member name="M:Butler.Lifetime.ScopedLifetimeManager.TrackInstance(System.Type,System.Object,System.Object)">
+            <summary>
+                Tracks the specified <paramref name="instance"/> for disposation.
+            </summary>
+            <param name="serviceType">the type of the service</param>
+            <param name="scope">the <paramref name="scope"/> the instance was created for</param>
+            <param name="instance">the instance to track</param>
+        </member>
         <member name="T:Butler.Lifetime.TransientLifetimeManager">
             <summary>
                 Implementation of an <see cref="T:Butler.Lifetime.ILifetimeManager"/> that re-creates services each call.
@@ -114,13 +173,28 @@
         </member>
         <member name="F:Butler.Lifetime.TransientLifetimeManager._tracker">
             <summary>
-                A list holding all disposable instances the lifetime created. The list only holds
-                <see cref="T:System.IDisposable"/> instances.
+                A list holding all tracked service instances.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.TransientLifetimeManager.Dispose">
+        <member name="F:Butler.Lifetime.TransientLifetimeManager._trackerLock">
             <summary>
-                Disposes all tracked objects.
+                A <see cref="T:System.Threading.SemaphoreSlim"/> for the <see cref="F:Butler.Lifetime.TransientLifetimeManager._tracker"/>.
+            </summary>
+        </member>
+        <member name="F:Butler.Lifetime.TransientLifetimeManager._disposed">
+            <summary>
+                A value indicating whether the lifetime manager was disposed (
+                <see langword="true"/>); otherwise <see langword="false"/>.
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.TransientLifetimeManager.#ctor">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Lifetime.TransientLifetimeManager"/> class.
+            </summary>
+        </member>
+        <member name="M:Butler.Lifetime.TransientLifetimeManager.DisposeAsync">
+            <summary>
+                Disposes all tracked objects asynchronously.
             </summary>
         </member>
         <member name="M:Butler.Lifetime.TransientLifetimeManager.Resolve(System.Type,System.Object)">
@@ -1359,11 +1433,6 @@
                 Initializes a new instance of the <see cref="T:Butler.RootContainer"/> class.
             </summary>
         </member>
-        <member name="M:Butler.RootContainer.Dispose">
-            <summary>
-                Disposes the root container.
-            </summary>
-        </member>
         <member name="M:Butler.RootContainer.GetEnumerator">
             <summary>
                 Gets the service registration enumerator.
@@ -1402,6 +1471,12 @@
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
+        </member>
+        <member name="M:Butler.RootContainer.DisposeAsync">
+            <summary>
+                Disposes the root container asynchronously.
+            </summary>
+            <returns>a task that represents the asynchronous operation.</returns>
         </member>
         <member name="T:Butler.Util.Debug.RegistrationProxy">
             <summary>
