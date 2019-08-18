@@ -1,7 +1,7 @@
 ﻿namespace Butler.Lifetime
 {
     using System;
-    using System.Collections;
+    using System.Collections.Generic;
     using System.Threading;
 
 #if SUPPORTS_ASYNC_DISPOSABLE
@@ -21,7 +21,7 @@
         /// <summary>
         ///     A list holding all tracked service instances.
         /// </summary>
-        private readonly IList _tracker;
+        private readonly IList<object> _tracker;
 
 #if SUPPORTS_ASYNC_DISPOSABLE
 
@@ -49,8 +49,13 @@
         /// </summary>
         public TransientLifetimeManager()
         {
-            _tracker = new ArrayList();
+            _tracker = new List<object>();
+
+#if SUPPORTS_ASYNC_DISPOSABLE
             _trackerLock = new SemaphoreSlim(1, 1);
+#else // SUPPORTS_ASYNC_DISPOSABLE
+            _trackerLock = new object();
+#endif // !SUPPORTS_ASYNC_DISPOSABLE
         }
 
 #if SUPPORTS_ASYNC_DISPOSABLE
