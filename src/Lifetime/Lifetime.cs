@@ -49,7 +49,11 @@
         /// </exception>
         public Lifetime(string name, LifetimeManagerFactory managerFactory)
         {
+#if SUPPORTS_WHITESPACE_CHECK
             if (string.IsNullOrWhiteSpace(name))
+#else // SUPPORTS_WHITESPACE_CHECK
+            if (string.IsNullOrEmpty(name))
+#endif // !SUPPORTS_WHITESPACE_CHECK
             {
                 throw new ArgumentException("The specified lifetime name can not be blank.", nameof(name));
             }

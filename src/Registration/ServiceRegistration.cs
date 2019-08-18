@@ -50,7 +50,13 @@
         /// </summary>
         /// <param name="context">the current resolver context</param>
         /// <returns>the instance</returns>
+#if NO_REFLECTION
+        public object Create(ServiceResolveContext context) => Activator.CreateInstance<TImplementation>();
+#else // NO_REFLECTION
+
         public object Create(ServiceResolveContext context) => Reflector.Resolve<TImplementation>(context);
+
+#endif // !NO_REFLECTION
 
         /// <summary>
         ///     Registers the service with the specified <paramref name="lifetime"/>.

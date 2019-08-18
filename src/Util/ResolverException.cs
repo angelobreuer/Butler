@@ -4,10 +4,18 @@
     using System.Runtime.CompilerServices;
     using Butler.Resolver;
 
+#if SUPPORTS_SERIALIZABLE
+    using System.Runtime.Serialization;
+#endif // SUPPORTS_SERIALIZABLE
+
     /// <summary>
     ///     Exception for resolver failures.
     /// </summary>
-    public sealed class ResolverException : Exception
+#if SUPPORTS_SERIALIZABLE
+    [Serializable]
+#endif // SUPPORTS_SERIALIZABLE
+
+    public class ResolverException : Exception
     {
         /// <summary>
         ///     The message used when no message is set explicitly.
@@ -76,11 +84,20 @@
         /// <param name="message">the base message</param>
         /// <param name="context">the current resolver context</param>
         /// <returns>the message build</returns>
+#if SUPPORTS_COMPILER_SERVICES
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else // SUPPORTS_COMPILER_SERVICES
+        [MethodImpl(256 /* Aggressive Inlining */)]
+#endif // !SUPPORTS_COMPILER_SERVICES
         private static string BuildMessage(string message = null, ServiceResolveContext context = null)
         {
             // use <Unknown Error> if no message is set
+#if SUPPORTS_WHITESPACE_CHECK
             if (string.IsNullOrWhiteSpace(message))
+#else // !SUPPORTS_WHITESPACE_CHECK
+            if (string.IsNullOrEmpty(message))
+#endif // SUPPORTS_WHITESPACE_CHECK
             {
                 message = UnknownErrorMessage;
             }
@@ -98,5 +115,17 @@
             return message;
 #endif // !DEBUG
         }
+
+#if SUPPORTS_SERIALIZABLE
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ResolverException"/> class.
+        /// </summary>
+        /// <param name="serializationInfo">the serialization information</param>
+        /// <param name="streamingContext">the streaming context</param>
+        protected ResolverException(SerializationInfo serializationInfo, StreamingContext streamingContext)
+            : base(serializationInfo, streamingContext)
+        {
+        }
+#endif // SUPPORTS_SERIALIZABLE
     }
 }

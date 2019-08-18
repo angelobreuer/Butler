@@ -3,7 +3,7 @@
   <!-- Main -->
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>netstandard1.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>netstandard1.0;netstandard2.0;netstandard2.1;net20</TargetFrameworks>
     <DocumentationFile>Butler.xml</DocumentationFile>
   </PropertyGroup>
 

@@ -18,7 +18,11 @@
         /// <summary>
         ///     Gets all service registrations in the register.
         /// </summary>
+#if SUPPORTS_READONLY_COLLECTIONS
         IReadOnlyCollection<KeyValuePair<Type, IServiceRegistration>> Registrations { get; }
+#else // SUPPORTS_READONLY_COLLECTIONS
+        IEnumerable<KeyValuePair<Type, IServiceRegistration>> Registrations { get; }
+#endif // !SUPPORTS_READONLY_COLLECTIONS
 
         /// <summary>
         ///     Creates a read-only instance of the service register.

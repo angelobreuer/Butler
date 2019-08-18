@@ -139,6 +139,7 @@
         public object Resolve(Type serviceType, object scopeKey = null, ServiceResolveContext context = null,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
         {
+#if !NO_REFLECTION
 #if SUPPORTS_REFLECTION
             // handle lazy resolving
             if (serviceType.IsGenericType && serviceType.GetGenericTypeDefinition() == typeof(Lazy<>))
@@ -162,6 +163,7 @@
                     .Invoke(this, new object[] { scopeKey, context, constructionMode });
             }
 #endif // !SUPPORTS_REFLECTION
+#endif // !NO_REFLECTION
 
             // resolve service normally
             return ResolveService(serviceType, scopeKey, context, constructionMode);
@@ -222,7 +224,12 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the maximum service resolve depth was exceeded.
         /// </exception>
+#if SUPPORTS_COMPILER_SERVICES
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else // SUPPORTS_COMPILER_SERVICES
+        [MethodImpl(256 /* Aggressive Inlining */)]
+#endif // !SUPPORTS_COMPILER_SERVICES
         public TService Resolve<TService>(object scopeKey = null, ServiceResolveContext context = null,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
             => (TService)Resolve(typeof(TService), scopeKey, context, constructionMode);
@@ -253,11 +260,14 @@
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
             => new Lazy<TService>(() => Resolve<TService>(scopeKey, context, constructionMode));
 
+#if !NO_REFLECTION
         /// <summary>
         ///     The method information of the
         ///     <see cref="ResolveLazy{TService}(object, ServiceResolveContext, ServiceConstructionMode)"/> method.
         /// </summary>
         private static readonly MethodInfo _resolveLazyMethod = typeof(IServiceResolver).GetRuntimeMethod("ResolveLazy",
             new[] { typeof(object), typeof(ServiceResolveContext), typeof(ServiceConstructionMode) });
+
+#endif // !NO_REFLECTION
     }
 }

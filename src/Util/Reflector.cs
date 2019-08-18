@@ -1,12 +1,14 @@
-﻿namespace Butler.Util
+﻿#if !NO_REFLECTION
+
+namespace Butler.Util
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
     using System.Runtime.CompilerServices;
     using Butler.Register;
     using Butler.Resolver;
+    using System.Linq;
 
     /// <summary>
     ///     An utility class for resolving a service with dependencies from an <see cref="IServiceResolver"/>.
@@ -35,7 +37,12 @@
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="context"/> is <see langword="null"/>.
         /// </exception>
+#if SUPPORTS_COMPILER_SERVICES
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else // SUPPORTS_COMPILER_SERVICES
+        [MethodImpl(256 /* Aggressive Inlining */)]
+#endif // !SUPPORTS_COMPILER_SERVICES
         public static TImplementation Resolve<TImplementation>(ServiceResolveContext context)
             => (TImplementation)Resolve(typeof(TImplementation), context);
 
@@ -185,3 +192,5 @@
         }
     }
 }
+
+#endif // !NO_REFLECTION

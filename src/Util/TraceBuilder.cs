@@ -8,8 +8,11 @@ namespace Butler.Util
     using System.Text;
     using System.Diagnostics;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
+
+#if SUPPORTS_LINQ
+    using System.Linq;
+#endif // SUPPORTS_LINQ
 
     /// <summary>
     ///     An utility class that is useful for building traces when resolving or registering services.
@@ -21,7 +24,12 @@ namespace Butler.Util
         ///     A list holding the trace elements.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#if SUPPORTS_LINQ
         private readonly IList<TraceElement> _entries;
+
+#else // SUPPORTS_LINQ
+        private readonly List<TraceElement> _entries;
+#endif // !SUPPORTS_LINQ
 
         /// <summary>
         ///     The lock for the entries.
@@ -42,7 +50,11 @@ namespace Butler.Util
         ///     Gets the trace elements.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+#if SUPPORTS_READONLY_COLLECTIONS
         public IReadOnlyList<TraceElement> Elements
+#else // SUPPORTS_READONLY_COLLECTIONS
+        public IEnumerable<TraceElement> Elements
+#endif // !SUPPORTS_READONLY_COLLECTIONS
         {
             get
             {

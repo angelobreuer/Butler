@@ -3,11 +3,15 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
+    using System.Reflection;
     using System.Runtime.CompilerServices;
     using Butler.Lifetime;
     using Butler.Registration;
     using Butler.Resolver;
+
+#if SUPPORTS_LINQ
+    using System.Linq;
+#endif // SUPPORTS_LINQ
 
     /// <summary>
     ///     A class that manages service registrations.
@@ -47,13 +51,36 @@
         /// <summary>
         ///     Gets all copy of the service registrations in the register.
         /// </summary>
+
+#if SUPPORTS_READONLY_COLLECTIONS
+
         public IReadOnlyCollection<KeyValuePair<Type, IServiceRegistration>> Registrations
+#else // SUPPORTS_READONLY_COLLECTIONS
+        public IEnumerable<KeyValuePair<Type, IServiceRegistration>> Registrations
+#endif // !SUPPORTS_READONLY_COLLECTIONS
         {
             get
             {
                 lock (_registrationsLock)
                 {
+#if SUPPORTS_LINQ
                     return _registrations.ToArray();
+#else // SUPPORTS_LINQ
+                    // the index in the output array
+                    var index = 0;
+
+                    // the registrations array
+                    var registrations = new KeyValuePair<Type, IServiceRegistration>[_registrations.Count];
+
+                    // iterate through all keys
+                    foreach (var key in _registrations.Keys)
+                    {
+                        // export registration to array
+                        registrations[index++] = new KeyValuePair<Type, IServiceRegistration>(key, _registrations[key]);
+                    }
+
+                    return registrations;
+#endif // !SUPPORTS_LINQ
                 }
             }
         }
@@ -62,14 +89,21 @@
         ///     Gets or sets the default service lifetime when no specific lifetime was specified.
         /// </summary>
         public IServiceLifetime DefaultServiceLifetime { get; set; }
-            = Butler.Lifetime.Lifetime.Transient;
+            = Lifetime.Transient;
 
         /// <summary>
         ///     Creates a read-only instance of the service register.
         /// </summary>
         /// <returns>the read-only service register</returns>
         public ReadOnlyServiceRegister AsReadOnly()
-            => new ReadOnlyServiceRegister(Registrations.ToDictionary(s => s.Key, s => s.Value));
+        {
+            // acquire lock
+            lock (_registrationsLock)
+            {
+                // create register
+                return new ReadOnlyServiceRegister(new Dictionary<Type, IServiceRegistration>(_registrations));
+            }
+        }
 
         /// <summary>
         ///     Finds the service registration for the specified <paramref name="type"/>.
@@ -187,7 +221,12 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
+#if SUPPORTS_COMPILER_SERVICES
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else // SUPPORTS_COMPILER_SERVICES
+        [MethodImpl(256 /* Aggressive Inlining */)]
+#endif // !SUPPORTS_COMPILER_SERVICES
         public IServiceRegistration Register<TService>(IServiceRegistration registration, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
         {
             if (registration is null)
@@ -302,7 +341,12 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
+#if SUPPORTS_COMPILER_SERVICES
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else // SUPPORTS_COMPILER_SERVICES
+        [MethodImpl(256 /* Aggressive Inlining */)]
+#endif // !SUPPORTS_COMPILER_SERVICES
         public IServiceRegistration RegisterInstance<TService>(TService instance, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TService : class
             => Register<TService>(new InstanceRegistration(instance), registrationMode);
 

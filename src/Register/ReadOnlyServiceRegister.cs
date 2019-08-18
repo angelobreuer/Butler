@@ -14,13 +14,22 @@
         /// <summary>
         ///     The service registrations.
         /// </summary>
+#if SUPPORTS_READONLY_COLLECTIONS
         private readonly IReadOnlyDictionary<Type, IServiceRegistration> _registrations;
+#else // SUPPORTS_READONLY_COLLECTIONS
+        private readonly IDictionary<Type, IServiceRegistration> _registrations;
+#endif // !SUPPORTS_READONLY_COLLECTIONS
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ReadOnlyServiceRegister"/> class.
         /// </summary>
         /// <param name="registrations">the static registrations</param>
+#if SUPPORTS_READONLY_COLLECTIONS
+
         public ReadOnlyServiceRegister(IReadOnlyDictionary<Type, IServiceRegistration> registrations)
+#else // SUPPORTS_READONLY_COLLECTIONS
+        public ReadOnlyServiceRegister(IDictionary<Type, IServiceRegistration> registrations)
+#endif // !SUPPORTS_READONLY_COLLECTIONS
             => _registrations = registrations ?? throw new ArgumentNullException(nameof(registrations));
 
         /// <summary>
@@ -31,7 +40,11 @@
         /// <summary>
         ///     Gets all service registrations in the register.
         /// </summary>
+#if SUPPORTS_READONLY_COLLECTIONS
         public IReadOnlyCollection<KeyValuePair<Type, IServiceRegistration>> Registrations => _registrations;
+#else // SUPPORTS_READONLY_COLLECTIONS
+        public IEnumerable<KeyValuePair<Type, IServiceRegistration>> Registrations => _registrations;
+#endif // !SUPPORTS_READONLY_COLLECTIONS
 
         /// <summary>
         ///     Creates a read-only instance of the service register.
@@ -56,7 +69,12 @@
         /// </summary>
         /// <typeparam name="TService">the type of the service to find the service for</typeparam>
         /// <returns>the service registration</returns>
+#if SUPPORTS_COMPILER_SERVICES
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else // SUPPORTS_COMPILER_SERVICES
+        [MethodImpl(256 /* Aggressive Inlining */)]
+#endif // !SUPPORTS_COMPILER_SERVICES
         public IServiceRegistration FindRegistration<TService>()
             => FindRegistration(typeof(TService));
 

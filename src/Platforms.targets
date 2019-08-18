@@ -18,6 +18,16 @@
 
   <!-- Platform-Specific Configuration -->
   <Choose>
+
+    <When Condition=" '$(TargetFramework)' == 'net20' ">
+      <!-- .NET Framework 2.0 -->
+
+      <!-- Defines -->
+      <PropertyGroup>
+        <DefineConstants>SUPPORTS_SERIALIZABLE;NO_REFLECTION</DefineConstants>
+      </PropertyGroup>
+    </When>
+
     <When Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
       <!-- .NET Standard 1.0 -->
 
@@ -25,13 +35,19 @@
       <ItemGroup>
         <PackageReference Include="System.Reflection" Version="4.3.0" />
       </ItemGroup>
+
+      <!-- Defines -->
+      <PropertyGroup>
+        <DefineConstants>SUPPORTS_READONLY_COLLECTIONS;SUPPORTS_LINQ;SUPPORTS_COMPILER_SERVICES;SUPPORTS_LAZY;SUPPORTS_WHITESPACE_CHECK</DefineConstants>
+      </PropertyGroup>
     </When>
+
     <When Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
       <!-- .NET Standard 2.0 -->
 
       <!-- Defines -->
       <PropertyGroup>
-        <DefineConstants>SUPPORTS_SERVICE_PROVIDER;SUPPORTS_SERIALIZABLE;SUPPORTS_REFLECTION</DefineConstants>
+        <DefineConstants>SUPPORTS_SERVICE_PROVIDER;SUPPORTS_SERIALIZABLE;SUPPORTS_REFLECTION;SUPPORTS_READONLY_COLLECTIONS;SUPPORTS_LINQ;SUPPORTS_COMPILER_SERVICES;SUPPORTS_SERIALIZABLE;SUPPORTS_LAZY;SUPPORTS_WHITESPACE_CHECK;SUPPORTS_DEBUGGER_CROSS_THREAD_NOTIFY</DefineConstants>
       </PropertyGroup>
     </When>
     <When Condition=" '$(TargetFramework)' == 'netstandard2.1' ">
@@ -39,7 +55,7 @@
 
       <!-- Defines -->
       <PropertyGroup>
-        <DefineConstants>SUPPORTS_SERVICE_PROVIDER;SUPPORTS_ASYNC_DISPOSABLE;SUPPORTS_SERIALIZABLE;SUPPORTS_REFLECTION</DefineConstants>
+        <DefineConstants>SUPPORTS_SERVICE_PROVIDER;SUPPORTS_ASYNC_DISPOSABLE;SUPPORTS_SERIALIZABLE;SUPPORTS_REFLECTION;SUPPORTS_READONLY_COLLECTIONS;SUPPORTS_LINQ;SUPPORTS_COMPILER_SERVICES;SUPPORTS_SERIALIZABLE;SUPPORTS_LAZY;SUPPORTS_WHITESPACE_CHECK;SUPPORTS_DEBUGGER_CROSS_THREAD_NOTIFY</DefineConstants>
       </PropertyGroup>
     </When>
   </Choose>
