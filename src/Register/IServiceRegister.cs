@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using Butler.Lifetime;
     using Butler.Registration;
     using Butler.Resolver;
 
@@ -10,6 +11,11 @@
     /// </summary>
     public interface IServiceRegister
     {
+        /// <summary>
+        ///     Gets or sets the default service lifetime when no specific lifetime was specified.
+        /// </summary>
+        IServiceLifetime DefaultServiceLifetime { get; set; }
+
         /// <summary>
         ///     Gets a value indicating whether new service registrations are not allowed.
         /// </summary>
@@ -67,7 +73,8 @@
         ///     and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        IServiceRegistration Register(Type type, IServiceRegistration registration, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
+        IServiceRegistration Register(Type type, IServiceRegistration registration,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
 
         /// <summary>
         ///     Registers the specified <paramref name="registration"/>.
@@ -86,13 +93,18 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        IServiceRegistration Register<TService>(IServiceRegistration registration, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
+        IServiceRegistration Register<TService>(IServiceRegistration registration,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
 
         /// <summary>
         ///     Registers a service registration for the specified <typeparamref name="TService"/>.
         /// </summary>
         /// <typeparam name="TService">the type of the service</typeparam>
         /// <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+        /// <param name="lifetime">
+        ///     the service lifetime, if <see langword="null"/> the
+        ///     <see cref="DefaultServiceLifetime"/> is used.
+        /// </param>
         /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
@@ -102,13 +114,19 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        ServiceRegistration<TImplementation> Register<TService, TImplementation>(ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TImplementation : class, TService;
+        ServiceRegistration<TImplementation> Register<TService, TImplementation>(
+            IServiceLifetime lifetime = null,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TImplementation : class, TService;
 
         /// <summary>
         ///     Registers a direct parameterless constructor service.
         /// </summary>
         /// <typeparam name="TService">the type of the service</typeparam>
         /// <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+        /// <param name="lifetime">
+        ///     the service lifetime, if <see langword="null"/> the
+        ///     <see cref="DefaultServiceLifetime"/> is used.
+        /// </param>
         /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
@@ -119,6 +137,7 @@
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
         DirectRegistration<TImplementation> RegisterDirect<TService, TImplementation>(
+            IServiceLifetime lifetime = null,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TImplementation : TService, new();
 
         /// <summary>
@@ -126,6 +145,10 @@
         /// </summary>
         /// <typeparam name="TService">the service the factory provides</typeparam>
         /// <param name="factory">the service factory</param>
+        /// <param name="lifetime">
+        ///     the service lifetime, if <see langword="null"/> the
+        ///     <see cref="DefaultServiceLifetime"/> is used.
+        /// </param>
         /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
@@ -139,6 +162,7 @@
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
         FactoryRegistration<TService> RegisterFactory<TService>(ServiceFactory<TService> factory,
+            IServiceLifetime lifetime = null,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
 
         /// <summary>
@@ -147,6 +171,10 @@
         /// <typeparam name="TService">the service the factory provides</typeparam>
         /// <typeparam name="TImplementation">type of the service implementation</typeparam>
         /// <param name="factory">the service factory</param>
+        /// <param name="lifetime">
+        ///     the service lifetime, if <see langword="null"/> the
+        ///     <see cref="DefaultServiceLifetime"/> is used.
+        /// </param>
         /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
@@ -161,6 +189,7 @@
         /// </exception>
         FactoryRegistration<TImplementation> RegisterFactory<TService, TImplementation>(
             ServiceFactory<TImplementation> factory,
+            IServiceLifetime lifetime = null,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
 
         /// <summary>
@@ -169,6 +198,10 @@
         /// <typeparam name="TImplementation">type of the service implementation</typeparam>
         /// <param name="serviceType">the type of the service</param>
         /// <param name="factory">the service factory</param>
+        /// <param name="lifetime">
+        ///     the service lifetime, if <see langword="null"/> the
+        ///     <see cref="DefaultServiceLifetime"/> is used.
+        /// </param>
         /// <param name="registrationMode">the service registration mode</param>
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
@@ -186,6 +219,7 @@
         /// </exception>
         FactoryRegistration<TImplementation> RegisterFactory<TImplementation>(
             Type serviceType, ServiceFactory<TImplementation> factory,
+            IServiceLifetime lifetime = null,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
 
         /// <summary>
