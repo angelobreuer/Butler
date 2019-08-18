@@ -320,7 +320,8 @@
                 _lifetimeLock.Release();
             }
 
-            _lifetimeLock.Release();
+            // dispose lock
+            _lifetimeLock.Dispose();
 #endif // !SUPPORTS_CONCURRENT_COLLECTIONS
         }
 #endif // SUPPORTS_ASYNC_DISPOSABLE
