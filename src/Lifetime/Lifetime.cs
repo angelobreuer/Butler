@@ -16,6 +16,13 @@
             = new Lifetime("Transient", resolver => new TransientLifetimeManager());
 
         /// <summary>
+        ///     Gets a singleton instance of the scoped <see cref="IServiceLifetime"/>. This
+        ///     <see cref="IServiceLifetime"/> creates for each scope key a new instance..
+        /// </summary>
+        public static IServiceLifetime Scoped { get; }
+            = new Lifetime("Scoped", resolver => new ScopedLifetimeManager());
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="Lifetime"/> class.
         /// </summary>
         /// <param name="name">
