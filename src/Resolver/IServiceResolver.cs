@@ -12,19 +12,26 @@
 #endif
     {
         /// <summary>
+        ///     Gets or sets the default <see cref="ServiceResolveMode"/> that is used when
+        ///     <see cref="ServiceResolveMode.Default"/> is passed.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     thrown if the specified value is not defined in the <see cref="ServiceResolveMode"/> enumeration.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     thrown if the specified value is <see cref="ServiceResolveMode.Default"/> (this mode
+        ///     can not be used, because the resolver specifies the default value, this mode can only
+        ///     be used when passing to a resolver method)
+        /// </exception>
+        ServiceResolveMode DefaultResolveMode { get; set; }
+
+        /// <summary>
         ///     Gets or sets the maximum service resolve depth (used to detect self-referencing loops).
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">
         ///     thrown if the specified value is zero or negative.
         /// </exception>
         int MaximumDepth { get; set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether disposable transients should be tracked by
-        ///     the container. Note that enabling this property can cause memory leaks, because the
-        ///     transients are released when the container is disposed.
-        /// </summary>
-        bool TrackDisposableTransients { get; set; }
 
         /// <summary>
         ///     Gets or sets the resolvers's <see cref="ServiceConstructionMode"/>.
@@ -37,6 +44,13 @@
         ServiceConstructionMode ServiceConstructionMode { get; set; }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether disposable transients should be tracked by
+        ///     the container. Note that enabling this property can cause memory leaks, because the
+        ///     transients are released when the container is disposed.
+        /// </summary>
+        bool TrackDisposableTransients { get; set; }
+
+        /// <summary>
         ///     Resolves a service of the specified <paramref name="serviceType"/>.
         /// </summary>
         /// <param name="scopeKey">
@@ -47,6 +61,10 @@
         /// <param name="context">
         ///     the parent resolve context; if <see langword="null"/> a new
         ///     <see cref="ServiceResolveContext"/> is created.
+        /// </param>
+        /// <param name="resolveMode">
+        ///     the service resolution mode; if <see cref="ServiceResolveMode.Default"/> then the
+        ///     <see cref="DefaultResolveMode"/> is used.
         /// </param>
         /// <param name="constructionMode">
         ///     the service construction mode; which defines the behavior for resolving constructors
@@ -61,7 +79,9 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the maximum service resolve depth was exceeded.
         /// </exception>
-        object Resolve(Type serviceType, object scopeKey = null, ServiceResolveContext context = null, ServiceConstructionMode constructionMode = ServiceConstructionMode.Default);
+        object Resolve(Type serviceType, object scopeKey = null, ServiceResolveContext context = null,
+            ServiceResolveMode resolveMode = ServiceResolveMode.Default,
+            ServiceConstructionMode constructionMode = ServiceConstructionMode.Default);
 
         /// <summary>
         ///     Resolves a service of the specified <typeparamref name="TService"/>.
@@ -74,6 +94,10 @@
         ///     the parent resolve context; if <see langword="null"/> a new
         ///     <see cref="ServiceResolveContext"/> is created.
         /// </param>
+        /// <param name="resolveMode">
+        ///     the service resolution mode; if <see cref="ServiceResolveMode.Default"/> then the
+        ///     <see cref="DefaultResolveMode"/> is used.
+        /// </param>
         /// <param name="constructionMode">
         ///     the service construction mode; which defines the behavior for resolving constructors
         ///     for a service implementation type.
@@ -85,7 +109,9 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the maximum service resolve depth was exceeded.
         /// </exception>
-        TService Resolve<TService>(object scopeKey = null, ServiceResolveContext context = null, ServiceConstructionMode constructionMode = ServiceConstructionMode.Default);
+        TService Resolve<TService>(object scopeKey = null, ServiceResolveContext context = null,
+            ServiceResolveMode resolveMode = ServiceResolveMode.Default,
+            ServiceConstructionMode constructionMode = ServiceConstructionMode.Default);
 
         /// <summary>
         ///     Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
@@ -98,6 +124,10 @@
         ///     the scope key for resolving the service; if <see langword="null"/> the global scope
         ///     is used.
         /// </param>
+        /// <param name="resolveMode">
+        ///     the service resolution mode; if <see cref="ServiceResolveMode.Default"/> then the
+        ///     <see cref="DefaultResolveMode"/> is used.
+        /// </param>
         /// <param name="constructionMode">
         ///     the service construction mode; which defines the behavior for resolving constructors
         ///     for a service implementation type.
@@ -109,6 +139,8 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the maximum service resolve depth was exceeded.
         /// </exception>
-        Lazy<TService> ResolveLazy<TService>(object scopeKey = null, ServiceResolveContext context = null, ServiceConstructionMode constructionMode = ServiceConstructionMode.Default);
+        Lazy<TService> ResolveLazy<TService>(object scopeKey = null, ServiceResolveContext context = null,
+            ServiceResolveMode resolveMode = ServiceResolveMode.Default,
+            ServiceConstructionMode constructionMode = ServiceConstructionMode.Default);
     }
 }

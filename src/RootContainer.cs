@@ -101,6 +101,10 @@
         ///     the parent resolve context; if <see langword="null"/> a new
         ///     <see cref="ServiceResolveContext"/> is created.
         /// </param>
+        /// <param name="resolveMode">
+        ///     the service resolution mode; if <see cref="ServiceResolveMode.Default"/> then the
+        ///     <see cref="IServiceResolver.DefaultResolveMode"/> is used.
+        /// </param>
         /// <param name="constructionMode">
         ///     the service construction mode; which defines the behavior for resolving constructors
         ///     for a service implementation type.
@@ -116,6 +120,7 @@
         /// </exception>
         protected override object ResolveService(Type serviceType, object scopeKey = null,
             ServiceResolveContext parentContext = null,
+            ServiceResolveMode resolveMode = ServiceResolveMode.Default,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
         {
             // check if the container is already disposed
@@ -145,12 +150,26 @@
             // check if the registration failed
             if (registration is null)
             {
-                // throw resolver exception
+                // check if the default service resolve mode should be used
+                if (resolveMode == ServiceResolveMode.Default)
+                {
+                    // use default resolve mode
+                    resolveMode = DefaultResolveMode;
+                }
+
+                // check if an exception should be thrown
+                if (resolveMode == ServiceResolveMode.ThrowException)
+                {
+                    // throw resolver exception
 #if DEBUG
-                context.TraceBuilder.AppendResolveFail(serviceType, critical: true);
+                    context.TraceBuilder.AppendResolveFail(serviceType, critical: true);
 #endif // DEBUG
 
-                throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).", context);
+                    throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).", context);
+                }
+
+                // The ServiceResolveMode is ReturnDefault.
+                return default;
             }
 
             // try getting the lifetime manager
