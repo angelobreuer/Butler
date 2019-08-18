@@ -1,7 +1,7 @@
 ﻿namespace Butler.Lifetime
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections;
     using System.Threading;
 
 #if SUPPORTS_ASYNC_DISPOSABLE
@@ -18,25 +18,18 @@
         IDisposable
 #endif // !SUPPORTS_ASYNC_DISPOSABLE
     {
-#if SUPPORTS_ASYNC_DISPOSABLE
         /// <summary>
-        ///     A list holding all (asynchronously) disposable instances the lifetime created. The
-        ///     list either holds an <see cref="IAsyncDisposable"/> or an <see cref="IDisposable"/>.
-        ///     Created instances which do not implement any of <see cref="IAsyncDisposable"/> or
-        ///     <see cref="IDisposable"/> are not tracked.
+        ///     A list holding all tracked service instances.
         /// </summary>
-        private readonly IList<object> _tracker;
+        private readonly IList _tracker;
+
+#if SUPPORTS_ASYNC_DISPOSABLE
 
         /// <summary>
         ///     A <see cref="SemaphoreSlim"/> for the <see cref="_tracker"/>.
         /// </summary>
         private readonly SemaphoreSlim _trackerLock;
 #else // SUPPORTS_ASYNC_DISPOSABLE
-        /// <summary>
-        ///     A list holding all disposable instances the lifetime created. The list only holds
-        ///     <see cref="IDisposable"/> instances.
-        /// </summary>
-        private readonly IList<IDisposable> _tracker;
 
         /// <summary>
         ///     A lock <see cref="object"/> for the <see cref="_tracker"/>.
@@ -56,12 +49,7 @@
         /// </summary>
         public TransientLifetimeManager()
         {
-#if SUPPORTS_ASYNC_DISPOSABLE
-            _tracker = new List<object>();
-#else // SUPPORTS_ASYNC_DISPOSABLE
-            _tracker = new List<IDisposable>();
-#endif //!SUPPORTS_ASYNC_DISPOSABLE
-
+            _tracker = new ArrayList();
             _trackerLock = new SemaphoreSlim(1, 1);
         }
 
@@ -103,6 +91,9 @@
                         disposable.Dispose();
                     }
                 }
+
+                // clear tracked instances
+                _tracker.Clear();
             }
             finally
             {
@@ -135,9 +126,16 @@
                 // iterate through all tracked objects
                 foreach (var instance in _tracker)
                 {
-                    // dispose instance
-                    instance.Dispose();
+                    // check if the instance inherits from the IDisposable interface
+                    if (instance is IDisposable disposable)
+                    {
+                        // dispose instance
+                        disposable.Dispose();
+                    }
                 }
+
+                // clear tracked instances
+                _tracker.Clear();
             }
         }
 
