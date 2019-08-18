@@ -177,7 +177,7 @@
             var service = registration.Create(context);
 
             // track service
-            lifetimeManager.TrackInstance(context, scopeKey, service);
+            lifetimeManager.TrackInstance(context, service, scopeKey);
 
             return service;
         }
