@@ -164,7 +164,7 @@
             }
 
             // try resolving from the lifetime
-            var lifetimeObject = lifetimeManager.Resolve(serviceType, scopeKey);
+            var lifetimeObject = lifetimeManager.Resolve(context, scopeKey);
 
             // check if the object is cached
             if (lifetimeObject != null)
@@ -177,7 +177,7 @@
             var service = registration.Create(context);
 
             // track service
-            lifetimeManager.TrackInstance(serviceType, scopeKey, service);
+            lifetimeManager.TrackInstance(context, scopeKey, service);
 
             return service;
         }
