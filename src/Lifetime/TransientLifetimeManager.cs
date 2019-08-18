@@ -173,6 +173,12 @@
         /// </param>
         public void TrackInstance(ServiceResolveContext resolveContext, object instance, object scopeKey = null)
         {
+            // check if the tracking of disposable transients is enabled
+            if (!resolveContext.Resolver.TrackDisposableTransients)
+            {
+                return;
+            }
+
             // The instances in the lifetime are tracked to dispose them, so we need only to track
             // disposable / asynchronously disposable objects.
 

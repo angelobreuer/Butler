@@ -20,6 +20,13 @@
         int MaximumDepth { get; set; }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether disposable transients should be tracked by
+        ///     the container. Note that enabling this property can cause memory leaks, because the
+        ///     transients are released when the container is disposed.
+        /// </summary>
+        bool TrackDisposableTransients { get; set; }
+
+        /// <summary>
         ///     Gets or sets the resolvers's <see cref="ServiceConstructionMode"/>.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">

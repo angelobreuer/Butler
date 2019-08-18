@@ -104,6 +104,13 @@
         }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether disposable transients should be tracked by
+        ///     the container. Note that enabling this property can cause memory leaks, because the
+        ///     transients are released when the container is disposed.
+        /// </summary>
+        public bool TrackDisposableTransients { get; set; }
+
+        /// <summary>
         ///     Resolves a service of the specified <paramref name="serviceType"/>.
         /// </summary>
         /// <param name="serviceType">the type of the service to resolve</param>
