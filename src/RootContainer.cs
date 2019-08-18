@@ -114,7 +114,7 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the maximum service resolve depth was exceeded.
         /// </exception>
-        public override object Resolve(Type serviceType, object scopeKey = null,
+        protected override object ResolveService(Type serviceType, object scopeKey = null,
             ServiceResolveContext parentContext = null,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
         {

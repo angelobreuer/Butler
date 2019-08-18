@@ -2,6 +2,7 @@
 {
     using System;
     using System.Diagnostics;
+    using System.Reflection;
     using System.Runtime.CompilerServices;
     using Butler.Register;
     using Butler.Util;
@@ -135,7 +136,68 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the maximum service resolve depth was exceeded.
         /// </exception>
-        public abstract object Resolve(Type serviceType, object scopeKey = null, ServiceResolveContext context = null,
+        public object Resolve(Type serviceType, object scopeKey = null, ServiceResolveContext context = null,
+            ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
+        {
+#if SUPPORTS_REFLECTION
+            // handle lazy resolving
+            if (serviceType.IsGenericType && serviceType.GetGenericTypeDefinition() == typeof(Lazy<>))
+            {
+                // resolve service using parameters (e.g. Lazy<ISomeService> -> [ISomeService]
+                serviceType = serviceType.GetGenericArguments()[0];
+
+                return _resolveLazyMethod.MakeGenericMethod(serviceType)
+                    .Invoke(this, new object[] { scopeKey, context, constructionMode });
+            }
+#else // SUPPORTS_REFLECTION
+            var typeInformation = serviceType.GetTypeInfo();
+
+            // handle lazy resolving
+            if (typeInformation.IsGenericTypeDefinition && serviceType.GetGenericTypeDefinition() == typeof(Lazy<>))
+            {
+                // resolve service using parameters (e.g. Lazy<ISomeService> -> [ISomeService]
+                serviceType = typeInformation.GenericTypeArguments[0];
+
+                return _resolveLazyMethod.MakeGenericMethod(serviceType)
+                    .Invoke(this, new object[] { scopeKey, context, constructionMode });
+            }
+#endif // !SUPPORTS_REFLECTION
+
+            // resolve service normally
+            return ResolveService(serviceType, scopeKey, context, constructionMode);
+        }
+
+        /// <summary>
+        ///     Resolves a service of the specified <paramref name="serviceType"/>.
+        /// </summary>
+        /// <remarks>
+        ///     This method is directly resolving services, the
+        ///     <see cref="Resolve(Type, object, ServiceResolveContext, ServiceConstructionMode)"/>
+        ///     handles the creation of lazy, function, etc. wrappers.
+        /// </remarks>
+        /// <param name="serviceType">the type of the service to resolve</param>
+        /// <param name="scopeKey">
+        ///     the scope key for resolving the service; if <see langword="null"/> the global scope
+        ///     is used.
+        /// </param>
+        /// <param name="context">
+        ///     the parent resolve context; if <see langword="null"/> a new
+        ///     <see cref="ServiceResolveContext"/> is created.
+        /// </param>
+        /// <param name="constructionMode">
+        ///     the service construction mode; which defines the behavior for resolving constructors
+        ///     for a service implementation type.
+        /// </param>
+        /// <returns>the resolved service</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
+        /// <exception cref="ObjectDisposedException">thrown if the container is disposed.</exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the maximum service resolve depth was exceeded.
+        /// </exception>
+        protected abstract object ResolveService(Type serviceType, object scopeKey = null, ServiceResolveContext context = null,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default);
 
         /// <summary>
@@ -190,5 +252,12 @@
         public Lazy<TService> ResolveLazy<TService>(object scopeKey = null, ServiceResolveContext context = null,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
             => new Lazy<TService>(() => Resolve<TService>(scopeKey, context, constructionMode));
+
+        /// <summary>
+        ///     The method information of the
+        ///     <see cref="ResolveLazy{TService}(object, ServiceResolveContext, ServiceConstructionMode)"/> method.
+        /// </summary>
+        private static readonly MethodInfo _resolveLazyMethod = typeof(IServiceResolver).GetRuntimeMethod("ResolveLazy",
+            new[] { typeof(object), typeof(ServiceResolveContext), typeof(ServiceConstructionMode) });
     }
 }
