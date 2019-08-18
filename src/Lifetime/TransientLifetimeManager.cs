@@ -172,18 +172,23 @@
             // disposable / asynchronously disposable objects.
 
 #if SUPPORTS_ASYNC_DISPOSABLE
+            // check if the instance does not inherit from IDisposable or IAsyncDisposable, then
+            // there is no need to track the service instance since the transient lifetime always
+            // re-creates services
+            if (!(instance is IDisposable || instance is IAsyncDisposable))
+            {
+                // there is no need to track the instance
+                return;
+            }
+
             // acquire lock
             _trackerLock.Wait();
 
             // ensure the lock is released even if an exception is thrown
             try
             {
-                // check if the instance inherits from IDisposable or IAsyncDisposable
-                if (instance is IDisposable || instance is IAsyncDisposable)
-                {
-                    // track instance
-                    _tracker.Add(instance);
-                }
+                // track instance
+                _tracker.Add(instance);
             }
             finally
             {
