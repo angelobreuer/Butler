@@ -9,6 +9,49 @@
                 Interface for a root container.
             </summary>
         </member>
+        <member name="T:Butler.Lazy`1">
+            <summary>
+                Drop-in replacement for the <c>"System.Lazy{T}"</c> class.
+            </summary>
+            <typeparam name="T">the type of the object</typeparam>
+        </member>
+        <member name="M:Butler.Lazy`1.#ctor(Butler.Lazy{`0}.LazyValueFactory)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Lazy`1"/> class.
+            </summary>
+            <param name="factory">the lazy value factory</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Lazy`1.#ctor(`0)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Lazy`1"/> class.
+            </summary>
+            <param name="value">the value</param>
+        </member>
+        <member name="T:Butler.Lazy`1.LazyValueFactory">
+            <summary>
+                Delegate for a lazy-value factory.
+            </summary>
+            <returns>the created value</returns>
+        </member>
+        <member name="P:Butler.Lazy`1.IsValueCreated">
+            <summary>
+                Gets a value indicating whether the value was created.
+            </summary>
+        </member>
+        <member name="P:Butler.Lazy`1.IsValueFaulted">
+            <summary>
+                Gets a value indicating whether an exception occurred while creating the value.
+            </summary>
+            occurred
+        </member>
+        <member name="P:Butler.Lazy`1.Value">
+            <summary>
+                Gets the value, if it is not created it will be created.
+            </summary>
+        </member>
         <member name="T:Butler.Lifetime.ILifetimeManager">
             <summary>
                 Interface for lifetime managers.
@@ -136,9 +179,9 @@
                 scope key.
             </summary>
         </member>
-        <member name="F:Butler.Lifetime.ScopedLifetimeManager._trackerLock">
+        <member name="F:Butler.Lifetime.ScopedLifetimeManager._serviceLock">
             <summary>
-                A <see cref="T:System.Threading.SemaphoreSlim"/> for the <see cref="F:Butler.Lifetime.ScopedLifetimeManager._services"/>.
+                A lock <see cref="T:System.Object"/> for the <see cref="F:Butler.Lifetime.ScopedLifetimeManager._services"/>.
             </summary>
         </member>
         <member name="F:Butler.Lifetime.ScopedLifetimeManager._disposed">
@@ -152,9 +195,9 @@
                 Initializes a new instance of the <see cref="T:Butler.Lifetime.ScopedLifetimeManager"/> class.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.ScopedLifetimeManager.DisposeAsync">
+        <member name="M:Butler.Lifetime.ScopedLifetimeManager.Dispose">
             <summary>
-                Disposes all tracked objects asynchronously.
+                Disposes all tracked objects.
             </summary>
         </member>
         <member name="M:Butler.Lifetime.ScopedLifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
@@ -190,9 +233,9 @@
                 A dictionary containing the service instance keyed by the service type.
             </summary>
         </member>
-        <member name="F:Butler.Lifetime.SingletonLifetimeManager._trackerLock">
+        <member name="F:Butler.Lifetime.SingletonLifetimeManager._serviceLock">
             <summary>
-                A <see cref="T:System.Threading.SemaphoreSlim"/> for the <see cref="F:Butler.Lifetime.SingletonLifetimeManager._services"/>.
+                A lock <see cref="T:System.Object"/> for the <see cref="F:Butler.Lifetime.SingletonLifetimeManager._services"/>.
             </summary>
         </member>
         <member name="F:Butler.Lifetime.SingletonLifetimeManager._disposed">
@@ -206,9 +249,9 @@
                 Initializes a new instance of the <see cref="T:Butler.Lifetime.SingletonLifetimeManager"/> class.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.SingletonLifetimeManager.DisposeAsync">
+        <member name="M:Butler.Lifetime.SingletonLifetimeManager.Dispose">
             <summary>
-                Disposes all tracked objects asynchronously.
+                Disposes all tracked objects.
             </summary>
         </member>
         <member name="M:Butler.Lifetime.SingletonLifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
@@ -245,7 +288,7 @@
         </member>
         <member name="F:Butler.Lifetime.TransientLifetimeManager._trackerLock">
             <summary>
-                A <see cref="T:System.Threading.SemaphoreSlim"/> for the <see cref="F:Butler.Lifetime.TransientLifetimeManager._tracker"/>.
+                A lock <see cref="T:System.Object"/> for the <see cref="F:Butler.Lifetime.TransientLifetimeManager._tracker"/>.
             </summary>
         </member>
         <member name="F:Butler.Lifetime.TransientLifetimeManager._disposed">
@@ -259,9 +302,9 @@
                 Initializes a new instance of the <see cref="T:Butler.Lifetime.TransientLifetimeManager"/> class.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.TransientLifetimeManager.DisposeAsync">
+        <member name="M:Butler.Lifetime.TransientLifetimeManager.Dispose">
             <summary>
-                Disposes all tracked objects asynchronously.
+                Disposes all tracked objects.
             </summary>
         </member>
         <member name="M:Butler.Lifetime.TransientLifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
@@ -289,6 +332,11 @@
         <member name="T:Butler.Register.IServiceRegister">
             <summary>
                 Interface for a service register.
+            </summary>
+        </member>
+        <member name="P:Butler.Register.IServiceRegister.DefaultServiceLifetime">
+            <summary>
+                Gets or sets the default service lifetime when no specific lifetime was specified.
             </summary>
         </member>
         <member name="P:Butler.Register.IServiceRegister.IsReadOnly">
@@ -365,12 +413,16 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.IServiceRegister.Register``2(Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.IServiceRegister.Register``2(Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service registration for the specified <typeparamref name="TService"/>.
             </summary>
             <typeparam name="TService">the type of the service</typeparam>
             <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the register is read-only ( <see cref="P:Butler.Register.IServiceRegister.IsReadOnly"/>).
@@ -381,12 +433,16 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.IServiceRegister.RegisterDirect``2(Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.IServiceRegister.RegisterDirect``2(Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a direct parameterless constructor service.
             </summary>
             <typeparam name="TService">the type of the service</typeparam>
             <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the register is read-only ( <see cref="P:Butler.Register.IServiceRegister.IsReadOnly"/>).
@@ -397,12 +453,16 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``1(Butler.Resolver.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``1(Butler.Resolver.ServiceFactory{``0},Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
             <typeparam name="TService">the service the factory provides</typeparam>
             <param name="factory">the service factory</param>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
@@ -416,13 +476,17 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``2(Butler.Resolver.ServiceFactory{``1},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``2(Butler.Resolver.ServiceFactory{``1},Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
             <typeparam name="TService">the service the factory provides</typeparam>
             <typeparam name="TImplementation">type of the service implementation</typeparam>
             <param name="factory">the service factory</param>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
@@ -436,13 +500,17 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``1(System.Type,Butler.Resolver.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.IServiceRegister.RegisterFactory``1(System.Type,Butler.Resolver.ServiceFactory{``0},Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
             <typeparam name="TImplementation">type of the service implementation</typeparam>
             <param name="serviceType">the type of the service</param>
             <param name="factory">the service factory</param>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
@@ -497,16 +565,28 @@
                 A class that provides a read-only service register.
             </summary>
         </member>
+        <member name="P:Butler.Register.ReadOnlyServiceRegister.DefaultServiceLifetime">
+            <summary>
+                Gets or sets the default service lifetime when no specific lifetime was specified.
+            </summary>
+        </member>
         <member name="F:Butler.Register.ReadOnlyServiceRegister._registrations">
             <summary>
                 The service registrations.
             </summary>
         </member>
-        <member name="M:Butler.Register.ReadOnlyServiceRegister.#ctor(System.Collections.Generic.IReadOnlyDictionary{System.Type,Butler.Registration.IServiceRegistration})">
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.#ctor(Butler.Lifetime.IServiceLifetime,System.Collections.Generic.IDictionary{System.Type,Butler.Registration.IServiceRegistration})">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Register.ReadOnlyServiceRegister"/> class.
             </summary>
+            <param name="defaultServiceLifetime">the default service lifetime</param>
             <param name="registrations">the static registrations</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="defaultServiceLifetime"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="registrations"/> dictionary is <see langword="null"/>.
+            </exception>
         </member>
         <member name="P:Butler.Register.ReadOnlyServiceRegister.IsReadOnly">
             <summary>
@@ -541,13 +621,17 @@
             <typeparam name="TService">the type of the service to find the service for</typeparam>
             <returns>the service registration</returns>
         </member>
-        <member name="M:Butler.Register.ReadOnlyServiceRegister.Register``2(Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.Register``2(Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service registration for the specified <typeparamref name="TService"/>.
             </summary>
             <typeparam name="TService">the type of the service</typeparam>
             <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
             <param name="registrationMode">the service registration mode</param>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the register is read-only ( <see cref="P:Butler.Register.ReadOnlyServiceRegister.IsReadOnly"/>).
             </exception>
@@ -597,12 +681,16 @@
                 exists and replace is <see langword="false"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterDirect``2(Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterDirect``2(Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a direct parameterless constructor service.
             </summary>
             <typeparam name="TService">the type of the service</typeparam>
             <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the register is read-only ( <see cref="P:Butler.Register.ReadOnlyServiceRegister.IsReadOnly"/>).
@@ -613,12 +701,16 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``1(Butler.Resolver.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``1(Butler.Resolver.ServiceFactory{``0},Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
             <typeparam name="TService">the service the factory provides</typeparam>
             <param name="factory">the service factory</param>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
@@ -632,13 +724,17 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``2(Butler.Resolver.ServiceFactory{``1},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``2(Butler.Resolver.ServiceFactory{``1},Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
             <typeparam name="TService">the service the factory provides</typeparam>
             <typeparam name="TImplementation">type of the service implementation</typeparam>
             <param name="factory">the service factory</param>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
@@ -652,13 +748,17 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``1(System.Type,Butler.Resolver.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``1(System.Type,Butler.Resolver.ServiceFactory{``0},Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
             <typeparam name="TImplementation">type of the service implementation</typeparam>
             <param name="serviceType">the type of the service</param>
             <param name="factory">the service factory</param>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
@@ -783,12 +883,16 @@
             <typeparam name="TService">the type of the service to find the service for</typeparam>
             <returns>the service registration</returns>
         </member>
-        <member name="M:Butler.Register.ServiceRegister.Register``2(Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ServiceRegister.Register``2(Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service registration for the specified <typeparamref name="TService"/>.
             </summary>
             <typeparam name="TService">the type of the service</typeparam>
             <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the register is read-only ( <see cref="P:Butler.Register.ServiceRegister.IsReadOnly"/>).
@@ -841,12 +945,16 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ServiceRegister.RegisterDirect``2(Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ServiceRegister.RegisterDirect``2(Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a direct parameterless constructor service.
             </summary>
             <typeparam name="TService">the type of the service</typeparam>
             <typeparam name="TImplementation">the type of the implementation of the service</typeparam>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the register is read-only ( <see cref="P:Butler.Register.ServiceRegister.IsReadOnly"/>).
@@ -856,12 +964,16 @@
                 exists and replace is <see langword="false"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``1(Butler.Resolver.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``1(Butler.Resolver.ServiceFactory{``0},Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
             <typeparam name="TService">the service the factory provides</typeparam>
             <param name="factory">the service factory</param>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
@@ -875,13 +987,17 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``2(Butler.Resolver.ServiceFactory{``1},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``2(Butler.Resolver.ServiceFactory{``1},Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
             <typeparam name="TService">the service the factory provides</typeparam>
             <typeparam name="TImplementation">type of the service implementation</typeparam>
             <param name="factory">the service factory</param>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
@@ -895,13 +1011,17 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
-        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``1(System.Type,Butler.Resolver.ServiceFactory{``0},Butler.Register.ServiceRegistrationMode)">
+        <member name="M:Butler.Register.ServiceRegister.RegisterFactory``1(System.Type,Butler.Resolver.ServiceFactory{``0},Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
                 Registers a service factory.
             </summary>
             <typeparam name="TImplementation">type of the service implementation</typeparam>
             <param name="serviceType">the type of the service</param>
             <param name="factory">the service factory</param>
+            <param name="lifetime">
+                the service lifetime, if <see langword="null"/> the
+                <see cref="P:Butler.Register.IServiceRegister.DefaultServiceLifetime"/> is used.
+            </param>
             <param name="registrationMode">the service registration mode</param>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
@@ -973,18 +1093,67 @@
                 registration should be dropped without registering.
             </summary>
         </member>
+        <member name="T:Butler.Registration.BaseRegistration">
+            <summary>
+                Base abstraction of an <see cref="T:Butler.Registration.IServiceRegistration"/>.
+            </summary>
+        </member>
+        <member name="P:Butler.Registration.BaseRegistration.ServiceLifetime">
+            <summary>
+                Gets the lifetime of the service.
+            </summary>
+        </member>
+        <member name="P:Butler.Registration.BaseRegistration.WasCreated">
+            <summary>
+                Gets a value indicating whether the registration created an instance of a service.
+            </summary>
+        </member>
+        <member name="M:Butler.Registration.BaseRegistration.AsScoped">
+            <summary>
+                Registers the service with the <see cref="P:Butler.Lifetime.Lifetime.Scoped"/> lifetime.
+            </summary>
+            <returns>the <see cref="T:Butler.Registration.BaseRegistration"/> instance</returns>
+        </member>
+        <member name="M:Butler.Registration.BaseRegistration.AsSingleton">
+            <summary>
+                Registers the service with the <see cref="P:Butler.Lifetime.Lifetime.Singleton"/> lifetime.
+            </summary>
+            <returns>the <see cref="T:Butler.Registration.BaseRegistration"/> instance</returns>
+        </member>
+        <member name="M:Butler.Registration.BaseRegistration.AsTransient">
+            <summary>
+                Registers the service with the <see cref="P:Butler.Lifetime.Lifetime.Transient"/> lifetime.
+            </summary>
+            <returns>the <see cref="T:Butler.Registration.BaseRegistration"/> instance</returns>
+        </member>
+        <member name="M:Butler.Registration.BaseRegistration.Create(Butler.Resolver.ServiceResolveContext)">
+            <summary>
+                Creates the instance.
+            </summary>
+            <param name="context">the current resolver context</param>
+            <returns>the instance</returns>
+        </member>
+        <member name="M:Butler.Registration.BaseRegistration.WithLifetime(Butler.Lifetime.IServiceLifetime)">
+            <summary>
+                Registers the service with the specified <paramref name="lifetime"/>.
+            </summary>
+            <param name="lifetime">the service lifetime</param>
+            <returns>the <see cref="T:Butler.Registration.BaseRegistration"/> instance</returns>
+        </member>
+        <member name="M:Butler.Registration.BaseRegistration.CreateService(Butler.Resolver.ServiceResolveContext)">
+            <summary>
+                Creates the instance.
+            </summary>
+            <param name="context">the current resolver context</param>
+            <returns>the instance</returns>
+        </member>
         <member name="T:Butler.Registration.DirectRegistration`1">
             <summary>
                 Provides an <see cref="T:Butler.Registration.IServiceRegistration"/> for direct parameterless constructors.
             </summary>
             <typeparam name="TImplementation">the service implementation</typeparam>
         </member>
-        <member name="P:Butler.Registration.DirectRegistration`1.ServiceLifetime">
-            <summary>
-                Gets the lifetime of the service.
-            </summary>
-        </member>
-        <member name="M:Butler.Registration.DirectRegistration`1.Create(Butler.Resolver.ServiceResolveContext)">
+        <member name="M:Butler.Registration.DirectRegistration`1.CreateService(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates the instance.
             </summary>
@@ -1006,17 +1175,12 @@
                 thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
             </exception>
         </member>
-        <member name="P:Butler.Registration.FactoryRegistration`1.ServiceLifetime">
-            <summary>
-                Gets the lifetime of the service.
-            </summary>
-        </member>
         <member name="P:Butler.Registration.FactoryRegistration`1.Factory">
             <summary>
                 Gets the service factory.
             </summary>
         </member>
-        <member name="M:Butler.Registration.FactoryRegistration`1.Create(Butler.Resolver.ServiceResolveContext)">
+        <member name="M:Butler.Registration.FactoryRegistration`1.CreateService(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates the instance.
             </summary>
@@ -1097,65 +1261,30 @@
             </summary>
             <typeparam name="TImplementation">the type of the implementation</typeparam>
         </member>
-        <member name="M:Butler.Registration.ServiceRegistration`1.#ctor(Butler.Lifetime.IServiceLifetime)">
-            <summary>
-                Initializes a new instance of the <see cref="T:Butler.Registration.ServiceRegistration`1"/> class.
-            </summary>
-            <param name="serviceLifetime">the initial service lifetime to use</param>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceLifetime"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="P:Butler.Registration.ServiceRegistration`1.ServiceLifetime">
-            <summary>
-                Gets the lifetime of the service.
-            </summary>
-        </member>
-        <member name="M:Butler.Registration.ServiceRegistration`1.AsScoped">
-            <summary>
-                Registers the service with the <see cref="P:Butler.Lifetime.Lifetime.Scoped"/> lifetime.
-            </summary>
-            <returns>the <see cref="T:Butler.Registration.ServiceRegistration`1"/> instance</returns>
-        </member>
-        <member name="M:Butler.Registration.ServiceRegistration`1.AsSingleton">
-            <summary>
-                Registers the service with the <see cref="P:Butler.Lifetime.Lifetime.Singleton"/> lifetime.
-            </summary>
-            <returns>the <see cref="T:Butler.Registration.ServiceRegistration`1"/> instance</returns>
-        </member>
-        <member name="M:Butler.Registration.ServiceRegistration`1.AsTransient">
-            <summary>
-                Registers the service with the <see cref="P:Butler.Lifetime.Lifetime.Transient"/> lifetime.
-            </summary>
-            <returns>the <see cref="T:Butler.Registration.ServiceRegistration`1"/> instance</returns>
-        </member>
-        <member name="M:Butler.Registration.ServiceRegistration`1.Create(Butler.Resolver.ServiceResolveContext)">
+        <member name="M:Butler.Registration.ServiceRegistration`1.CreateService(Butler.Resolver.ServiceResolveContext)">
             <summary>
                 Creates the instance.
             </summary>
             <param name="context">the current resolver context</param>
             <returns>the instance</returns>
         </member>
-        <member name="M:Butler.Registration.ServiceRegistration`1.WithLifetime(Butler.Lifetime.IServiceLifetime)">
-            <summary>
-                Registers the service with the specified <paramref name="lifetime"/>.
-            </summary>
-            <param name="lifetime">the service lifetime</param>
-            <returns>the <see cref="T:Butler.Registration.ServiceRegistration`1"/> instance</returns>
-        </member>
         <member name="T:Butler.Resolver.BaseServiceResolver">
             <summary>
                 Base implementation of an <see cref="T:Butler.Resolver.IServiceResolver"/>.
             </summary>
         </member>
-        <member name="M:Butler.Resolver.BaseServiceResolver.System#IServiceProvider#GetService(System.Type)">
+        <member name="P:Butler.Resolver.BaseServiceResolver.DefaultResolveMode">
             <summary>
-                Resolves a service of the specified <paramref name="serviceType"/>.
+                Gets or sets the default <see cref="T:Butler.Resolver.ServiceResolveMode"/> that is used when
+                <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> is passed.
             </summary>
-            <param name="serviceType">the type of the service to resolve</param>
-            <returns>the resolved service</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is not defined in the <see cref="T:Butler.Resolver.ServiceResolveMode"/> enumeration.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> (this mode
+                can not be used, because the resolver specifies the default value, this mode can only
+                be used when passing to a resolver method)
             </exception>
         </member>
         <member name="F:Butler.Resolver.BaseServiceResolver.DefaultMaximumDepth">
@@ -1176,6 +1305,11 @@
         <member name="F:Butler.Resolver.BaseServiceResolver._serviceConstructionMode">
             <summary>
                 The current <see cref="P:Butler.Resolver.BaseServiceResolver.ServiceConstructionMode"/>.
+            </summary>
+        </member>
+        <member name="F:Butler.Resolver.BaseServiceResolver._defaultResolveMode">
+            <summary>
+                The current <see cref="T:Butler.Resolver.ServiceResolveMode"/>.
             </summary>
         </member>
         <member name="P:Butler.Resolver.BaseServiceResolver.MaximumDepth">
@@ -1203,7 +1337,7 @@
                 transients are released when the container is disposed.
             </summary>
         </member>
-        <member name="M:Butler.Resolver.BaseServiceResolver.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.Resolver.BaseServiceResolver.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
             </summary>
@@ -1215,6 +1349,10 @@
             <param name="context">
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.BaseServiceResolver.DefaultResolveMode"/> is used.
             </param>
             <param name="constructionMode">
                 the service construction mode; which defines the behavior for resolving constructors
@@ -1230,13 +1368,13 @@
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
         </member>
-        <member name="M:Butler.Resolver.BaseServiceResolver.ResolveService(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.Resolver.BaseServiceResolver.ResolveService(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
             </summary>
             <remarks>
                 This method is directly resolving services, the
-                <see cref="M:Butler.Resolver.BaseServiceResolver.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)"/>
+                <see cref="M:Butler.Resolver.BaseServiceResolver.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)"/>
                 handles the creation of lazy, function, etc. wrappers.
             </remarks>
             <param name="serviceType">the type of the service to resolve</param>
@@ -1248,6 +1386,10 @@
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
             </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.BaseServiceResolver.DefaultResolveMode"/> is used.
+            </param>
             <param name="constructionMode">
                 the service construction mode; which defines the behavior for resolving constructors
                 for a service implementation type.
@@ -1262,7 +1404,7 @@
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
         </member>
-        <member name="M:Butler.Resolver.BaseServiceResolver.Resolve``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.Resolver.BaseServiceResolver.Resolve``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <typeparamref name="TService"/>.
             </summary>
@@ -1275,6 +1417,10 @@
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
             </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.BaseServiceResolver.DefaultResolveMode"/> is used.
+            </param>
             <param name="constructionMode">
                 the service construction mode; which defines the behavior for resolving constructors
                 for a service implementation type.
@@ -1286,7 +1432,7 @@
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
         </member>
-        <member name="M:Butler.Resolver.BaseServiceResolver.ResolveLazy``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.Resolver.BaseServiceResolver.ResolveLazy``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
             </summary>
@@ -1298,6 +1444,10 @@
             <param name="context">
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.BaseServiceResolver.DefaultResolveMode"/> is used.
             </param>
             <param name="constructionMode">
                 the service construction mode; which defines the behavior for resolving constructors
@@ -1313,13 +1463,27 @@
         <member name="F:Butler.Resolver.BaseServiceResolver._resolveLazyMethod">
             <summary>
                 The method information of the
-                <see cref="M:Butler.Resolver.BaseServiceResolver.ResolveLazy``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)"/> method.
+                <see cref="M:Butler.Resolver.BaseServiceResolver.ResolveLazy``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)"/> method.
             </summary>
         </member>
         <member name="T:Butler.Resolver.IServiceResolver">
             <summary>
                 Interface for service resolvers.
             </summary>
+        </member>
+        <member name="P:Butler.Resolver.IServiceResolver.DefaultResolveMode">
+            <summary>
+                Gets or sets the default <see cref="T:Butler.Resolver.ServiceResolveMode"/> that is used when
+                <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> is passed.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is not defined in the <see cref="T:Butler.Resolver.ServiceResolveMode"/> enumeration.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> (this mode
+                can not be used, because the resolver specifies the default value, this mode can only
+                be used when passing to a resolver method)
+            </exception>
         </member>
         <member name="P:Butler.Resolver.IServiceResolver.MaximumDepth">
             <summary>
@@ -1328,13 +1492,6 @@
             <exception cref="T:System.ArgumentOutOfRangeException">
                 thrown if the specified value is zero or negative.
             </exception>
-        </member>
-        <member name="P:Butler.Resolver.IServiceResolver.TrackDisposableTransients">
-            <summary>
-                Gets or sets a value indicating whether disposable transients should be tracked by
-                the container. Note that enabling this property can cause memory leaks, because the
-                transients are released when the container is disposed.
-            </summary>
         </member>
         <member name="P:Butler.Resolver.IServiceResolver.ServiceConstructionMode">
             <summary>
@@ -1346,7 +1503,14 @@
             </exception>
             <exception cref="T:System.ArgumentException">thrown if the specified value is <see cref="F:Butler.Resolver.ServiceConstructionMode.Default"/></exception>
         </member>
-        <member name="M:Butler.Resolver.IServiceResolver.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="P:Butler.Resolver.IServiceResolver.TrackDisposableTransients">
+            <summary>
+                Gets or sets a value indicating whether disposable transients should be tracked by
+                the container. Note that enabling this property can cause memory leaks, because the
+                transients are released when the container is disposed.
+            </summary>
+        </member>
+        <member name="M:Butler.Resolver.IServiceResolver.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
             </summary>
@@ -1358,6 +1522,10 @@
             <param name="context">
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.IServiceResolver.DefaultResolveMode"/> is used.
             </param>
             <param name="constructionMode">
                 the service construction mode; which defines the behavior for resolving constructors
@@ -1373,7 +1541,7 @@
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
         </member>
-        <member name="M:Butler.Resolver.IServiceResolver.Resolve``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.Resolver.IServiceResolver.Resolve``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <typeparamref name="TService"/>.
             </summary>
@@ -1384,6 +1552,10 @@
             <param name="context">
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.IServiceResolver.DefaultResolveMode"/> is used.
             </param>
             <param name="constructionMode">
                 the service construction mode; which defines the behavior for resolving constructors
@@ -1397,7 +1569,7 @@
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
         </member>
-        <member name="M:Butler.Resolver.IServiceResolver.ResolveLazy``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.Resolver.IServiceResolver.ResolveLazy``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
             </summary>
@@ -1408,6 +1580,10 @@
             <param name="scopeKey">
                 the scope key for resolving the service; if <see langword="null"/> the global scope
                 is used.
+            </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.IServiceResolver.DefaultResolveMode"/> is used.
             </param>
             <param name="constructionMode">
                 the service construction mode; which defines the behavior for resolving constructors
@@ -1561,6 +1737,28 @@
                 Please note that this property is only available when the Debug configuration is used.
             </remarks>
         </member>
+        <member name="T:Butler.Resolver.ServiceResolveMode">
+            <summary>
+                A set of different service resolution modes.
+            </summary>
+        </member>
+        <member name="F:Butler.Resolver.ServiceResolveMode.Default">
+            <summary>
+                Denotes that the default behavior of the <see cref="T:Butler.Resolver.IServiceResolver"/> should be used.
+            </summary>
+        </member>
+        <member name="F:Butler.Resolver.ServiceResolveMode.ThrowException">
+            <summary>
+                Denotes that the resolver should throw a <see cref="T:Butler.Util.ResolverException"/> if the
+                service could not be resolved.
+            </summary>
+        </member>
+        <member name="F:Butler.Resolver.ServiceResolveMode.ReturnDefault">
+            <summary>
+                Denotes that the resolver should return the default value for the service type if the
+                service could not be resolved.
+            </summary>
+        </member>
         <member name="T:Butler.RootContainer">
             <summary>
                 An inversion of control (IoC) container that supports resolving services.
@@ -1581,6 +1779,11 @@
                 Initializes a new instance of the <see cref="T:Butler.RootContainer"/> class.
             </summary>
         </member>
+        <member name="M:Butler.RootContainer.Dispose">
+            <summary>
+                Disposes the root container.
+            </summary>
+        </member>
         <member name="M:Butler.RootContainer.GetEnumerator">
             <summary>
                 Gets the service registration enumerator.
@@ -1593,7 +1796,7 @@
             </summary>
             <returns>the service registration enumerator</returns>
         </member>
-        <member name="M:Butler.RootContainer.ResolveService(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
+        <member name="M:Butler.RootContainer.ResolveService(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
             </summary>
@@ -1605,6 +1808,10 @@
             <param name="parentContext">
                 the parent resolve context; if <see langword="null"/> a new
                 <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.IServiceResolver.DefaultResolveMode"/> is used.
             </param>
             <param name="constructionMode">
                 the service construction mode; which defines the behavior for resolving constructors
@@ -1619,12 +1826,6 @@
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
-        </member>
-        <member name="M:Butler.RootContainer.DisposeAsync">
-            <summary>
-                Disposes the root container asynchronously.
-            </summary>
-            <returns>a task that represents the asynchronous operation.</returns>
         </member>
         <member name="T:Butler.Util.Debug.RegistrationProxy">
             <summary>
