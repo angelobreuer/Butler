@@ -5,17 +5,25 @@
     using System.Collections.Generic;
     using Butler.Registration;
     using Butler.Resolver;
-
-#if DEBUG
-    using System.Diagnostics;
     using Butler.Util;
     using Butler.Util.Proxy;
     using Butler.Lifetime;
+
+#if DEBUG
+    using System.Diagnostics;
 #endif // DEBUG
+
+#if !SUPPORTS_CONCURRENT_COLLECTIONS && SUPPORTS_ASYNC_DISPOSABLE
+    using System.Threading;
+#endif // !SUPPORTS_CONCURRENT_COLLECTIONS && SUPPORTS_ASYNC_DISPOSABLE
 
 #if SUPPORTS_ASYNC_DISPOSABLE
     using System.Threading.Tasks;
 #endif // SUPPORTS_ASYNC_DISPOSABLE
+
+#if SUPPORTS_CONCURRENT_COLLECTIONS
+    using System.Collections.Concurrent;
+#endif // SUPPORTS_CONCURRENT_COLLECTIONS
 
     /// <summary>
     ///     An inversion of control (IoC) container that supports resolving services.
@@ -32,7 +40,22 @@
 #if DEBUG
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif // DEBUG
-        private readonly IDictionary<IServiceLifetime, ILifetimeManager> _lifetimes; // TODO make thread-safe
+
+#if SUPPORTS_CONCURRENT_COLLECTIONS
+        private readonly ConcurrentDictionary<IServiceLifetime, ILifetimeManager> _lifetimes;
+#else // SUPPORTS_CONCURRENT_COLLECTIONS
+        private readonly IDictionary<IServiceLifetime, ILifetimeManager> _lifetimes;
+
+        /// <summary>
+        ///     The lock used for the lifetime manager dictionary ( <see cref="_lifetimes"/>).
+        /// </summary>
+#if SUPPORTS_ASYNC_DISPOSABLE
+        private readonly SemaphoreSlim _lifetimeLock;
+#else // SUPPORTS_ASYNC_DISPOSABLE
+        private readonly object _lifetimeLock;
+#endif // !SUPPORTS_ASYNC_DISPOSABLE
+
+#endif // !SUPPORTS_CONCURRENT_COLLECTIONS
 
         /// <summary>
         ///     A value indicating whether the root container has been disposed.
@@ -47,7 +70,16 @@
         /// </summary>
         public RootContainer()
         {
+#if SUPPORTS_CONCURRENT_COLLECTIONS
+            _lifetimes = new ConcurrentDictionary<IServiceLifetime, ILifetimeManager>();
+#else // SUPPORTS_CONCURRENT_DICTIONARY
             _lifetimes = new Dictionary<IServiceLifetime, ILifetimeManager>();
+#if SUPPORTS_ASYNC_DISPOSABLE
+            _lifetimeLock = new SemaphoreSlim(1, 1);
+#else // SUPPORTS_ASYNC_DISPOSABLE
+            _lifetimeLock = new object();
+#endif // !SUPPORTS_ASYNC_DISPOSABLE
+#endif // !SUPPORTS_CONCURRENT_COLLECTIONS
         }
 
 #if !SUPPORTS_ASYNC_DISPOSABLE
@@ -66,12 +98,20 @@
             // set disposed flag
             _disposed = true;
 
+#if !SUPPORTS_CONCURRENT_COLLECTIONS
+            // acquire lock
+            lock (_lifetimeLock)
+            {
+#endif // !SUPPORTS_CONCURRENT_COLLECTIONS
             // iterate through all used lifetimes and dispose them
             foreach (var lifetime in _lifetimes.Values)
             {
                 // dispose lifetime
                 lifetime.Dispose();
             }
+#if !SUPPORTS_CONCURRENT_COLLECTIONS
+            }
+#endif // !SUPPORTS_CONCURRENT_COLLECTIONS
         }
 
 #endif // !SUPPORTS_ASYNC_DISPOSABLE
@@ -172,15 +212,53 @@
                 return default;
             }
 
-            // try getting the lifetime manager
-            if (!_lifetimes.TryGetValue(registration.ServiceLifetime, out var lifetimeManager))
-            {
-                // create lifetime manager for this resolver
-                lifetimeManager = registration.ServiceLifetime.CreateManager(this);
+#if SUPPORTS_CONCURRENT_COLLECTIONS
 
-                // add the lifetime manager
-                _lifetimes.Add(registration.ServiceLifetime, lifetimeManager);
+            // get the corresponding lifetime manager
+            var lifetimeManager = _lifetimes.GetOrAdd(
+                registration.ServiceLifetime,
+                lifetime => lifetime.CreateManager(this));
+
+#else // SUPPORTS_CONCURRENT_COLLECTIONS
+
+            // store the lifetime manager result
+            var lifetimeManager = default(ILifetimeManager);
+
+#if SUPPORTS_ASYNC_DISPOSABLE
+
+            // acquire lock
+            _lifetimeLock.Wait();
+
+            // make sure the lock is released even if an exception is thrown
+            try
+            {
+#else // SUPPORTS_ASYNC_DISPOSABLE
+            lock (_lifetimeLock)
+            {
+#endif // !SUPPORTS_ASYNC_DISPOSABLE
+
+                // try getting the lifetime manager
+                if (!_lifetimes.TryGetValue(registration.ServiceLifetime, out lifetimeManager))
+                {
+                    // create lifetime manager for this resolver
+                    lifetimeManager = registration.ServiceLifetime.CreateManager(this);
+
+                    // add the lifetime manager
+                    _lifetimes.Add(registration.ServiceLifetime, lifetimeManager);
+                }
+
+#if SUPPORTS_ASYNC_DISPOSABLE
             }
+            finally
+            {
+                // release lock
+                _lifetimeLock.Release();
+            }
+#else // SUPPORTS_ASYNC_DISPOSABLE
+            }
+#endif // !SUPPORTS_ASYNC_DISPOSABLE
+
+#endif // !SUPPORTS_CONCURRENT_COLLECTIONS
 
             // try resolving from the lifetime
             var lifetimeObject = lifetimeManager.Resolve(context, scopeKey);
@@ -217,12 +295,33 @@
             // set disposed flag
             _disposed = true;
 
+#if !SUPPORTS_CONCURRENT_COLLECTIONS
+
+            // acquire lock
+            await _lifetimeLock.WaitAsync();
+
+            // make sure the lock is released even if an exception is thrown
+            try
+            {
+#endif // !SUPPORTS_CONCURRENT_COLLECTIONS
+
             // iterate through all used lifetimes and dispose them
             foreach (var lifetime in _lifetimes.Values)
             {
                 // dispose lifetime
                 await lifetime.DisposeAsync();
             }
+
+#if !SUPPORTS_CONCURRENT_COLLECTIONS
+            }
+            finally
+            {
+                // release lock
+                _lifetimeLock.Release();
+            }
+
+            _lifetimeLock.Release();
+#endif // !SUPPORTS_CONCURRENT_COLLECTIONS
         }
 #endif // SUPPORTS_ASYNC_DISPOSABLE
     }
