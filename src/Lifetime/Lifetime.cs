@@ -17,10 +17,17 @@
 
         /// <summary>
         ///     Gets a singleton instance of the scoped <see cref="IServiceLifetime"/>. This
-        ///     <see cref="IServiceLifetime"/> creates for each scope key a new instance..
+        ///     <see cref="IServiceLifetime"/> creates for each scope key a new instance.
         /// </summary>
         public static IServiceLifetime Scoped { get; }
             = new Lifetime("Scoped", resolver => new ScopedLifetimeManager());
+
+        /// <summary>
+        ///     Gets a singleton instance of the singleton <see cref="IServiceLifetime"/>. This
+        ///     <see cref="IServiceLifetime"/> creates a service only once.
+        /// </summary>
+        public static IServiceLifetime Singleton { get; }
+            = new Lifetime("Singleton", resolver => new SingletonLifetimeManager());
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Lifetime"/> class.
