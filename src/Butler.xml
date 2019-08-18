@@ -14,23 +14,27 @@
                 Interface for lifetime managers.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.ILifetimeManager.Resolve(System.Type,System.Object)">
+        <member name="M:Butler.Lifetime.ILifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
             <summary>
                 Tries to resolve an object from the manager.
             </summary>
-            <param name="serviceType">the type of the service being resolved</param>
-            <param name="scope">
-                the service scope; if <see langword="null"/> then the scope is global
+            <param name="resolveContext">the current resolver context</param>
+            <param name="scopeKey">
+                the <paramref name="scopeKey"/> the instance was created for; if
+                <see langword="null"/> then the scope is global.
             </param>
             <returns>the resolved service; or default if the service could not be resolved</returns>
         </member>
-        <member name="M:Butler.Lifetime.ILifetimeManager.TrackInstance(System.Type,System.Object,System.Object)">
+        <member name="M:Butler.Lifetime.ILifetimeManager.TrackInstance(Butler.Resolver.ServiceResolveContext,System.Object,System.Object)">
             <summary>
                 Tracks the specified <paramref name="instance"/> for disposation.
             </summary>
-            <param name="serviceType">the type of the service</param>
-            <param name="scope">the <paramref name="scope"/> the instance was created for</param>
+            <param name="resolveContext">the resolver context from which the service was resolved</param>
             <param name="instance">the instance to track</param>
+            <param name="scopeKey">
+                the <paramref name="scopeKey"/> the instance was created for; if
+                <see langword="null"/> then the scope is global.
+            </param>
         </member>
         <member name="T:Butler.Lifetime.IServiceLifetime">
             <summary>
@@ -147,23 +151,27 @@
                 Disposes all tracked objects asynchronously.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.ScopedLifetimeManager.Resolve(System.Type,System.Object)">
+        <member name="M:Butler.Lifetime.ScopedLifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
             <summary>
                 Tries to resolve an object from the manager.
             </summary>
-            <param name="serviceType">the type of the service being resolved</param>
-            <param name="scope">
-                the service scope; if <see langword="null"/> then the scope is global
+            <param name="resolveContext">the current resolver context</param>
+            <param name="scopeKey">
+                the <paramref name="scopeKey"/> the instance was created for; if
+                <see langword="null"/> then the scope is global.
             </param>
             <returns>the resolved service; or default if the service could not be resolved</returns>
         </member>
-        <member name="M:Butler.Lifetime.ScopedLifetimeManager.TrackInstance(System.Type,System.Object,System.Object)">
+        <member name="M:Butler.Lifetime.ScopedLifetimeManager.TrackInstance(Butler.Resolver.ServiceResolveContext,System.Object,System.Object)">
             <summary>
                 Tracks the specified <paramref name="instance"/> for disposation.
             </summary>
-            <param name="serviceType">the type of the service</param>
-            <param name="scope">the <paramref name="scope"/> the instance was created for</param>
+            <param name="resolveContext">the resolver context from which the service was resolved</param>
             <param name="instance">the instance to track</param>
+            <param name="scopeKey">
+                the <paramref name="scopeKey"/> the instance was created for; if
+                <see langword="null"/> then the scope is global.
+            </param>
         </member>
         <member name="T:Butler.Lifetime.TransientLifetimeManager">
             <summary>
@@ -196,23 +204,27 @@
                 Disposes all tracked objects asynchronously.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.TransientLifetimeManager.Resolve(System.Type,System.Object)">
+        <member name="M:Butler.Lifetime.TransientLifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
             <summary>
                 Tries to resolve an object from the manager.
             </summary>
-            <param name="serviceType">the type of the service being resolved</param>
-            <param name="scope">
-                the service scope; if <see langword="null"/> then the scope is global
+            <param name="resolveContext">the current resolver context</param>
+            <param name="scopeKey">
+                the <paramref name="scopeKey"/> the instance was created for; if
+                <see langword="null"/> then the scope is global.
             </param>
             <returns>the resolved service; or default if the service could not be resolved</returns>
         </member>
-        <member name="M:Butler.Lifetime.TransientLifetimeManager.TrackInstance(System.Type,System.Object,System.Object)">
+        <member name="M:Butler.Lifetime.TransientLifetimeManager.TrackInstance(Butler.Resolver.ServiceResolveContext,System.Object,System.Object)">
             <summary>
                 Tracks the specified <paramref name="instance"/> for disposation.
             </summary>
-            <param name="serviceType">the type of the service</param>
-            <param name="scope">the <paramref name="scope"/> the instance was created for</param>
+            <param name="resolveContext">the resolver context from which the service was resolved</param>
             <param name="instance">the instance to track</param>
+            <param name="scopeKey">
+                the <paramref name="scopeKey"/> the instance was created for; if
+                <see langword="null"/> then the scope is global.
+            </param>
         </member>
         <member name="T:Butler.Register.IServiceRegister">
             <summary>
@@ -1099,6 +1111,13 @@
             </exception>
             <exception cref="T:System.ArgumentException">thrown if the specified value is <see cref="F:Butler.Resolver.ServiceConstructionMode.Default"/></exception>
         </member>
+        <member name="P:Butler.Resolver.BaseServiceResolver.TrackDisposableTransients">
+            <summary>
+                Gets or sets a value indicating whether disposable transients should be tracked by
+                the container. Note that enabling this property can cause memory leaks, because the
+                transients are released when the container is disposed.
+            </summary>
+        </member>
         <member name="M:Butler.Resolver.BaseServiceResolver.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
@@ -1186,6 +1205,13 @@
             <exception cref="T:System.ArgumentOutOfRangeException">
                 thrown if the specified value is zero or negative.
             </exception>
+        </member>
+        <member name="P:Butler.Resolver.IServiceResolver.TrackDisposableTransients">
+            <summary>
+                Gets or sets a value indicating whether disposable transients should be tracked by
+                the container. Note that enabling this property can cause memory leaks, because the
+                transients are released when the container is disposed.
+            </summary>
         </member>
         <member name="P:Butler.Resolver.IServiceResolver.ServiceConstructionMode">
             <summary>
