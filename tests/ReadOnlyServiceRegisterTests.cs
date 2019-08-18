@@ -1,10 +1,11 @@
 ﻿namespace Butler.Tests
 {
+    using System;
+    using System.Collections.Generic;
     using Butler.Register;
     using Butler.Registration;
     using Butler.Tests.Dummy;
-    using System;
-    using System.Collections.Generic;
+    using Butler.Lifetime;
     using Xunit;
 
     /// <summary>
@@ -16,7 +17,7 @@
         ///     Initializes a new instance of the <see cref="ReadOnlyServiceRegisterTests"/> class.
         /// </summary>
         public ReadOnlyServiceRegisterTests()
-            => ServiceRegister = new ReadOnlyServiceRegister(new Dictionary<Type, IServiceRegistration>());
+            => ServiceRegister = new ReadOnlyServiceRegister(Lifetime.Singleton, new Dictionary<Type, IServiceRegistration>());
 
         /// <summary>
         ///     Gets the service register being tested.
