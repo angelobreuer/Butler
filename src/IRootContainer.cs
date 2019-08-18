@@ -21,5 +21,24 @@
         IDisposable
 #endif // SUPPORTS_ASYNC_DISPOSABLE
     {
+        /// <summary>
+        ///     Gets or sets the container service resolution mode.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     thrown if the specified value is not defined in the
+        ///     <see cref="ContainerResolveMode"/> enumeration.
+        /// </exception>
+        ContainerResolveMode ContainerResolveMode { get; set; }
+
+        /// <summary>
+        ///     Gets the parent container (if <see langword="null"/> then the container has no parent).
+        /// </summary>
+        IRootContainer Parent { get; }
+
+        /// <summary>
+        ///     Creates a new child container of the current <see cref="IRootContainer"/>.
+        /// </summary>
+        /// <returns>the child container</returns>
+        IRootContainer CreateChild();
     }
 }

@@ -35,6 +35,11 @@
     public class RootContainer : BaseServiceResolver, IRootContainer, IServiceResolver
     {
         /// <summary>
+        ///     The parent container (if <see langword="null"/>, then this container has no parent).
+        /// </summary>
+        private readonly RootContainer _parent;
+
+        /// <summary>
         ///     A dictionary containing service lifetimes storing an <see cref="ILifetimeManager"/> class.
         /// </summary>
 #if DEBUG
@@ -64,6 +69,24 @@
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif // DEBUG
         private volatile bool _disposed;
+
+        /// <summary>
+        ///     The actual <see cref="ContainerResolveMode"/> for the container.
+        /// </summary>
+#if DEBUG
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#endif // DEBUG
+        private ContainerResolveMode _containerResolveMode = DefaultContainerResolveMode;
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="RootContainer"/> class.
+        /// </summary>
+        /// <param name="parent">the parent container</param>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="parent"/> is <see langword="null"/>.
+        /// </exception>
+        public RootContainer(RootContainer parent) : this()
+            => _parent = parent ?? throw new ArgumentNullException(nameof(parent));
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="RootContainer"/> class.
@@ -117,6 +140,41 @@
 #endif // !SUPPORTS_ASYNC_DISPOSABLE
 
         /// <summary>
+        ///     Gets the parent container (if <see langword="null"/> then the container has no parent).
+        /// </summary>
+        public IRootContainer Parent => _parent;
+
+        /// <summary>
+        ///     The default value for the <see cref="ContainerResolveMode"/> property.
+        /// </summary>
+        public const ContainerResolveMode DefaultContainerResolveMode
+            = ContainerResolveMode.ChildFirst;
+
+        /// <summary>
+        ///     Gets or sets the container service resolution mode.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     thrown if the specified value is not defined in the
+        ///     <see cref="ContainerResolveMode"/> enumeration.
+        /// </exception>
+        public ContainerResolveMode ContainerResolveMode
+        {
+            get => _containerResolveMode;
+
+            set
+            {
+                // ensure the mode is defined
+                if (!Enum.IsDefined(typeof(ContainerResolveMode), value))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), value,
+                        "The specified value is not defined in the ContainerResolveMode enumeration.");
+                }
+
+                _containerResolveMode = value;
+            }
+        }
+
+        /// <summary>
         ///     Gets the service registration enumerator.
         /// </summary>
         /// <returns>the service registration enumerator</returns>
@@ -128,6 +186,70 @@
         /// </summary>
         /// <returns>the service registration enumerator</returns>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /// <summary>
+        ///     Resolves a service of the specified <paramref name="serviceType"/>.
+        /// </summary>
+        /// <param name="serviceType">the type of the service to resolve</param>
+        /// <param name="scopeKey">
+        ///     the scope key for resolving the service; if <see langword="null"/> the global scope
+        ///     is used.
+        /// </param>
+        /// <param name="context">
+        ///     the parent resolve context; if <see langword="null"/> a new
+        ///     <see cref="ServiceResolveContext"/> is created.
+        /// </param>
+        /// <param name="resolveMode">
+        ///     the service resolution mode; if <see cref="ServiceResolveMode.Default"/> then the
+        ///     <see cref="IServiceResolver.DefaultResolveMode"/> is used.
+        /// </param>
+        /// <param name="constructionMode">
+        ///     the service construction mode; which defines the behavior for resolving constructors
+        ///     for a service implementation type.
+        /// </param>
+        /// <returns>the resolved service</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
+        /// <exception cref="ObjectDisposedException">thrown if the container is disposed.</exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the maximum service resolve depth was exceeded.
+        /// </exception>
+        protected override object ResolveService(Type serviceType, object scopeKey = null, ServiceResolveContext context = null,
+            ServiceResolveMode resolveMode = ServiceResolveMode.Default,
+            ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
+        {
+            // check if the container is parent-less
+            if (_parent is null)
+            {
+                // resolve the service using the default behavior
+                return ResolveServiceInternal(serviceType, scopeKey, context, resolveMode, constructionMode);
+            }
+
+            // resolve using the first choice
+            var firstChoice = ContainerResolveMode == ContainerResolveMode.ChildFirst ?
+                ResolveServiceInternal(serviceType, scopeKey, context, ServiceResolveMode.ReturnDefault, constructionMode) :
+                _parent.ResolveServiceInternal(serviceType, scopeKey, context, ServiceResolveMode.ReturnDefault, constructionMode);
+
+            // check if the first choice could resolve the service
+            if (firstChoice != default)
+            {
+                return firstChoice;
+            }
+
+            // fallback to next container
+            return ContainerResolveMode == ContainerResolveMode.ParentFirst ?
+                ResolveServiceInternal(serviceType, scopeKey, context, resolveMode, constructionMode) :
+                _parent.ResolveServiceInternal(serviceType, scopeKey, context, resolveMode, constructionMode);
+        }
+
+        /// <summary>
+        ///     Creates a new child container of the current <see cref="IRootContainer"/>.
+        /// </summary>
+        /// <returns>the child container</returns>
+        public IRootContainer CreateChild()
+            => new RootContainer(this);
 
         /// <summary>
         ///     Resolves a service of the specified <paramref name="serviceType"/>.
@@ -158,7 +280,7 @@
         /// <exception cref="InvalidOperationException">
         ///     thrown if the maximum service resolve depth was exceeded.
         /// </exception>
-        protected override object ResolveService(Type serviceType, object scopeKey = null,
+        private object ResolveServiceInternal(Type serviceType, object scopeKey = null,
             ServiceResolveContext parentContext = null,
             ServiceResolveMode resolveMode = ServiceResolveMode.Default,
             ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
