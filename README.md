@@ -84,22 +84,24 @@ You can register as many services as you want, there are several methods to regi
 #### Service Lifetimes
 
 The container keeps care of dependency resolution and disposation of the service and dependencies. You can control the service lifetime using 
-service lifetimes. Butler comes with three service-lifetimes out of the box: `Singleton`, `Transient` and `Scoped`. By default Butler uses the
+service lifetimes. Butler comes with three service-lifetimes out of the box: [`Singleton`](https://github.com/angelobreuer/Butler/blob/master/src/Lifetime/Lifetime.cs#L29), [`Transient`](https://github.com/angelobreuer/Butler/blob/master/src/Lifetime/Lifetime.cs#L15) and [`Scoped`](https://github.com/angelobreuer/Butler/blob/master/src/Lifetime/Lifetime.cs#L22). By default Butler uses the
 Transient lifetime which recreates the service each request / resolve.
 
 ##### Singleton
 
-The singleton service lifetime (`Lifetime.Singleton`) creates the service once, the instance is shared for all creations.
+The singleton service lifetime ([`Lifetime.Singleton`](https://github.com/angelobreuer/Butler/blob/master/src/Lifetime/Lifetime.cs#L29)) 
+creates the service once, the instance is shared for all creations.
 
 ##### Scoped
 
-The scoped service lifetime (`Lifetime.Scoped`) creates the service for each new scope. You can set the scope key in the
+The scoped service lifetime ([`Lifetime.Scoped`](https://github.com/angelobreuer/Butler/blob/master/src/Lifetime/Lifetime.cs#L22)) creates the service for each new scope. You can set the scope key in the
 resolve method when resolving the service. All resolves will retrieve the same service instance with the same scope key.
 
 ##### Transient
 
-The transient service lifetime (`Lifetime.Transient`) creates a new service each resolve. This should be used for state-less
-small services. (*Note: By default Butler does not track / dispose transient services, this can be enabled using the `TrackDisposableTransients` property*)
+The transient service lifetime ([`Lifetime.Transient`]((https://github.com/angelobreuer/Butler/blob/master/src/Lifetime/Lifetime.cs#L15))) creates a new service each 
+resolve. This should be used for state-less small services. (*Note: By default Butler does not track / dispose 
+transient services, this can be enabled using the `TrackDisposableTransients` property*)
 
 ##### Custom
 
