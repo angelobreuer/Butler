@@ -52,7 +52,7 @@
 
 #endif // !SUPPORTS_READONLY_COLLECTIONS
         {
-            DefaultServiceLifetime = defaultServiceLifetime ?? throw new ArgumentNullException(nameof(defaultServiceLifetime));
+            _defaultServiceLifetime = defaultServiceLifetime ?? throw new ArgumentNullException(nameof(defaultServiceLifetime));
             _registrations = registrations ?? throw new ArgumentNullException(nameof(registrations));
         }
 
