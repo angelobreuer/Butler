@@ -28,6 +28,15 @@
       </PropertyGroup>
     </When>
 
+    <When Condition=" '$(TargetFramework)' == 'net35' ">
+      <!-- .NET Framework 2.0 -->
+
+      <!-- Defines -->
+      <PropertyGroup>
+        <DefineConstants>SUPPORTS_SERIALIZABLE;SUPPORTS_REFLECTION</DefineConstants>
+      </PropertyGroup>
+    </When>
+
     <When Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
       <!-- .NET Standard 1.0 -->
 

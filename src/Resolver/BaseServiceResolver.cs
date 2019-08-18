@@ -265,7 +265,11 @@
         ///     The method information of the
         ///     <see cref="ResolveLazy{TService}(object, ServiceResolveContext, ServiceConstructionMode)"/> method.
         /// </summary>
+#if NET35
+        private static readonly MethodInfo _resolveLazyMethod = typeof(IServiceResolver).GetMethod("ResolveLazy",
+#else // NET35
         private static readonly MethodInfo _resolveLazyMethod = typeof(IServiceResolver).GetRuntimeMethod("ResolveLazy",
+#endif // !NET35
             new[] { typeof(object), typeof(ServiceResolveContext), typeof(ServiceConstructionMode) });
 
 #endif // !NO_REFLECTION

@@ -142,7 +142,11 @@ namespace Butler.Util
                 foreach (var constructor in availableConstructors)
                 {
                     // check if the constructor is preferred
+#if NET35
+                    if (constructor.GetCustomAttributes(true).OfType<PreferConstructorAttribute>().Any())
+#else // NET35
                     if (constructor.GetCustomAttribute<PreferConstructorAttribute>() != null)
+#endif // !NET35
                     {
                         // constructor has the attribute
                         return constructor;
@@ -156,8 +160,13 @@ namespace Butler.Util
             {
                 // iterate through all available constructors and find the complexest
                 var constructor = availableConstructors
+#if SUPPORTS_READONLY_COLLECTIONS
                     .Select(s => new KeyValuePair<ConstructorInfo, IReadOnlyList<ParameterInfo>>(s, s.GetParameters()))
                     .OrderByDescending(s => s.Value.Count) // order by parameter count (descending)
+#else // SUPPORTS_READONLY_COLLECTIONS
+                    .Select(s => new KeyValuePair<ConstructorInfo, ParameterInfo[]>(s, s.GetParameters()))
+                    .OrderByDescending(s => s.Value.Length) // order by parameter count (descending)
+#endif // !SUPPORTS_READONLY_COLLECTIONS
                     .FirstOrDefault(s => CanUseConstructor(context.Register, s.Value));
 
                 // check if no constructor was found
