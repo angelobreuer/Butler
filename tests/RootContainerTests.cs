@@ -1,8 +1,11 @@
 ﻿namespace Butler.Tests
 {
     using System;
+    using Butler.Tests.Dummy;
     using Butler.Util;
+    using Butler.Lifetime;
     using Xunit;
+    using Butler.Resolver;
 
     /// <summary>
     ///     Contains tests for the <see cref="RootContainer"/> class.
@@ -29,5 +32,30 @@
         /// </summary>
         [Fact]
         public void TestNullResolve() => Assert.Throws<ArgumentNullException>(() => Container.Resolve(null));
+
+        [Fact]
+        public void TestResolveUnregisteredWithExceptionMode()
+            => Assert.Throws<ResolverException>(
+                () => Container.Resolve<IDummyService>(
+                    resolveMode: ServiceResolveMode.ThrowException));
+
+        [Fact]
+        public void TestresolveUnregisteredWithReturnDefaultMode()
+            => Assert.Null(Container.Resolve<IDummyService>(
+                resolveMode: ServiceResolveMode.ReturnDefault));
+
+        /// <summary>
+        ///     Tests the basic resolution of a service.
+        /// </summary>
+        [Fact]
+        public void TestBasicResolve()
+        {
+            Container.Register<IDummyService, DummyService>(Lifetime.Singleton);
+
+            var service = Container.Resolve(typeof(IDummyService));
+
+            Assert.NotNull(service);
+            Assert.IsType<DummyService>(service);
+        }
     }
 }
