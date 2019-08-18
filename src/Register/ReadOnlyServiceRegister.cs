@@ -153,7 +153,7 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public IServiceRegistration RegisterDirect<TService, TImplementation>(
+        public DirectRegistration<TImplementation> RegisterDirect<TService, TImplementation>(
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             where TImplementation : TService, new() => throw ThrowReadOnlyException();
 
@@ -174,7 +174,7 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public IServiceRegistration RegisterFactory<TService>(ServiceFactory<TService> factory,
+        public FactoryRegistration<TService> RegisterFactory<TService>(ServiceFactory<TService> factory,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             => throw ThrowReadOnlyException();
 
@@ -196,7 +196,7 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public IServiceRegistration RegisterFactory<TService, TImplementation>(ServiceFactory<TImplementation> factory,
+        public FactoryRegistration<TImplementation> RegisterFactory<TService, TImplementation>(ServiceFactory<TImplementation> factory,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             => throw ThrowReadOnlyException();
 
@@ -221,7 +221,7 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public IServiceRegistration RegisterFactory<TImplementation>(Type serviceType,
+        public FactoryRegistration<TImplementation> RegisterFactory<TImplementation>(Type serviceType,
             ServiceFactory<TImplementation> factory,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             => throw ThrowReadOnlyException();
@@ -240,7 +240,7 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public IServiceRegistration RegisterInstance<TService>(TService instance,
+        public InstanceRegistration RegisterInstance<TService>(TService instance,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             where TService : class => throw ThrowReadOnlyException();
 
@@ -259,7 +259,7 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        public IServiceRegistration RegisterInstance<TService, TImplementation>(TImplementation instance,
+        public InstanceRegistration RegisterInstance<TService, TImplementation>(TImplementation instance,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             where TImplementation : class, TService => throw ThrowReadOnlyException();
 

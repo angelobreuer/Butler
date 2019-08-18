@@ -118,7 +118,8 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        IServiceRegistration RegisterDirect<TService, TImplementation>(ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TImplementation : TService, new();
+        DirectRegistration<TImplementation> RegisterDirect<TService, TImplementation>(
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TImplementation : TService, new();
 
         /// <summary>
         ///     Registers a service factory.
@@ -137,7 +138,8 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        IServiceRegistration RegisterFactory<TService>(ServiceFactory<TService> factory, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
+        FactoryRegistration<TService> RegisterFactory<TService>(ServiceFactory<TService> factory,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
 
         /// <summary>
         ///     Registers a service factory.
@@ -157,7 +159,9 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        IServiceRegistration RegisterFactory<TService, TImplementation>(ServiceFactory<TImplementation> factory, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
+        FactoryRegistration<TImplementation> RegisterFactory<TService, TImplementation>(
+            ServiceFactory<TImplementation> factory,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
 
         /// <summary>
         ///     Registers a service factory.
@@ -180,7 +184,9 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        IServiceRegistration RegisterFactory<TImplementation>(Type serviceType, ServiceFactory<TImplementation> factory, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
+        FactoryRegistration<TImplementation> RegisterFactory<TImplementation>(
+            Type serviceType, ServiceFactory<TImplementation> factory,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
@@ -196,7 +202,8 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        IServiceRegistration RegisterInstance<TService>(TService instance, ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TService : class;
+        InstanceRegistration RegisterInstance<TService>(TService instance,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default) where TService : class;
 
         /// <summary>
         ///     Registers the specified <paramref name="instance"/> as a singleton.
@@ -213,7 +220,7 @@
         ///     exists and the specified <paramref name="registrationMode"/> is not
         ///     <see cref="ServiceRegistrationMode.Replace"/> or <see cref="ServiceRegistrationMode.Ignore"/>.
         /// </exception>
-        IServiceRegistration RegisterInstance<TService, TImplementation>(TImplementation instance,
+        InstanceRegistration RegisterInstance<TService, TImplementation>(TImplementation instance,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             where TImplementation : class, TService;
     }

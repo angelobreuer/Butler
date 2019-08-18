@@ -1,5 +1,6 @@
 ﻿namespace Butler.Registration
 {
+    using System;
     using Butler.Lifetime;
     using Butler.Resolver;
 
@@ -8,18 +9,13 @@
     /// </summary>
     /// <typeparam name="TImplementation">the service implementation</typeparam>
     public class DirectRegistration<TImplementation>
-        : IServiceRegistration where TImplementation : new()
+        : BaseRegistration where TImplementation : new()
     {
-        /// <summary>
-        ///     Gets the lifetime of the service.
-        /// </summary>
-        public IServiceLifetime ServiceLifetime { get; } = Lifetime.Transient;
-
         /// <summary>
         ///     Creates the instance.
         /// </summary>
         /// <param name="context">the current resolver context</param>
         /// <returns>the instance</returns>
-        public object Create(ServiceResolveContext context) => new TImplementation();
+        protected override object CreateService(ServiceResolveContext context) => new TImplementation();
     }
 }
