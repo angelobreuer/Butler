@@ -44,6 +44,9 @@
             // register the dummy test service as transient
             container.Register<DummyDisposeTracker, DummyDisposeTracker>().AsTransient();
 
+            // track disposable transients
+            container.TrackDisposableTransients = true;
+
             // resolve tests services
             var service = container.Resolve<DummyDisposeTracker>();
 
