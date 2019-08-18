@@ -9,7 +9,7 @@
 #if DEBUG
     using System.Diagnostics;
     using Butler.Util;
-    using Butler.Util.Debug;
+    using Butler.Util.Proxy;
     using Butler.Lifetime;
 #endif // DEBUG
 
