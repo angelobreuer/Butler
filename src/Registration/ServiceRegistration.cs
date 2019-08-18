@@ -23,6 +23,29 @@
             => ServiceLifetime = serviceLifetime ?? throw new ArgumentNullException(nameof(serviceLifetime));
 
         /// <summary>
+        ///     Gets the lifetime of the service.
+        /// </summary>
+        public IServiceLifetime ServiceLifetime { get; set; }
+
+        /// <summary>
+        ///     Registers the service with the <see cref="Scoped"/> lifetime.
+        /// </summary>
+        /// <returns>the <see cref="ServiceRegistration{TImplementation}"/> instance</returns>
+        public ServiceRegistration<TImplementation> AsScoped() => WithLifetime(Scoped);
+
+        /// <summary>
+        ///     Registers the service with the <see cref="Singleton"/> lifetime.
+        /// </summary>
+        /// <returns>the <see cref="ServiceRegistration{TImplementation}"/> instance</returns>
+        public ServiceRegistration<TImplementation> AsSingleton() => WithLifetime(Singleton);
+
+        /// <summary>
+        ///     Registers the service with the <see cref="Transient"/> lifetime.
+        /// </summary>
+        /// <returns>the <see cref="ServiceRegistration{TImplementation}"/> instance</returns>
+        public ServiceRegistration<TImplementation> AsTransient() => WithLifetime(Transient);
+
+        /// <summary>
         ///     Creates the instance.
         /// </summary>
         /// <param name="context">the current resolver context</param>
@@ -30,20 +53,14 @@
         public object Create(ServiceResolveContext context) => Reflector.Resolve<TImplementation>(context);
 
         /// <summary>
-        ///     Gets the lifetime of the service.
+        ///     Registers the service with the specified <paramref name="lifetime"/>.
         /// </summary>
-        public IServiceLifetime ServiceLifetime { get; set; }
-
+        /// <param name="lifetime">the service lifetime</param>
+        /// <returns>the <see cref="ServiceRegistration{TImplementation}"/> instance</returns>
         public ServiceRegistration<TImplementation> WithLifetime(IServiceLifetime lifetime)
         {
             ServiceLifetime = lifetime ?? throw new ArgumentNullException(nameof(lifetime));
             return this;
         }
-
-        public ServiceRegistration<TImplementation> AsTransient() => WithLifetime(Transient);
-
-        public ServiceRegistration<TImplementation> AsScoped() => WithLifetime(Scoped);
-
-        public ServiceRegistration<TImplementation> AsSingleton() => WithLifetime(Singleton);
     }
 }
