@@ -4,8 +4,9 @@
     using Butler.Tests.Dummy;
     using Butler.Util;
     using Butler.Lifetime;
-    using Xunit;
     using Butler.Resolver;
+    using Butler.Register;
+    using Xunit;
 
     /// <summary>
     ///     Contains tests for the <see cref="RootContainer"/> class.
@@ -17,6 +18,22 @@
         /// </summary>
         public RootContainerTests()
             => Container = new RootContainer();
+
+        [Fact]
+        public void TestMultiRegistration()
+        {
+            var firstService = new DummyService();
+            var secondService = new OtherDummyService();
+
+            Container.RegisterInstance<IDummyService>(firstService, registrationMode: ServiceRegistrationMode.Append);
+            Container.RegisterInstance<IDummyService>(secondService, registrationMode: ServiceRegistrationMode.Append);
+
+            var services = Container.ResolveAll<IDummyService>();
+
+            Assert.NotNull(services);
+            Assert.Contains(firstService, services);
+            Assert.Contains(secondService, services);
+        }
 
         [Fact]
         public void TestTryResolveUnregisteredService()
