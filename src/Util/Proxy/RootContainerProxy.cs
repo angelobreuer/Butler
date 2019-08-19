@@ -24,16 +24,42 @@ namespace Butler.Util.Proxy
         /// <exception cref="ArgumentNullException">
         ///     thrown if the specified <paramref name="rootContainer"/> is <see langword="null"/>.
         /// </exception>
-        public RootContainerProxy(IRootContainer rootContainer)
+        public RootContainerProxy(RootContainer rootContainer)
         {
             RootContainer = rootContainer ?? throw new ArgumentNullException(nameof(rootContainer));
-            Settings = new ResolverSettingsProxy(rootContainer);
+            Settings = new SettingsProxy(rootContainer);
         }
 
         /// <summary>
         ///     Gets a proxy holding debugger information of settings for the root container.
         /// </summary>
-        public ResolverSettingsProxy Settings { get; }
+        public SettingsProxy Settings { get; }
+
+#if SUPPORTS_READONLY_COLLECTIONS
+
+        public IReadOnlyList<LifetimeProxy> Lifetimes
+#else // SUPPORTS_READONLY_COLLECTIONS
+        public LifetimeProxy[] Lifetimes
+#endif // !SUPPORTS_READONLY_COLLECTIONS
+        {
+            get
+            {
+#if SUPPORTS_LINQ
+                return RootContainer.GetLifetimes().Select(s => new LifetimeProxy(s.Key, s.Value)).ToArray();
+#else // SUPPORTS_LINQ
+                var lifetimes = RootContainer.GetLifetimes();
+                var proxies = new LifetimeProxy[lifetimes.Count];
+                var index = 0;
+
+                foreach (var lifetime in lifetimes)
+                {
+                    proxies[index++] = new LifetimeProxy(lifetime.Key, lifetime.Value);
+                }
+
+                return proxies;
+#endif // !SUPPORTS_LINQ
+            }
+        }
 
         /// <summary>
         ///     Gets the container registrations.
@@ -80,7 +106,7 @@ namespace Butler.Util.Proxy
         ///     Gets the root container bound to.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public IRootContainer RootContainer { get; }
+        public RootContainer RootContainer { get; }
     }
 }
 
