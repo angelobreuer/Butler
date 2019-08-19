@@ -554,6 +554,24 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
+        <member name="M:Butler.Register.IServiceRegister.RegisterAll``1(System.Collections.Generic.IEnumerable{Butler.Registration.IServiceRegistration},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers multiple services using registrations.
+            </summary>
+            <typeparam name="TService">the type of the service</typeparam>
+            <param name="registrations">the service registrations</param>
+            <param name="registrationMode">the registration mode</param>
+            <returns>the multi-registration containing the registrations</returns>
+        </member>
+        <member name="M:Butler.Register.IServiceRegister.RegisterAll(System.Type,System.Collections.Generic.IEnumerable{Butler.Registration.IServiceRegistration},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers multiple services using registrations.
+            </summary>
+            <param name="serviceType">the type of the service</param>
+            <param name="registrations">the service registrations</param>
+            <param name="registrationMode">the registration mode</param>
+            <returns>the multi-registration containing the registrations</returns>
+        </member>
         <member name="T:Butler.Register.ReadOnlyServiceRegister">
             <summary>
                 A class that provides a read-only service register.
@@ -717,6 +735,24 @@
                 exists and the specified <paramref name="registrationMode"/> is not
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
+        </member>
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterAll``1(System.Collections.Generic.IEnumerable{Butler.Registration.IServiceRegistration},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers multiple services using registrations.
+            </summary>
+            <typeparam name="TService">the type of the service</typeparam>
+            <param name="registrations">the service registrations</param>
+            <param name="registrationMode">the registration mode</param>
+            <returns>the multi-registration containing the registrations</returns>
+        </member>
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterAll(System.Type,System.Collections.Generic.IEnumerable{Butler.Registration.IServiceRegistration},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers multiple services using registrations.
+            </summary>
+            <param name="serviceType">the type of the service</param>
+            <param name="registrations">the service registrations</param>
+            <param name="registrationMode">the registration mode</param>
+            <returns>the multi-registration containing the registrations</returns>
         </member>
         <member name="M:Butler.Register.ReadOnlyServiceRegister.RegisterFactory``2(Butler.Resolver.ServiceFactory{``1},Butler.Lifetime.IServiceLifetime,Butler.Register.ServiceRegistrationMode)">
             <summary>
@@ -1065,6 +1101,23 @@
                 <see cref="F:Butler.Register.ServiceRegistrationMode.Replace"/> or <see cref="F:Butler.Register.ServiceRegistrationMode.Ignore"/>.
             </exception>
         </member>
+        <member name="M:Butler.Register.ServiceRegister.RegisterAll``1(System.Collections.Generic.IEnumerable{Butler.Registration.IServiceRegistration},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers multiple services using registrations.
+            </summary>
+            <param name="registrations">the service registrations</param>
+            <param name="registrationMode">the registration mode</param>
+            <returns>the multi-registration containing the registrations</returns>
+        </member>
+        <member name="M:Butler.Register.ServiceRegister.RegisterAll(System.Type,System.Collections.Generic.IEnumerable{Butler.Registration.IServiceRegistration},Butler.Register.ServiceRegistrationMode)">
+            <summary>
+                Registers multiple services using registrations.
+            </summary>
+            <param name="serviceType">the type of the service</param>
+            <param name="registrations">the service registrations</param>
+            <param name="registrationMode">the registration mode</param>
+            <returns>the multi-registration containing the registrations</returns>
+        </member>
         <member name="T:Butler.Register.ServiceRegistrationMode">
             <summary>
                 A set of different service registration modes.
@@ -1085,6 +1138,12 @@
             <summary>
                 Denotes that the existing service registration should be kept and the new service
                 registration should be dropped without registering.
+            </summary>
+        </member>
+        <member name="F:Butler.Register.ServiceRegistrationMode.Append">
+            <summary>
+                Denotes that the existing service registration should be converted to a
+                multi-registration. If no registration exists then the registration is kept.
             </summary>
         </member>
         <member name="T:Butler.Registration.BaseRegistration">
@@ -1229,6 +1288,201 @@
                 Gets the lifetime of the service.
             </summary>
         </member>
+        <member name="T:Butler.Registration.MultiRegistration">
+            <summary>
+                An <see cref="T:Butler.Registration.IServiceRegistration"/> containing multiple registrations.
+            </summary>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.#ctor(System.Collections.Generic.IEnumerable{Butler.Registration.IServiceRegistration})">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Registration.MultiRegistration"/> class.
+            </summary>
+            <param name="registrations">the service registrations contained in the registration</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="registrations"/> enumerable is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+                thrown if the specified <paramref name="registrations"/> enumerable is empty.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the service lifetimes of the registrations in the specified
+                <paramref name="registrations"/> enumerable are inconsistent.
+            </exception>
+        </member>
+        <member name="P:Butler.Registration.MultiRegistration.Count">
+            <summary>
+                Gets the number of registrations.
+            </summary>
+        </member>
+        <member name="P:Butler.Registration.MultiRegistration.IsReadOnly">
+            <summary>
+                Gets a value indicating whether no registrations can be removed or added to the registration.
+            </summary>
+        </member>
+        <member name="P:Butler.Registration.MultiRegistration.Registrations">
+            <summary>
+                Gets the service registrations.
+            </summary>
+        </member>
+        <member name="P:Butler.Registration.MultiRegistration.ServiceLifetime">
+            <summary>
+                Gets the lifetime of the service.
+            </summary>
+        </member>
+        <member name="P:Butler.Registration.MultiRegistration.Item(System.Int32)">
+            <summary>
+                Gets or sets the <see cref="T:Butler.Registration.IServiceRegistration"/> at the specified <paramref name="index"/>.
+            </summary>
+            <param name="index">the zero-based index</param>
+            <returns>the service registration at the specified <paramref name="index"/></returns>
+            <exception cref="T:System.ArgumentNullException">thrown if the specified value is <see langword="null"/>.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the service lifetime ( <see cref="P:Butler.Registration.IServiceRegistration.ServiceLifetime"/>)
+                does not match the registration lifetime ( <see cref="P:Butler.Registration.MultiRegistration.ServiceLifetime"/>).
+            </exception>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.Add(Butler.Registration.IServiceRegistration)">
+            <summary>
+                Adds the specified <paramref name="registration"/>.
+            </summary>
+            <param name="registration">the registration to add</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="registration"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the service lifetime ( <see cref="P:Butler.Registration.IServiceRegistration.ServiceLifetime"/>)
+                does not match the registration lifetime ( <see cref="P:Butler.Registration.MultiRegistration.ServiceLifetime"/>).
+            </exception>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.AddRange(System.Collections.Generic.IEnumerable{Butler.Registration.IServiceRegistration})">
+            <summary>
+                Adds the specified <paramref name="registrations"/>.
+            </summary>
+            <param name="registrations">the registrations to add</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="registrations"/> enumerable is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the one of the registrations in the specified
+                <paramref name="registrations"/> enumerable is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the service lifetime ( <see cref="P:Butler.Registration.IServiceRegistration.ServiceLifetime"/>)
+                of one of the service registrations in the specified <paramref name="registrations"/>
+                enumerable does not match the registration lifetime ( <see cref="P:Butler.Registration.MultiRegistration.ServiceLifetime"/>).
+            </exception>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.Clear">
+            <summary>
+                Clears all registrations.
+            </summary>
+            <exception cref="T:System.NotSupportedException">
+                thrown because all multi-registrations must contain at least a single registration.
+            </exception>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.Contains(Butler.Registration.IServiceRegistration)">
+            <summary>
+                Checks whether the service registration contains the specified <paramref name="registration"/>.
+            </summary>
+            <param name="registration">the service registration</param>
+            <returns>
+                a value indicating whether the service registration contains the specified <paramref name="registration"/>
+            </returns>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.CopyTo(Butler.Registration.IServiceRegistration[],System.Int32)">
+            <summary>
+                Copies all registrations to the specified <paramref name="array"/> starting at the
+                specified zero-based <paramref name="arrayIndex"/>.
+            </summary>
+            <param name="array">the array to copy the registrations to</param>
+            <param name="arrayIndex">the write index</param>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.Create(Butler.Resolver.ServiceResolveContext)">
+            <summary>
+                Creates the services for the specified <paramref name="context"/>.
+            </summary>
+            <param name="context">the context</param>
+            <returns>the service enumerable</returns>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.Butler#Registration#IServiceRegistration#Create(Butler.Resolver.ServiceResolveContext)">
+            <summary>
+                Creates the instance.
+            </summary>
+            <param name="context">the current resolver context</param>
+            <returns>the instance</returns>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.GetEnumerator">
+            <summary>
+                Gets the registration enumerator.
+            </summary>
+            <returns>the registration enumerator</returns>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+                Gets the registration enumerator.
+            </summary>
+            <returns>the registration enumerator</returns>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.IndexOf(Butler.Registration.IServiceRegistration)">
+            <summary>
+                Gets the zero-based index of the specified
+            </summary>
+            <param name="registration">the registration to find</param>
+            <returns>
+                the absolute zero-based index of the specified <paramref name="registration"/>; if
+                negative then the specified <paramref name="registration"/> is not contained in the
+                multi-registration or the specified <paramref name="registration"/> is <see langword="null"/>.
+            </returns>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.Insert(System.Int32,Butler.Registration.IServiceRegistration)">
+            <summary>
+                Inserts the specified <paramref name="registration"/> at the specified zero-based <paramref name="index"/>.
+            </summary>
+            <param name="index">the zero-based index to insert the registration at</param>
+            <param name="registration">the registration to insert</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="registration"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the service lifetime ( <see cref="P:Butler.Registration.IServiceRegistration.ServiceLifetime"/>)
+                does not match the registration lifetime ( <see cref="P:Butler.Registration.MultiRegistration.ServiceLifetime"/>).
+            </exception>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.Remove(Butler.Registration.IServiceRegistration)">
+            <summary>
+                Removes the specified <paramref name="registration"/> from the registration list.
+            </summary>
+            <param name="registration">the registration to remove</param>
+            <returns>
+                a value indicating whether the specified <paramref name="registration"/> was
+                contained in the registration list and whether it was removed.
+            </returns>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the registration list would be empty if the item is removed
+            </exception>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.RemoveAt(System.Int32)">
+            <summary>
+                Removes the registration at the specified <paramref name="index"/>.
+            </summary>
+            <param name="index">the zero-based index</param>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the registration list would be empty if the item is removed
+            </exception>
+        </member>
+        <member name="M:Butler.Registration.MultiRegistration.CheckLifetime(Butler.Registration.IServiceRegistration)">
+            <summary>
+                Checks for service lifetime inconsistence of the specified <paramref name="registration"/>.
+            </summary>
+            <param name="registration">the service registration</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="registration"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the service lifetime ( <see cref="P:Butler.Registration.IServiceRegistration.ServiceLifetime"/>)
+                does not match the registration lifetime ( <see cref="P:Butler.Registration.MultiRegistration.ServiceLifetime"/>).
+            </exception>
+        </member>
         <member name="T:Butler.Registration.ServiceLifetime">
             <summary>
                 A set of different service lifetimes.
@@ -1341,11 +1595,76 @@
                 transients are released when the container is disposed.
             </summary>
         </member>
+        <member name="M:Butler.Resolver.BaseServiceResolver.ResolveAll``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
+            <summary>
+                Resolves multiple services of the specified <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">the type of the services to resolve</typeparam>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
+            </param>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.BaseServiceResolver.DefaultResolveMode"/> is used.
+            </param>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <returns>
+                an enumerable that enumerates through the services. The service enumerable caches the
+                service creations and creates the service as iterated (if not already cached).
+            </returns>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
+        <member name="M:Butler.Resolver.BaseServiceResolver.ResolveAll(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
+            <summary>
+                Resolves multiple services of the specified <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">the type of the service to resolve</param>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
+            </param>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.BaseServiceResolver.DefaultResolveMode"/> is used.
+            </param>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <returns>
+                an enumerable that enumerates through the services. The service enumerable caches the
+                service creations and creates the service as iterated (if not already cached).
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
         <member name="M:Butler.Resolver.BaseServiceResolver.Resolve(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
             </summary>
-            <param name="serviceType">the type of the service to resolve</param>
+            <param name="serviceType">the type of the services to resolve</param>
             <param name="scopeKey">
                 the scope key for resolving the service; if <see langword="null"/> the global scope
                 is used.
@@ -1436,6 +1755,17 @@
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
         </member>
+        <member name="M:Butler.Resolver.BaseServiceResolver.Resolve(Butler.Registration.IServiceRegistration,Butler.Resolver.ServiceResolveContext,System.Object)">
+            <summary>
+                Resolves a service directly from the specified <paramref name="registration"/>.
+            </summary>
+            <param name="registration">the registration to resolve the service from</param>
+            <param name="context">the service resolver context</param>
+            <param name="scopeKey">
+                the current scope key; or <see langword="null"/> to use the global scope
+            </param>
+            <returns>the resolved service</returns>
+        </member>
         <member name="M:Butler.Resolver.BaseServiceResolver.ResolveLazy``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a lazy-initialized service of the specified <typeparamref name="TService"/>.
@@ -1474,6 +1804,17 @@
             <summary>
                 Interface for service resolvers.
             </summary>
+        </member>
+        <member name="M:Butler.Resolver.IServiceResolver.Resolve(Butler.Registration.IServiceRegistration,Butler.Resolver.ServiceResolveContext,System.Object)">
+            <summary>
+                Resolves a service directly from the specified <paramref name="registration"/>.
+            </summary>
+            <param name="registration">the registration to resolve the service from</param>
+            <param name="context">the service resolver context</param>
+            <param name="scopeKey">
+                the current scope key; or <see langword="null"/> to use the global scope
+            </param>
+            <returns>the resolved service</returns>
         </member>
         <member name="P:Butler.Resolver.IServiceResolver.DefaultResolveMode">
             <summary>
@@ -1595,6 +1936,71 @@
             </param>
             <typeparam name="TService">the type of the service</typeparam>
             <returns>a wrapper that supports lazy-initialization of the specified <typeparamref name="TService"/></returns>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
+        <member name="M:Butler.Resolver.IServiceResolver.ResolveAll(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
+            <summary>
+                Resolves multiple services of the specified <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">the type of the service to resolve</param>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
+            </param>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.IServiceResolver.DefaultResolveMode"/> is used.
+            </param>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <returns>
+                an enumerable that enumerates through the services. The service enumerable caches the
+                service creations and creates the service as iterated (if not already cached).
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
+        <member name="M:Butler.Resolver.IServiceResolver.ResolveAll``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
+            <summary>
+                Resolves multiple services of the specified <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">the type of the services to resolve</typeparam>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
+            </param>
+            <param name="context">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.IServiceResolver.DefaultResolveMode"/> is used.
+            </param>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <returns>
+                an enumerable that enumerates through the services. The service enumerable caches the
+                service creations and creates the service as iterated (if not already cached).
+            </returns>
             <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
             <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
             <exception cref="T:System.InvalidOperationException">
@@ -1870,6 +2276,27 @@
             </summary>
             <returns>the child container</returns>
         </member>
+        <member name="M:Butler.RootContainer.ResolveRegistration(Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Registration.IServiceRegistration@)">
+            <summary>
+                Resolves a registration for the specified <paramref name="context"/>.
+            </summary>
+            <param name="context">the context</param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.IServiceResolver.DefaultResolveMode"/> is used.
+            </param>
+            <param name="registration">
+                the registration found; or <see langword="null"/> if the result value is <see langword="false"/>.
+            </param>
+            <returns>
+                a value indicating whether the registration was found ( <see langword="true"/>),
+                otherwise <see langword="false"/> if the registration was not found and the specified
+                <paramref name="resolveMode"/> is <see cref="F:Butler.Resolver.ServiceResolveMode.ReturnDefault"/> (or
+                the specified <paramref name="resolveMode"/> is
+                <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> and the resolver
+                <see cref="P:Butler.Resolver.IServiceResolver.DefaultResolveMode"/> is <see cref="F:Butler.Resolver.ServiceResolveMode.ReturnDefault"/>)
+            </returns>
+        </member>
         <member name="M:Butler.RootContainer.ResolveServiceInternal(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
             <summary>
                 Resolves a service of the specified <paramref name="serviceType"/>.
@@ -1892,6 +2319,58 @@
                 for a service implementation type.
             </param>
             <returns>the resolved service</returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:Butler.Util.ResolverException">thrown if the service resolve failed.</exception>
+            <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the maximum service resolve depth was exceeded.
+            </exception>
+        </member>
+        <member name="M:Butler.RootContainer.Resolve(Butler.Registration.IServiceRegistration,Butler.Resolver.ServiceResolveContext,System.Object)">
+            <summary>
+                Resolves a service directly from the specified <paramref name="registration"/>.
+            </summary>
+            <param name="registration">the registration to resolve the service from</param>
+            <param name="context">the service resolver context</param>
+            <param name="scopeKey">
+                the current scope key; or <see langword="null"/> to use the global scope
+            </param>
+            <returns>the resolved service</returns>
+        </member>
+        <member name="M:Butler.RootContainer.GetLifetimeManager(Butler.Lifetime.IServiceLifetime)">
+            <summary>
+                Retrieves the <see cref="T:Butler.Lifetime.ILifetimeManager"/> for the specified <paramref name="serviceLifetime"/>.
+            </summary>
+            <param name="serviceLifetime">the service lifetime to get the manager for</param>
+            <returns>the lifetime manager</returns>
+        </member>
+        <member name="M:Butler.RootContainer.ResolveAll(System.Type,System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)">
+            <summary>
+                Resolves multiple services of the specified <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">the type of the service to resolve</param>
+            <param name="scopeKey">
+                the scope key for resolving the service; if <see langword="null"/> the global scope
+                is used.
+            </param>
+            <param name="parentContext">
+                the parent resolve context; if <see langword="null"/> a new
+                <see cref="T:Butler.Resolver.ServiceResolveContext"/> is created.
+            </param>
+            <param name="resolveMode">
+                the service resolution mode; if <see cref="F:Butler.Resolver.ServiceResolveMode.Default"/> then the
+                <see cref="P:Butler.Resolver.IServiceResolver.DefaultResolveMode"/> is used.
+            </param>
+            <param name="constructionMode">
+                the service construction mode; which defines the behavior for resolving constructors
+                for a service implementation type.
+            </param>
+            <returns>
+                an enumerable that enumerates through the services. The service enumerable caches the
+                service creations and creates the service as iterated (if not already cached).
+            </returns>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
             </exception>
