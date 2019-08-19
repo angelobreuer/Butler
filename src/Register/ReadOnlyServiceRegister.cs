@@ -45,7 +45,7 @@
         /// </exception>
 #if SUPPORTS_READONLY_COLLECTIONS
 
-        public ReadOnlyServiceRegister(IServiceLifetime defaultServiceLifetime,IReadOnlyDictionary<Type, IServiceRegistration> registrations)
+        public ReadOnlyServiceRegister(IServiceLifetime defaultServiceLifetime, IReadOnlyDictionary<Type, IServiceRegistration> registrations)
 #else // SUPPORTS_READONLY_COLLECTIONS
 
         public ReadOnlyServiceRegister(IServiceLifetime defaultServiceLifetime, IDictionary<Type, IServiceRegistration> registrations)
@@ -215,6 +215,28 @@
         /// </exception>
         public FactoryRegistration<TService> RegisterFactory<TService>(ServiceFactory<TService> factory,
             IServiceLifetime lifetime = null,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+            => throw ThrowReadOnlyException();
+
+        /// <summary>
+        ///     Registers multiple services using registrations.
+        /// </summary>
+        /// <typeparam name="TService">the type of the service</typeparam>
+        /// <param name="registrations">the service registrations</param>
+        /// <param name="registrationMode">the registration mode</param>
+        /// <returns>the multi-registration containing the registrations</returns>
+        public MultiRegistration RegisterAll<TService>(IEnumerable<IServiceRegistration> registrations,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+            => throw ThrowReadOnlyException();
+
+        /// <summary>
+        ///     Registers multiple services using registrations.
+        /// </summary>
+        /// <param name="serviceType">the type of the service</param>
+        /// <param name="registrations">the service registrations</param>
+        /// <param name="registrationMode">the registration mode</param>
+        /// <returns>the multi-registration containing the registrations</returns>
+        public MultiRegistration RegisterAll(Type serviceType, IEnumerable<IServiceRegistration> registrations,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             => throw ThrowReadOnlyException();
 

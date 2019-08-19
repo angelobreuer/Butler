@@ -1,6 +1,7 @@
 ﻿namespace Butler.Register
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using Butler.Lifetime;
     using Butler.Registration;
@@ -257,5 +258,25 @@
         InstanceRegistration RegisterInstance<TService, TImplementation>(TImplementation instance,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
             where TImplementation : class, TService;
+
+        /// <summary>
+        ///     Registers multiple services using registrations.
+        /// </summary>
+        /// <typeparam name="TService">the type of the service</typeparam>
+        /// <param name="registrations">the service registrations</param>
+        /// <param name="registrationMode">the registration mode</param>
+        /// <returns>the multi-registration containing the registrations</returns>
+        MultiRegistration RegisterAll<TService>(IEnumerable<IServiceRegistration> registrations,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
+
+        /// <summary>
+        ///     Registers multiple services using registrations.
+        /// </summary>
+        /// <param name="serviceType">the type of the service</param>
+        /// <param name="registrations">the service registrations</param>
+        /// <param name="registrationMode">the registration mode</param>
+        /// <returns>the multi-registration containing the registrations</returns>
+        MultiRegistration RegisterAll(Type serviceType, IEnumerable<IServiceRegistration> registrations,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
     }
 }

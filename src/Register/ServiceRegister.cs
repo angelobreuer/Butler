@@ -427,6 +427,35 @@
             return registration;
         }
 
+        /// <summary>
+        ///     Registers multiple services using registrations.
+        /// </summary>
+        /// <param name="registrations">the service registrations</param>
+        /// <param name="registrationMode">the registration mode</param>
+        /// <returns>the multi-registration containing the registrations</returns>
+        public MultiRegistration RegisterAll<TService>(IEnumerable<IServiceRegistration> registrations,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+        {
+            var registration = new MultiRegistration(registrations);
+            Register<TService>(registration, registrationMode);
+            return registration;
+        }
+
+        /// <summary>
+        ///     Registers multiple services using registrations.
+        /// </summary>
+        /// <param name="serviceType">the type of the service</param>
+        /// <param name="registrations">the service registrations</param>
+        /// <param name="registrationMode">the registration mode</param>
+        /// <returns>the multi-registration containing the registrations</returns>
+        public MultiRegistration RegisterAll(Type serviceType, IEnumerable<IServiceRegistration> registrations,
+            ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default)
+        {
+            var registration = new MultiRegistration(registrations);
+            Register(serviceType, registration, registrationMode);
+            return registration;
+        }
+
         private void RegisterInternal(Type type, IServiceRegistration registration, ServiceRegistrationMode registrationMode)
         {
             // acquire lock
@@ -444,7 +473,18 @@
                     // check if the registration should be appended
                     if (registrationMode == ServiceRegistrationMode.Append)
                     {
-                        _registrations[type] = new MultiRegistration(new[] { currentRegistration, registration });
+                        // check if the current registration is already a multi-registration
+                        if (currentRegistration is MultiRegistration multiRegistration)
+                        {
+                            // append the registration
+                            multiRegistration.Add(registration);
+                        }
+                        else
+                        {
+                            // create union registration
+                            _registrations[type] = new MultiRegistration(new[] { currentRegistration, registration });
+                        }
+
                         return;
                     }
 
