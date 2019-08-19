@@ -51,6 +51,10 @@ designed for performance, low-memory consumption and easy integrability.
 
 <span>&nbsp;&nbsp;&nbsp;</span>*and a lot more...*
 
+### NuGet
+- Download [Butler.IoC ![NuGet - Butler](https://img.shields.io/nuget/vpre/Butler.IoC.svg?style=flat-square)](https://www.nuget.org/packages/Butler.IoC/) 
+- Download [Butler.IoC.Development ![NuGet - Butler Development](https://img.shields.io/nuget/vpre/Butler.IoC.Development.svg?style=flat-square)](https://www.nuget.org/packages/Butler.IoC.Development/) 
+
 ### Minimum Requirements
 - .NET Core 1.0, .NET Framework 2.0*, .NET Standard 1.0 or Mono 4.6
 
