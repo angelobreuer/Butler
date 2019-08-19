@@ -6,10 +6,10 @@
     using Butler.Registration;
     using Butler.Resolver;
     using Butler.Util;
-    using Butler.Util.Proxy;
     using Butler.Lifetime;
 
 #if DEBUG
+    using Butler.Util.Proxy;
     using System.Diagnostics;
 #endif // DEBUG
 
@@ -32,6 +32,7 @@
 
     [DebuggerTypeProxy(typeof(RootContainerProxy))]
 #endif // DEBUG
+
     public class RootContainer : BaseServiceResolver, IRootContainer, IServiceResolver
     {
         /// <summary>
