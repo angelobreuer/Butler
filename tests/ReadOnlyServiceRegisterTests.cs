@@ -17,7 +17,8 @@
         ///     Initializes a new instance of the <see cref="ReadOnlyServiceRegisterTests"/> class.
         /// </summary>
         public ReadOnlyServiceRegisterTests()
-            => ServiceRegister = new ReadOnlyServiceRegister(Lifetime.Singleton, new Dictionary<Type, IServiceRegistration>());
+            => ServiceRegister = new ReadOnlyServiceRegister(ServiceRegistrationMode.Throw,
+                Lifetime.Singleton, new Dictionary<Type, IServiceRegistration>());
 
         /// <summary>
         ///     Gets the service register being tested.
