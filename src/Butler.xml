@@ -46,6 +46,49 @@
             </summary>
             <returns>the child container</returns>
         </member>
+        <member name="T:Butler.Lazy`1">
+            <summary>
+                Drop-in replacement for the <c>"System.Lazy{T}"</c> class.
+            </summary>
+            <typeparam name="T">the type of the object</typeparam>
+        </member>
+        <member name="M:Butler.Lazy`1.#ctor(Butler.Lazy{`0}.LazyValueFactory)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Lazy`1"/> class.
+            </summary>
+            <param name="factory">the lazy value factory</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Lazy`1.#ctor(`0)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Lazy`1"/> class.
+            </summary>
+            <param name="value">the value</param>
+        </member>
+        <member name="T:Butler.Lazy`1.LazyValueFactory">
+            <summary>
+                Delegate for a lazy-value factory.
+            </summary>
+            <returns>the created value</returns>
+        </member>
+        <member name="P:Butler.Lazy`1.IsValueCreated">
+            <summary>
+                Gets a value indicating whether the value was created.
+            </summary>
+        </member>
+        <member name="P:Butler.Lazy`1.IsValueFaulted">
+            <summary>
+                Gets a value indicating whether an exception occurred while creating the value.
+            </summary>
+            occurred
+        </member>
+        <member name="P:Butler.Lazy`1.Value">
+            <summary>
+                Gets the value, if it is not created it will be created.
+            </summary>
+        </member>
         <member name="T:Butler.Lifetime.ILifetimeManager">
             <summary>
                 Interface for lifetime managers.
@@ -173,9 +216,9 @@
                 scope key.
             </summary>
         </member>
-        <member name="F:Butler.Lifetime.ScopedLifetimeManager._trackerLock">
+        <member name="F:Butler.Lifetime.ScopedLifetimeManager._serviceLock">
             <summary>
-                A <see cref="T:System.Threading.SemaphoreSlim"/> for the <see cref="F:Butler.Lifetime.ScopedLifetimeManager._services"/>.
+                A lock <see cref="T:System.Object"/> for the <see cref="F:Butler.Lifetime.ScopedLifetimeManager._services"/>.
             </summary>
         </member>
         <member name="F:Butler.Lifetime.ScopedLifetimeManager._disposed">
@@ -189,9 +232,9 @@
                 Initializes a new instance of the <see cref="T:Butler.Lifetime.ScopedLifetimeManager"/> class.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.ScopedLifetimeManager.DisposeAsync">
+        <member name="M:Butler.Lifetime.ScopedLifetimeManager.Dispose">
             <summary>
-                Disposes all tracked objects asynchronously.
+                Disposes all tracked objects.
             </summary>
         </member>
         <member name="M:Butler.Lifetime.ScopedLifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
@@ -227,9 +270,9 @@
                 A dictionary containing the service instance keyed by the service type.
             </summary>
         </member>
-        <member name="F:Butler.Lifetime.SingletonLifetimeManager._trackerLock">
+        <member name="F:Butler.Lifetime.SingletonLifetimeManager._serviceLock">
             <summary>
-                A <see cref="T:System.Threading.SemaphoreSlim"/> for the <see cref="F:Butler.Lifetime.SingletonLifetimeManager._services"/>.
+                A lock <see cref="T:System.Object"/> for the <see cref="F:Butler.Lifetime.SingletonLifetimeManager._services"/>.
             </summary>
         </member>
         <member name="F:Butler.Lifetime.SingletonLifetimeManager._disposed">
@@ -243,9 +286,9 @@
                 Initializes a new instance of the <see cref="T:Butler.Lifetime.SingletonLifetimeManager"/> class.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.SingletonLifetimeManager.DisposeAsync">
+        <member name="M:Butler.Lifetime.SingletonLifetimeManager.Dispose">
             <summary>
-                Disposes all tracked objects asynchronously.
+                Disposes all tracked objects.
             </summary>
         </member>
         <member name="M:Butler.Lifetime.SingletonLifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
@@ -282,7 +325,7 @@
         </member>
         <member name="F:Butler.Lifetime.TransientLifetimeManager._trackerLock">
             <summary>
-                A <see cref="T:System.Threading.SemaphoreSlim"/> for the <see cref="F:Butler.Lifetime.TransientLifetimeManager._tracker"/>.
+                A lock <see cref="T:System.Object"/> for the <see cref="F:Butler.Lifetime.TransientLifetimeManager._tracker"/>.
             </summary>
         </member>
         <member name="F:Butler.Lifetime.TransientLifetimeManager._disposed">
@@ -296,9 +339,9 @@
                 Initializes a new instance of the <see cref="T:Butler.Lifetime.TransientLifetimeManager"/> class.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.TransientLifetimeManager.DisposeAsync">
+        <member name="M:Butler.Lifetime.TransientLifetimeManager.Dispose">
             <summary>
-                Disposes all tracked objects asynchronously.
+                Disposes all tracked objects.
             </summary>
         </member>
         <member name="M:Butler.Lifetime.TransientLifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
@@ -332,6 +375,26 @@
             <summary>
                 Gets or sets the default service lifetime when no specific lifetime was specified.
             </summary>
+            <exception cref="T:System.ArgumentNullException">thrown if the specified value is <see langword="null"/>.</exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.IServiceRegister.IsReadOnly"/>).
+            </exception>
+        </member>
+        <member name="P:Butler.Register.IServiceRegister.DefaultRegistrationMode">
+            <summary>
+                Gets or sets the default service registration mode (
+                <see cref="T:Butler.Register.ServiceRegistrationMode"/>). The default value for this property is <see cref="F:Butler.Register.ServiceRegistrationMode.Throw"/>.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is not defined in the
+                <see cref="T:Butler.Register.ServiceRegistrationMode"/> enumeration.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is <see cref="F:Butler.Register.ServiceRegistrationMode.Default"/>
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.IServiceRegister.IsReadOnly"/>).
+            </exception>
         </member>
         <member name="P:Butler.Register.IServiceRegister.IsReadOnly">
             <summary>
@@ -572,25 +635,71 @@
             <param name="registrationMode">the registration mode</param>
             <returns>the multi-registration containing the registrations</returns>
         </member>
+        <member name="M:Butler.Register.IServiceRegister.Unregister``1">
+            <summary>
+                Unregisters the service registration ( <see cref="T:Butler.Registration.IServiceRegistration"/>) for the
+                specified <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">the service type to unregister</typeparam>
+            <returns>a value indicating whether the service was unregistered</returns>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.IServiceRegister.IsReadOnly"/>).
+            </exception>
+        </member>
+        <member name="M:Butler.Register.IServiceRegister.Unregister(System.Type)">
+            <summary>
+                Unregisters the service registration ( <see cref="T:Butler.Registration.IServiceRegistration"/>) for the
+                specified <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">the service type to unregister</param>
+            <returns>a value indicating whether the service was unregistered</returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.IServiceRegister.IsReadOnly"/>).
+            </exception>
+        </member>
         <member name="T:Butler.Register.ReadOnlyServiceRegister">
             <summary>
                 A class that provides a read-only service register.
             </summary>
         </member>
+        <member name="P:Butler.Register.ReadOnlyServiceRegister.DefaultRegistrationMode">
+            <summary>
+                Gets or sets the default service registration mode (
+                <see cref="T:Butler.Register.ServiceRegistrationMode"/>). The default value for this property is <see cref="F:Butler.Register.ServiceRegistrationMode.Throw"/>.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is not defined in the
+                <see cref="T:Butler.Register.ServiceRegistrationMode"/> enumeration.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is <see cref="F:Butler.Register.ServiceRegistrationMode.Default"/>
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ReadOnlyServiceRegister.IsReadOnly"/>).
+            </exception>
+        </member>
         <member name="P:Butler.Register.ReadOnlyServiceRegister.DefaultServiceLifetime">
             <summary>
                 Gets or sets the default service lifetime when no specific lifetime was specified.
             </summary>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ReadOnlyServiceRegister.IsReadOnly"/>).
+            </exception>
+            <exception cref="T:System.ArgumentNullException">thrown if the specified value is <see langword="null"/>.</exception>
         </member>
         <member name="F:Butler.Register.ReadOnlyServiceRegister._registrations">
             <summary>
                 The service registrations.
             </summary>
         </member>
-        <member name="M:Butler.Register.ReadOnlyServiceRegister.#ctor(Butler.Lifetime.IServiceLifetime,System.Collections.Generic.IReadOnlyDictionary{System.Type,Butler.Registration.IServiceRegistration})">
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.#ctor(Butler.Register.ServiceRegistrationMode,Butler.Lifetime.IServiceLifetime,System.Collections.Generic.IDictionary{System.Type,Butler.Registration.IServiceRegistration})">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Register.ReadOnlyServiceRegister"/> class.
             </summary>
+            <param name="defaultRegistrationMode">the default registration mode</param>
             <param name="defaultServiceLifetime">the default service lifetime</param>
             <param name="registrations">the static registrations</param>
             <exception cref="T:System.ArgumentNullException">
@@ -625,6 +734,31 @@
                 thrown if the specified <paramref name="type"/> is <see langword="null"/>.
             </exception>
             <returns>the service registration</returns>
+        </member>
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.Unregister``1">
+            <summary>
+                Unregisters the service registration ( <see cref="T:Butler.Registration.IServiceRegistration"/>) for the
+                specified <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">the service type to unregister</typeparam>
+            <returns>a value indicating whether the service was unregistered</returns>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ReadOnlyServiceRegister.IsReadOnly"/>).
+            </exception>
+        </member>
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.Unregister(System.Type)">
+            <summary>
+                Unregisters the service registration ( <see cref="T:Butler.Registration.IServiceRegistration"/>) for the
+                specified <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">the service type to unregister</param>
+            <returns>a value indicating whether the service was unregistered</returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ReadOnlyServiceRegister.IsReadOnly"/>).
+            </exception>
         </member>
         <member name="M:Butler.Register.ReadOnlyServiceRegister.FindRegistration``1">
             <summary>
@@ -870,6 +1004,16 @@
                 Lock used for accessing the <see cref="F:Butler.Register.ServiceRegister._registrations"/> thread-safe.
             </summary>
         </member>
+        <member name="F:Butler.Register.ServiceRegister._defaultServiceLifetime">
+            <summary>
+                The current <see cref="P:Butler.Register.ServiceRegister.DefaultServiceLifetime"/>.
+            </summary>
+        </member>
+        <member name="F:Butler.Register.ServiceRegister._defaultRegistrationMode">
+            <summary>
+                The current <see cref="P:Butler.Register.ServiceRegister.DefaultRegistrationMode"/>.
+            </summary>
+        </member>
         <member name="M:Butler.Register.ServiceRegister.#ctor">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Register.ServiceRegister"/> class.
@@ -889,6 +1033,48 @@
             <summary>
                 Gets or sets the default service lifetime when no specific lifetime was specified.
             </summary>
+            <exception cref="T:System.ArgumentNullException">thrown if the specified value is <see langword="null"/>.</exception>
+        </member>
+        <member name="M:Butler.Register.ServiceRegister.Unregister``1">
+            <summary>
+                Unregisters the service registration ( <see cref="T:Butler.Registration.IServiceRegistration"/>) for the
+                specified <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">the service type to unregister</typeparam>
+            <returns>a value indicating whether the service was unregistered</returns>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ServiceRegister.IsReadOnly"/>).
+            </exception>
+        </member>
+        <member name="M:Butler.Register.ServiceRegister.Unregister(System.Type)">
+            <summary>
+                Unregisters the service registration ( <see cref="T:Butler.Registration.IServiceRegistration"/>) for the
+                specified <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">the service type to unregister</param>
+            <returns>a value indicating whether the service was unregistered</returns>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ServiceRegister.IsReadOnly"/>).
+            </exception>
+        </member>
+        <member name="P:Butler.Register.ServiceRegister.DefaultRegistrationMode">
+            <summary>
+                Gets or sets the default service registration mode (
+                <see cref="T:Butler.Register.ServiceRegistrationMode"/>). The default value for this property is <see cref="F:Butler.Register.ServiceRegistrationMode.Throw"/>.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is not defined in the
+                <see cref="T:Butler.Register.ServiceRegistrationMode"/> enumeration.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                thrown if the specified value is <see cref="F:Butler.Register.ServiceRegistrationMode.Default"/>
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+                thrown if the register is read-only ( <see cref="P:Butler.Register.ServiceRegister.IsReadOnly"/>).
+            </exception>
         </member>
         <member name="M:Butler.Register.ServiceRegister.AsReadOnly">
             <summary>
@@ -1124,6 +1310,11 @@
             </summary>
         </member>
         <member name="F:Butler.Register.ServiceRegistrationMode.Default">
+            <summary>
+                Denotes that the default mode for the <see cref="T:Butler.Register.IServiceRegister"/> should be used.
+            </summary>
+        </member>
+        <member name="F:Butler.Register.ServiceRegistrationMode.Throw">
             <summary>
                 Denotes that an exception should be thrown if a service registration already exists
                 for the specified service type.
@@ -1520,16 +1711,6 @@
             <summary>
                 Base implementation of an <see cref="T:Butler.Resolver.IServiceResolver"/>.
             </summary>
-        </member>
-        <member name="M:Butler.Resolver.BaseServiceResolver.System#IServiceProvider#GetService(System.Type)">
-            <summary>
-                Resolves a service of the specified <paramref name="serviceType"/>.
-            </summary>
-            <param name="serviceType">the type of the service to resolve</param>
-            <returns>the resolved service</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-            </exception>
         </member>
         <member name="P:Butler.Resolver.BaseServiceResolver.DefaultResolveMode">
             <summary>
@@ -2184,6 +2365,11 @@
                 A dictionary containing service lifetimes storing an <see cref="T:Butler.Lifetime.ILifetimeManager"/> class.
             </summary>
         </member>
+        <member name="F:Butler.RootContainer._lifetimeLock">
+            <summary>
+                The lock used for the lifetime manager dictionary ( <see cref="F:Butler.RootContainer._lifetimes"/>).
+            </summary>
+        </member>
         <member name="F:Butler.RootContainer._disposed">
             <summary>
                 A value indicating whether the root container has been disposed.
@@ -2206,6 +2392,11 @@
         <member name="M:Butler.RootContainer.#ctor">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.RootContainer"/> class.
+            </summary>
+        </member>
+        <member name="M:Butler.RootContainer.Dispose">
+            <summary>
+                Disposes the root container.
             </summary>
         </member>
         <member name="P:Butler.RootContainer.Parent">
@@ -2379,12 +2570,6 @@
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
-        </member>
-        <member name="M:Butler.RootContainer.DisposeAsync">
-            <summary>
-                Disposes the root container asynchronously.
-            </summary>
-            <returns>a task that represents the asynchronous operation.</returns>
         </member>
         <member name="T:Butler.Util.Proxy.RegistrationProxy">
             <summary>
