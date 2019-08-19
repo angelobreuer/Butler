@@ -165,3 +165,23 @@ myContainer.Resolve<ISomeService>().DoSomething();
 // dispose the instance
 myService.Dispose();
 ```
+
+##### Multi-Registration
+
+A multi-registration can contain as the name says multiple registrations in once: For example you want to register
+multiple services with the same service type:
+
+```csharp
+// enable automatic multi-registration creation
+myContainer.DefaultRegistrationMode = ServiceRegistrationMode.Append;
+
+// register multiple registrations with the same type
+myContainer.Register<ISomeService, SomeService>();
+myContainer.Register<ISomeService, SomeOtherService>();
+
+// resolve all
+myContainer.ResolveAll<ISomeService>();
+// --> Contains an instance of SomeService and SomeOtherService
+```
+
+*Note: The service instances are created when enumerating through the enumerable.*
