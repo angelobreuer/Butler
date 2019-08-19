@@ -99,7 +99,7 @@ resolve method when resolving the service. All resolves will retrieve the same s
 
 ##### Transient
 
-The transient service lifetime ([`Lifetime.Transient`]((https://github.com/angelobreuer/Butler/blob/master/src/Lifetime/Lifetime.cs#L15))) creates a new service each 
+The transient service lifetime ([`Lifetime.Transient`](https://github.com/angelobreuer/Butler/blob/master/src/Lifetime/Lifetime.cs#L15)) creates a new service each 
 resolve. This should be used for state-less small services. (*Note: By default Butler does not track / dispose 
 transient services, this can be enabled using the `TrackDisposableTransients` property*)
 
