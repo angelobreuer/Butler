@@ -20,6 +20,12 @@
         ///     Denotes that the existing service registration should be kept and the new service
         ///     registration should be dropped without registering.
         /// </summary>
-        Ignore
+        Ignore,
+
+        /// <summary>
+        ///     Denotes that the existing service registration should be converted to a
+        ///     multi-registration. If no registration exists then the registration is kept.
+        /// </summary>
+        Append
     }
 }

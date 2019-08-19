@@ -126,12 +126,12 @@
             lock (_lifetimeLock)
             {
 #endif // !SUPPORTS_CONCURRENT_COLLECTIONS
-            // iterate through all used lifetimes and dispose them
-            foreach (var lifetime in _lifetimes.Values)
-            {
-                // dispose lifetime
-                lifetime.Dispose();
-            }
+                // iterate through all used lifetimes and dispose them
+                foreach (var lifetime in _lifetimes.Values)
+                {
+                    // dispose lifetime
+                    lifetime.Dispose();
+                }
 #if !SUPPORTS_CONCURRENT_COLLECTIONS
             }
 #endif // !SUPPORTS_CONCURRENT_COLLECTIONS
@@ -252,6 +252,58 @@
             => new RootContainer(this);
 
         /// <summary>
+        ///     Resolves a registration for the specified <paramref name="context"/>.
+        /// </summary>
+        /// <param name="context">the context</param>
+        /// <param name="resolveMode">
+        ///     the service resolution mode; if <see cref="ServiceResolveMode.Default"/> then the
+        ///     <see cref="IServiceResolver.DefaultResolveMode"/> is used.
+        /// </param>
+        /// <param name="registration">
+        ///     the registration found; or <see langword="null"/> if the result value is <see langword="false"/>.
+        /// </param>
+        /// <returns>
+        ///     a value indicating whether the registration was found ( <see langword="true"/>),
+        ///     otherwise <see langword="false"/> if the registration was not found and the specified
+        ///     <paramref name="resolveMode"/> is <see cref="ServiceResolveMode.ReturnDefault"/> (or
+        ///     the specified <paramref name="resolveMode"/> is
+        ///     <see cref="ServiceResolveMode.Default"/> and the resolver
+        ///     <see cref="IServiceResolver.DefaultResolveMode"/> is <see cref="ServiceResolveMode.ReturnDefault"/>)
+        /// </returns>
+        private bool ResolveRegistration(ServiceResolveContext context, ServiceResolveMode resolveMode, out IServiceRegistration registration)
+        {
+            // find registration
+            registration = FindRegistration(context.ServiceType);
+
+            // check if the registration failed
+            if (registration is null)
+            {
+                // check if the default service resolve mode should be used
+                if (resolveMode == ServiceResolveMode.Default)
+                {
+                    // use default resolve mode
+                    resolveMode = DefaultResolveMode;
+                }
+
+                // check if an exception should be thrown
+                if (resolveMode == ServiceResolveMode.ThrowException)
+                {
+                    // throw resolver exception
+#if DEBUG
+                    context.TraceBuilder.AppendResolveFail(context.ServiceType, critical: true);
+#endif // DEBUG
+
+                    throw new ResolverException($"Could not resolve service of type '{context.ServiceType}' (No registration).", context);
+                }
+
+                // The ServiceResolveMode is ReturnDefault.
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         ///     Resolves a service of the specified <paramref name="serviceType"/>.
         /// </summary>
         /// <param name="serviceType">the type of the service to resolve</param>
@@ -301,86 +353,34 @@
             var context = parentContext == null ?
                 new ServiceResolveContext(this, this, constructionMode, serviceType) :
                 new ServiceResolveContext(parentContext, constructionMode, serviceType);
+
 #if DEBUG
             // trace resolve
             context.TraceBuilder.AppendResolve(serviceType);
 #endif // DEBUG
 
-            // find registration
-            var registration = FindRegistration(serviceType);
-
-            // check if the registration failed
-            if (registration is null)
+            // resolve the service registration
+            if (!ResolveRegistration(context, resolveMode, out var registration))
             {
-                // check if the default service resolve mode should be used
-                if (resolveMode == ServiceResolveMode.Default)
-                {
-                    // use default resolve mode
-                    resolveMode = DefaultResolveMode;
-                }
-
-                // check if an exception should be thrown
-                if (resolveMode == ServiceResolveMode.ThrowException)
-                {
-                    // throw resolver exception
-#if DEBUG
-                    context.TraceBuilder.AppendResolveFail(serviceType, critical: true);
-#endif // DEBUG
-
-                    throw new ResolverException($"Could not resolve service of type '{serviceType}' (No registration).", context);
-                }
-
-                // The ServiceResolveMode is ReturnDefault.
                 return default;
             }
 
-#if SUPPORTS_CONCURRENT_COLLECTIONS
+            return Resolve(registration, context, scopeKey);
+        }
 
-            // get the corresponding lifetime manager
-            var lifetimeManager = _lifetimes.GetOrAdd(
-                registration.ServiceLifetime,
-                lifetime => lifetime.CreateManager(this));
-
-#else // SUPPORTS_CONCURRENT_COLLECTIONS
-
-            // store the lifetime manager result
-            var lifetimeManager = default(ILifetimeManager);
-
-#if SUPPORTS_ASYNC_DISPOSABLE
-
-            // acquire lock
-            _lifetimeLock.Wait();
-
-            // make sure the lock is released even if an exception is thrown
-            try
-            {
-#else // SUPPORTS_ASYNC_DISPOSABLE
-            lock (_lifetimeLock)
-            {
-#endif // !SUPPORTS_ASYNC_DISPOSABLE
-
-                // try getting the lifetime manager
-                if (!_lifetimes.TryGetValue(registration.ServiceLifetime, out lifetimeManager))
-                {
-                    // create lifetime manager for this resolver
-                    lifetimeManager = registration.ServiceLifetime.CreateManager(this);
-
-                    // add the lifetime manager
-                    _lifetimes.Add(registration.ServiceLifetime, lifetimeManager);
-                }
-
-#if SUPPORTS_ASYNC_DISPOSABLE
-            }
-            finally
-            {
-                // release lock
-                _lifetimeLock.Release();
-            }
-#else // SUPPORTS_ASYNC_DISPOSABLE
-            }
-#endif // !SUPPORTS_ASYNC_DISPOSABLE
-
-#endif // !SUPPORTS_CONCURRENT_COLLECTIONS
+        /// <summary>
+        ///     Resolves a service directly from the specified <paramref name="registration"/>.
+        /// </summary>
+        /// <param name="registration">the registration to resolve the service from</param>
+        /// <param name="context">the service resolver context</param>
+        /// <param name="scopeKey">
+        ///     the current scope key; or <see langword="null"/> to use the global scope
+        /// </param>
+        /// <returns>the resolved service</returns>
+        public override object Resolve(IServiceRegistration registration, ServiceResolveContext context, object scopeKey = null)
+        {
+            // the manager for the lifetime
+            var lifetimeManager = GetLifetimeManager(registration.ServiceLifetime);
 
             // try resolving from the lifetime
             var lifetimeObject = lifetimeManager.Resolve(context, scopeKey);
@@ -399,6 +399,134 @@
             lifetimeManager.TrackInstance(context, service, scopeKey);
 
             return service;
+        }
+
+        /// <summary>
+        ///     Retrieves the <see cref="ILifetimeManager"/> for the specified <paramref name="serviceLifetime"/>.
+        /// </summary>
+        /// <param name="serviceLifetime">the service lifetime to get the manager for</param>
+        /// <returns>the lifetime manager</returns>
+        private ILifetimeManager GetLifetimeManager(IServiceLifetime serviceLifetime)
+        {
+#if SUPPORTS_CONCURRENT_COLLECTIONS
+
+            // get the corresponding lifetime manager
+            return _lifetimes.GetOrAdd(serviceLifetime,
+                lifetime => lifetime.CreateManager(this));
+
+#else // SUPPORTS_CONCURRENT_COLLECTIONS
+
+#if SUPPORTS_ASYNC_DISPOSABLE
+
+            // acquire lock
+            _lifetimeLock.Wait();
+
+            // make sure the lock is released even if an exception is thrown
+            try
+            {
+#else // SUPPORTS_ASYNC_DISPOSABLE
+            lock (_lifetimeLock)
+            {
+#endif // !SUPPORTS_ASYNC_DISPOSABLE
+
+                // try getting the lifetime manager
+                if (!_lifetimes.TryGetValue(serviceLifetime, out var lifetimeManager))
+                {
+                    // create lifetime manager for this resolver
+                    lifetimeManager = serviceLifetime.CreateManager(this);
+
+                    // add the lifetime manager
+                    _lifetimes.Add(serviceLifetime, lifetimeManager);
+                }
+
+                return lifetimeManager;
+
+#if SUPPORTS_ASYNC_DISPOSABLE
+            }
+            finally
+            {
+                // release lock
+                _lifetimeLock.Release();
+            }
+#else // SUPPORTS_ASYNC_DISPOSABLE
+            }
+#endif // !SUPPORTS_ASYNC_DISPOSABLE
+
+#endif // !SUPPORTS_CONCURRENT_COLLECTIONS
+        }
+
+        /// <summary>
+        ///     Resolves multiple services of the specified <paramref name="serviceType"/>.
+        /// </summary>
+        /// <param name="serviceType">the type of the service to resolve</param>
+        /// <param name="scopeKey">
+        ///     the scope key for resolving the service; if <see langword="null"/> the global scope
+        ///     is used.
+        /// </param>
+        /// <param name="parentContext">
+        ///     the parent resolve context; if <see langword="null"/> a new
+        ///     <see cref="ServiceResolveContext"/> is created.
+        /// </param>
+        /// <param name="resolveMode">
+        ///     the service resolution mode; if <see cref="ServiceResolveMode.Default"/> then the
+        ///     <see cref="IServiceResolver.DefaultResolveMode"/> is used.
+        /// </param>
+        /// <param name="constructionMode">
+        ///     the service construction mode; which defines the behavior for resolving constructors
+        ///     for a service implementation type.
+        /// </param>
+        /// <returns>
+        ///     an enumerable that enumerates through the services. The service enumerable caches the
+        ///     service creations and creates the service as iterated (if not already cached).
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ResolverException">thrown if the service resolve failed.</exception>
+        /// <exception cref="ObjectDisposedException">thrown if the container is disposed.</exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the maximum service resolve depth was exceeded.
+        /// </exception>
+        public override IEnumerable ResolveAll(Type serviceType, object scopeKey = null, ServiceResolveContext parentContext = null,
+            ServiceResolveMode resolveMode = ServiceResolveMode.Default,
+            ServiceConstructionMode constructionMode = ServiceConstructionMode.Default)
+        {
+            // check if the container is already disposed
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(RootContainer));
+            }
+
+            // null-check service type
+            if (serviceType is null)
+            {
+                throw new ArgumentNullException(nameof(serviceType), "Could not resolve service of type <null>.");
+            }
+
+            // create a context for this resolve
+            var context = parentContext == null ?
+                new ServiceResolveContext(this, this, constructionMode, serviceType) :
+                new ServiceResolveContext(parentContext, constructionMode, serviceType);
+
+#if DEBUG
+            // trace resolve
+            context.TraceBuilder.AppendResolve(serviceType);
+#endif // DEBUG
+
+            // resolve the service registration
+            if (!ResolveRegistration(context, resolveMode, out var registration))
+            {
+                return default;
+            }
+
+            // check if the registration is not a multi registration
+            if (!(registration is MultiRegistration multiRegistration))
+            {
+                // resolve the service normally and return it as a single-item enumerable
+                return new[] { Resolve(registration, context, scopeKey) };
+            }
+
+            return multiRegistration.Create(context);
         }
 
 #if SUPPORTS_ASYNC_DISPOSABLE

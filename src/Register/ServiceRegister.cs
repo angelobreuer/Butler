@@ -433,11 +433,18 @@
             lock (_registrationsLock)
             {
                 // check if a service registration already exists for the type
-                if (registrationMode != ServiceRegistrationMode.Replace && _registrations.Remove(type))
+                if (registrationMode != ServiceRegistrationMode.Replace && _registrations.TryGetValue(type, out var currentRegistration))
                 {
                     // check if the exception should be suppressed
                     if (registrationMode == ServiceRegistrationMode.Ignore)
                     {
+                        return;
+                    }
+
+                    // check if the registration should be appended
+                    if (registrationMode == ServiceRegistrationMode.Append)
+                    {
+                        _registrations[type] = new MultiRegistration(new[] { currentRegistration, registration });
                         return;
                     }
 
