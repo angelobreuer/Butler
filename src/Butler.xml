@@ -46,6 +46,49 @@
             </summary>
             <returns>the child container</returns>
         </member>
+        <member name="T:Butler.Lazy`1">
+            <summary>
+                Drop-in replacement for the <c>"System.Lazy{T}"</c> class.
+            </summary>
+            <typeparam name="T">the type of the object</typeparam>
+        </member>
+        <member name="M:Butler.Lazy`1.#ctor(Butler.Lazy{`0}.LazyValueFactory)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Lazy`1"/> class.
+            </summary>
+            <param name="factory">the lazy value factory</param>
+            <exception cref="T:System.ArgumentNullException">
+                thrown if the specified <paramref name="factory"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Butler.Lazy`1.#ctor(`0)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Butler.Lazy`1"/> class.
+            </summary>
+            <param name="value">the value</param>
+        </member>
+        <member name="T:Butler.Lazy`1.LazyValueFactory">
+            <summary>
+                Delegate for a lazy-value factory.
+            </summary>
+            <returns>the created value</returns>
+        </member>
+        <member name="P:Butler.Lazy`1.IsValueCreated">
+            <summary>
+                Gets a value indicating whether the value was created.
+            </summary>
+        </member>
+        <member name="P:Butler.Lazy`1.IsValueFaulted">
+            <summary>
+                Gets a value indicating whether an exception occurred while creating the value.
+            </summary>
+            occurred
+        </member>
+        <member name="P:Butler.Lazy`1.Value">
+            <summary>
+                Gets the value, if it is not created it will be created.
+            </summary>
+        </member>
         <member name="T:Butler.Lifetime.ILifetimeManager">
             <summary>
                 Interface for lifetime managers.
@@ -173,9 +216,9 @@
                 scope key.
             </summary>
         </member>
-        <member name="F:Butler.Lifetime.ScopedLifetimeManager._trackerLock">
+        <member name="F:Butler.Lifetime.ScopedLifetimeManager._serviceLock">
             <summary>
-                A <see cref="T:System.Threading.SemaphoreSlim"/> for the <see cref="F:Butler.Lifetime.ScopedLifetimeManager._services"/>.
+                A lock <see cref="T:System.Object"/> for the <see cref="F:Butler.Lifetime.ScopedLifetimeManager._services"/>.
             </summary>
         </member>
         <member name="F:Butler.Lifetime.ScopedLifetimeManager._disposed">
@@ -189,9 +232,9 @@
                 Initializes a new instance of the <see cref="T:Butler.Lifetime.ScopedLifetimeManager"/> class.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.ScopedLifetimeManager.DisposeAsync">
+        <member name="M:Butler.Lifetime.ScopedLifetimeManager.Dispose">
             <summary>
-                Disposes all tracked objects asynchronously.
+                Disposes all tracked objects.
             </summary>
         </member>
         <member name="M:Butler.Lifetime.ScopedLifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
@@ -227,9 +270,9 @@
                 A dictionary containing the service instance keyed by the service type.
             </summary>
         </member>
-        <member name="F:Butler.Lifetime.SingletonLifetimeManager._trackerLock">
+        <member name="F:Butler.Lifetime.SingletonLifetimeManager._serviceLock">
             <summary>
-                A <see cref="T:System.Threading.SemaphoreSlim"/> for the <see cref="F:Butler.Lifetime.SingletonLifetimeManager._services"/>.
+                A lock <see cref="T:System.Object"/> for the <see cref="F:Butler.Lifetime.SingletonLifetimeManager._services"/>.
             </summary>
         </member>
         <member name="F:Butler.Lifetime.SingletonLifetimeManager._disposed">
@@ -243,9 +286,9 @@
                 Initializes a new instance of the <see cref="T:Butler.Lifetime.SingletonLifetimeManager"/> class.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.SingletonLifetimeManager.DisposeAsync">
+        <member name="M:Butler.Lifetime.SingletonLifetimeManager.Dispose">
             <summary>
-                Disposes all tracked objects asynchronously.
+                Disposes all tracked objects.
             </summary>
         </member>
         <member name="M:Butler.Lifetime.SingletonLifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
@@ -282,7 +325,7 @@
         </member>
         <member name="F:Butler.Lifetime.TransientLifetimeManager._trackerLock">
             <summary>
-                A <see cref="T:System.Threading.SemaphoreSlim"/> for the <see cref="F:Butler.Lifetime.TransientLifetimeManager._tracker"/>.
+                A lock <see cref="T:System.Object"/> for the <see cref="F:Butler.Lifetime.TransientLifetimeManager._tracker"/>.
             </summary>
         </member>
         <member name="F:Butler.Lifetime.TransientLifetimeManager._disposed">
@@ -296,9 +339,9 @@
                 Initializes a new instance of the <see cref="T:Butler.Lifetime.TransientLifetimeManager"/> class.
             </summary>
         </member>
-        <member name="M:Butler.Lifetime.TransientLifetimeManager.DisposeAsync">
+        <member name="M:Butler.Lifetime.TransientLifetimeManager.Dispose">
             <summary>
-                Disposes all tracked objects asynchronously.
+                Disposes all tracked objects.
             </summary>
         </member>
         <member name="M:Butler.Lifetime.TransientLifetimeManager.Resolve(Butler.Resolver.ServiceResolveContext,System.Object)">
@@ -652,7 +695,7 @@
                 The service registrations.
             </summary>
         </member>
-        <member name="M:Butler.Register.ReadOnlyServiceRegister.#ctor(Butler.Register.ServiceRegistrationMode,Butler.Lifetime.IServiceLifetime,System.Collections.Generic.IReadOnlyDictionary{System.Type,Butler.Registration.IServiceRegistration})">
+        <member name="M:Butler.Register.ReadOnlyServiceRegister.#ctor(Butler.Register.ServiceRegistrationMode,Butler.Lifetime.IServiceLifetime,System.Collections.Generic.IDictionary{System.Type,Butler.Registration.IServiceRegistration})">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Register.ReadOnlyServiceRegister"/> class.
             </summary>
@@ -1669,16 +1712,6 @@
                 Base implementation of an <see cref="T:Butler.Resolver.IServiceResolver"/>.
             </summary>
         </member>
-        <member name="M:Butler.Resolver.BaseServiceResolver.System#IServiceProvider#GetService(System.Type)">
-            <summary>
-                Resolves a service of the specified <paramref name="serviceType"/>.
-            </summary>
-            <param name="serviceType">the type of the service to resolve</param>
-            <returns>the resolved service</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-            </exception>
-        </member>
         <member name="P:Butler.Resolver.BaseServiceResolver.DefaultResolveMode">
             <summary>
                 Gets or sets the default <see cref="T:Butler.Resolver.ServiceResolveMode"/> that is used when
@@ -1941,12 +1974,6 @@
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
             </exception>
-        </member>
-        <member name="F:Butler.Resolver.BaseServiceResolver._resolveLazyMethod">
-            <summary>
-                The method information of the
-                <see cref="M:Butler.Resolver.BaseServiceResolver.ResolveLazy``1(System.Object,Butler.Resolver.ServiceResolveContext,Butler.Resolver.ServiceResolveMode,Butler.Resolver.ServiceConstructionMode)"/> method.
-            </summary>
         </member>
         <member name="T:Butler.Resolver.IServiceResolver">
             <summary>
@@ -2212,7 +2239,7 @@
                 A compound of required information while resolving a service.
             </summary>
         </member>
-        <member name="M:Butler.Resolver.ServiceResolveContext.#ctor(Butler.Resolver.IServiceResolver,Butler.Register.IServiceRegister,Butler.Resolver.ServiceConstructionMode,System.Type,System.Type,Butler.Util.TraceBuilder)">
+        <member name="M:Butler.Resolver.ServiceResolveContext.#ctor(Butler.Resolver.IServiceResolver,Butler.Register.IServiceRegister,Butler.Resolver.ServiceConstructionMode,System.Type,System.Type)">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.Resolver.ServiceResolveContext"/> class.
             </summary>
@@ -2221,9 +2248,6 @@
             <param name="constructionMode">the service construction mode for the resolve</param>
             <param name="serviceType">the type of the service being resolved</param>
             <param name="parentType">the type of the parent</param>
-            <param name="traceBuilder">
-                the trace builder; if <see langword="null"/> a new instance will be created.
-            </param>
             <exception cref="T:System.ArgumentNullException">
                 thrown if the specified <paramref name="resolver"/> is <see langword="null"/>.
             </exception>
@@ -2286,15 +2310,6 @@
                 Gets the type of the service being service.
             </summary>
         </member>
-        <member name="P:Butler.Resolver.ServiceResolveContext.TraceBuilder">
-            <summary>
-                Gets the trace builder used for useful output on resolve failures to make it easier
-                to find resolution errors and their cause.
-            </summary>
-            <remarks>
-                Please note that this property is only available when the Debug configuration is used.
-            </remarks>
-        </member>
         <member name="T:Butler.Resolver.ServiceResolveMode">
             <summary>
                 A set of different service resolution modes.
@@ -2332,6 +2347,11 @@
                 A dictionary containing service lifetimes storing an <see cref="T:Butler.Lifetime.ILifetimeManager"/> class.
             </summary>
         </member>
+        <member name="F:Butler.RootContainer._lifetimeLock">
+            <summary>
+                The lock used for the lifetime manager dictionary ( <see cref="F:Butler.RootContainer._lifetimes"/>).
+            </summary>
+        </member>
         <member name="F:Butler.RootContainer._disposed">
             <summary>
                 A value indicating whether the root container has been disposed.
@@ -2354,6 +2374,11 @@
         <member name="M:Butler.RootContainer.#ctor">
             <summary>
                 Initializes a new instance of the <see cref="T:Butler.RootContainer"/> class.
+            </summary>
+        </member>
+        <member name="M:Butler.RootContainer.Dispose">
+            <summary>
+                Disposes the root container.
             </summary>
         </member>
         <member name="P:Butler.RootContainer.Parent">
@@ -2487,15 +2512,6 @@
             </param>
             <returns>the resolved service</returns>
         </member>
-        <member name="M:Butler.RootContainer.GetLifetimes">
-            <summary>
-                Debugger proxy interface for <see cref="T:Butler.Util.Proxy.LifetimeProxy"/>.
-            </summary>
-            <returns>
-                a list of key-value pairs containing lifetime managers keyed by the corresponding
-                lifetime type
-            </returns>
-        </member>
         <member name="M:Butler.RootContainer.GetLifetimeManager(Butler.Lifetime.IServiceLifetime)">
             <summary>
                 Retrieves the <see cref="T:Butler.Lifetime.ILifetimeManager"/> for the specified <paramref name="serviceLifetime"/>.
@@ -2535,192 +2551,6 @@
             <exception cref="T:System.ObjectDisposedException">thrown if the container is disposed.</exception>
             <exception cref="T:System.InvalidOperationException">
                 thrown if the maximum service resolve depth was exceeded.
-            </exception>
-        </member>
-        <member name="M:Butler.RootContainer.DisposeAsync">
-            <summary>
-                Disposes the root container asynchronously.
-            </summary>
-            <returns>a task that represents the asynchronous operation.</returns>
-        </member>
-        <member name="T:Butler.Util.Proxy.LifetimeProxy">
-            <summary>
-                Debugger Type Proxy for <see cref="T:Butler.Lifetime.IServiceLifetime"/>.
-            </summary>
-        </member>
-        <member name="M:Butler.Util.Proxy.LifetimeProxy.#ctor(Butler.Lifetime.IServiceLifetime,Butler.Lifetime.ILifetimeManager)">
-            <summary>
-                Initializes a new instance of the <see cref="T:Butler.Util.Proxy.LifetimeProxy"/> class.
-            </summary>
-            <param name="serviceLifetime">the service lifetime bound to</param>
-            <param name="lifetimeManager">the lifetime manager bound to</param>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceLifetime"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="lifetimeManager"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="P:Butler.Util.Proxy.LifetimeProxy.ServiceLifetime">
-            <summary>
-                Gets the service lifetime bound to.
-            </summary>
-        </member>
-        <member name="P:Butler.Util.Proxy.LifetimeProxy.LifetimeManager">
-            <summary>
-                Gets the lifetime manager bound to.
-            </summary>
-        </member>
-        <member name="T:Butler.Util.Proxy.RegistrationProxy">
-            <summary>
-                An union of a service registration alias ( <see cref="P:Butler.Util.Proxy.RegistrationProxy.Name"/>), a service type (
-                <see cref="P:Butler.Util.Proxy.RegistrationProxy.ServiceType"/>) and a service registration ( <see cref="P:Butler.Util.Proxy.RegistrationProxy.Registration"/>) used
-                for advanced debugging views.
-            </summary>
-        </member>
-        <member name="M:Butler.Util.Proxy.RegistrationProxy.#ctor(System.String,System.Type,Butler.Registration.IServiceRegistration)">
-            <summary>
-                Initializes a new instance of the <see cref="T:Butler.Util.Proxy.RegistrationProxy"/> class.
-            </summary>
-            <param name="name">the name / alias of the registration</param>
-            <param name="serviceType">the type of the service</param>
-            <param name="registration">the registration</param>
-        </member>
-        <member name="P:Butler.Util.Proxy.RegistrationProxy.Name">
-            <summary>
-                Gets the key.
-            </summary>
-        </member>
-        <member name="P:Butler.Util.Proxy.RegistrationProxy.Registration">
-            <summary>
-                Gets the associated value.
-            </summary>
-        </member>
-        <member name="P:Butler.Util.Proxy.RegistrationProxy.ServiceType">
-            <summary>
-                Gets the item.
-            </summary>
-        </member>
-        <member name="T:Butler.Util.Proxy.ResolverSettingsProxy">
-            <summary>
-                A class for wrapping the resolver settings into a category.
-            </summary>
-        </member>
-        <member name="M:Butler.Util.Proxy.ResolverSettingsProxy.#ctor(Butler.Resolver.IServiceResolver)">
-            <summary>
-                Initializes a new instance of the <see cref="T:Butler.Util.Proxy.ResolverSettingsProxy"/> class.
-            </summary>
-            <param name="serviceResolver">the service resolver bound to</param>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceResolver"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="P:Butler.Util.Proxy.ResolverSettingsProxy.ServiceResolver">
-            <summary>
-                Gets the service resolver bound to.
-            </summary>
-        </member>
-        <member name="P:Butler.Util.Proxy.ResolverSettingsProxy.MaximumDepth">
-            <summary>
-                Gets or sets the maximum depth of the <see cref="P:Butler.Util.Proxy.ResolverSettingsProxy.ServiceResolver"/>.
-            </summary>
-        </member>
-        <member name="P:Butler.Util.Proxy.ResolverSettingsProxy.ServiceConstructionMode">
-            <summary>
-                Gets or sets the service construction mode of the <see cref="P:Butler.Util.Proxy.ResolverSettingsProxy.ServiceResolver"/>.
-            </summary>
-        </member>
-        <member name="T:Butler.Util.Proxy.RootContainerProxy">
-            <summary>
-                Debugger type proxy for the <see cref="P:Butler.Util.Proxy.RootContainerProxy.RootContainer"/> type.
-            </summary>
-        </member>
-        <member name="M:Butler.Util.Proxy.RootContainerProxy.#ctor(Butler.RootContainer)">
-            <summary>
-                Initializes a new instance of the <see cref="T:Butler.Util.Proxy.RootContainerProxy"/> class.
-            </summary>
-            <param name="rootContainer">the root container bound to</param>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="rootContainer"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="P:Butler.Util.Proxy.RootContainerProxy.Settings">
-            <summary>
-                Gets a proxy holding debugger information of settings for the root container.
-            </summary>
-        </member>
-        <member name="P:Butler.Util.Proxy.RootContainerProxy.Registrations">
-            <summary>
-                Gets the container registrations.
-            </summary>
-        </member>
-        <member name="P:Butler.Util.Proxy.RootContainerProxy.RootContainer">
-            <summary>
-                Gets the root container bound to.
-            </summary>
-        </member>
-        <member name="T:Butler.Util.Reflector">
-            <summary>
-                An utility class for resolving a service with dependencies from an <see cref="T:Butler.Resolver.IServiceResolver"/>.
-            </summary>
-        </member>
-        <member name="M:Butler.Util.Reflector.CanUseConstructor(Butler.Register.IServiceRegister,System.Collections.Generic.IEnumerable{System.Reflection.ParameterInfo})">
-            <summary>
-                Gets a value indicating whether the specified <paramref name="parameters"/> can be
-                resolved using the specified <paramref name="register"/>.
-            </summary>
-            <param name="register">the register to use</param>
-            <param name="parameters">the service implementation type constructor parameters</param>
-            <returns>
-                a value indicating whether the specified <paramref name="parameters"/> can be
-                resolved using the specified <paramref name="register"/>
-            </returns>
-        </member>
-        <member name="M:Butler.Util.Reflector.Resolve``1(Butler.Resolver.ServiceResolveContext)">
-            <summary>
-                Creates a new instance of the specified service type (in <paramref name="context"/>).
-            </summary>
-            <typeparam name="TImplementation">the type of the implementation to construct</typeparam>
-            <param name="context">the resolve context</param>
-            <returns>the service instance</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="context"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Butler.Util.Reflector.Resolve(System.Type,Butler.Resolver.ServiceResolveContext)">
-            <summary>
-                Creates a new instance of the specified service type (in <paramref name="context"/>).
-            </summary>
-            <param name="implementationType">the type of the implementation to construct</param>
-            <param name="context">the resolve context</param>
-            <returns>the service instance</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="implementationType"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="context"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Butler.Util.Reflector.ResolveConstructor(Butler.Resolver.ServiceResolveContext,System.Collections.Generic.IEnumerable{System.Reflection.ConstructorInfo},System.Type,Butler.Resolver.ServiceConstructionMode)">
-            <summary>
-                Resolves the matching constructor for the specified
-                <paramref name="implementationType"/> with respecting the specified <paramref name="constructionMode"/>.
-            </summary>
-            <param name="context">the current resolver context</param>
-            <param name="availableConstructors">
-                an enumerable that enumerates through the available constructors for the specified <paramref name="implementationType"/>.
-            </param>
-            <param name="implementationType">
-                the type of the service implementation to resolve the constructor for
-            </param>
-            <param name="constructionMode">the service construction mode.</param>
-            <returns>the constructor chosen fro the specified <paramref name="implementationType"/></returns>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-                thrown if the specified <paramref name="constructionMode"/> is unsupported or not
-                defined in the <see cref="T:Butler.Resolver.ServiceConstructionMode"/> enumeration.
-            </exception>
-            <exception cref="T:Butler.Util.ResolverException">
-                thrown if no passable constructor was found for the specified <paramref name="implementationType"/>
             </exception>
         </member>
         <member name="T:Butler.Util.ResolverException">
@@ -2792,178 +2622,6 @@
             </summary>
             <param name="serializationInfo">the serialization information</param>
             <param name="streamingContext">the streaming context</param>
-        </member>
-        <member name="T:Butler.Util.TraceBuilder">
-            <summary>
-                An utility class that is useful for building traces when resolving or registering services.
-            </summary>
-        </member>
-        <member name="F:Butler.Util.TraceBuilder._entries">
-            <summary>
-                A list holding the trace elements.
-            </summary>
-        </member>
-        <member name="F:Butler.Util.TraceBuilder._entryLock">
-            <summary>
-                The lock for the entries.
-            </summary>
-        </member>
-        <member name="M:Butler.Util.TraceBuilder.#ctor">
-            <summary>
-                Initializes a new instance of the <see cref="T:Butler.Util.TraceBuilder"/> class.
-            </summary>
-        </member>
-        <member name="P:Butler.Util.TraceBuilder.Elements">
-            <summary>
-                Gets the trace elements.
-            </summary>
-        </member>
-        <member name="P:Butler.Util.TraceBuilder.DebuggerDisplay">
-            <summary>
-                Gets the debugger display value.
-            </summary>
-        </member>
-        <member name="M:Butler.Util.TraceBuilder.Append(System.String)">
-            <summary>
-                Appends the specified <paramref name="content"/> to the trace.
-            </summary>
-            <param name="content">the trace content</param>
-            <returns>the <see cref="T:Butler.Util.TraceBuilder"/> instance</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="content"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Butler.Util.TraceBuilder.Append(Butler.Util.TraceLevel,System.String)">
-            <summary>
-                Appends the specified <paramref name="content"/> to the trace.
-            </summary>
-            <param name="level">the trace level</param>
-            <param name="content">the trace content</param>
-            <returns>the <see cref="T:Butler.Util.TraceBuilder"/> instance</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="content"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Butler.Util.TraceBuilder.Append(Butler.Util.TraceElement)">
-            <summary>
-                Appends the specified <paramref name="element"/> to the trace elements list.
-            </summary>
-            <param name="element">the element to add</param>
-            <returns>the <see cref="T:Butler.Util.TraceBuilder"/> instance</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="element"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Butler.Util.TraceBuilder.AppendConstructorResolve(System.Type,System.Reflection.ConstructorInfo)">
-            <summary>
-                Appends a trace element that indicates that a service of type
-                <paramref name="serviceType"/> is tried to resolve using the specified <paramref name="constructor"/>.
-            </summary>
-            <param name="serviceType">the type of the service being resolved</param>
-            <param name="constructor">the constructor</param>
-            <returns>the <see cref="T:Butler.Util.TraceBuilder"/> instance</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="constructor"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Butler.Util.TraceBuilder.AppendResolve(System.Type)">
-            <summary>
-                Appends a trace element that indicates that a service of type
-                <paramref name="serviceType"/> is resolving.
-            </summary>
-            <param name="serviceType">the type of the service being resolved</param>
-            <returns>the <see cref="T:Butler.Util.TraceBuilder"/> instance</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Butler.Util.TraceBuilder.AppendResolved(System.Type,System.Type)">
-            <summary>
-                Appends a trace element that indicates that a service was resolved successfully.
-            </summary>
-            <param name="serviceType">the type of the service being resolved</param>
-            <param name="implementationType">the implementation of the service created</param>
-            <returns>the <see cref="T:Butler.Util.TraceBuilder"/> instance</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="implementationType"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Butler.Util.TraceBuilder.AppendResolveFail(System.Type,System.Boolean)">
-            <summary>
-                Appends a trace element that indicates that a service resolve failed.
-            </summary>
-            <param name="serviceType">the type of the service being resolved</param>
-            <param name="critical">
-                a value indicating whether the resolve failure is critical (e.g. there are no service
-                alternatives to resolve).
-            </param>
-            <returns>the <see cref="T:Butler.Util.TraceBuilder"/> instance</returns>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="M:Butler.Util.TraceBuilder.Clear">
-            <summary>
-                Clears the trace.
-            </summary>
-        </member>
-        <member name="M:Butler.Util.TraceBuilder.ToString">
-            <summary>
-                Builds a <see cref="T:System.String"/> representation of the object.
-            </summary>
-            <returns>a <see cref="T:System.String"/> representation of the object</returns>
-        </member>
-        <member name="T:Butler.Util.TraceElement">
-            <summary>
-                A class holding the information of a trace element.
-            </summary>
-        </member>
-        <member name="M:Butler.Util.TraceElement.#ctor(Butler.Util.TraceLevel,System.String)">
-            <summary>
-                Initializes a new instance of the <see cref="T:Butler.Util.TraceElement"/> class.
-            </summary>
-            <param name="level">the level of the trace entry</param>
-            <param name="content">the content of the trace element</param>
-            <exception cref="T:System.ArgumentNullException">
-                thrown if the specified <paramref name="content"/> is <see langword="null"/>.
-            </exception>
-        </member>
-        <member name="P:Butler.Util.TraceElement.Level">
-            <summary>
-                Gets the level of the trace entry.
-            </summary>
-        </member>
-        <member name="P:Butler.Util.TraceElement.Content">
-            <summary>
-                Gets the content of the trace element.
-            </summary>
-        </member>
-        <member name="T:Butler.Util.TraceLevel">
-            <summary>
-                A set of trace levels.
-            </summary>
-        </member>
-        <member name="F:Butler.Util.TraceLevel.Info">
-            <summary>
-                Denotes that the trace entry is only for information.
-            </summary>
-        </member>
-        <member name="F:Butler.Util.TraceLevel.Warning">
-            <summary>
-                Denotes that for example a resolve failed or a constructor did not match, but the
-                resolve can continue.
-            </summary>
-        </member>
-        <member name="F:Butler.Util.TraceLevel.Error">
-            <summary>
-                Denotes that an error occurred (e.g. resolve failed, etc.).
-            </summary>
         </member>
     </members>
 </doc>
