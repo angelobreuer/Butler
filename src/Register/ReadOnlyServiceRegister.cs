@@ -114,6 +114,34 @@
             => _registrations.TryGetValue(type, out var registration) ? registration : null;
 
         /// <summary>
+        ///     Unregisters the service registration ( <see cref="IServiceRegistration"/>) for the
+        ///     specified <typeparamref name="TService"/>.
+        /// </summary>
+        /// <typeparam name="TService">the service type to unregister</typeparam>
+        /// <returns>a value indicating whether the service was unregistered</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        public bool Unregister<TService>() => throw ThrowReadOnlyException();
+
+        /// <summary>
+        ///     Unregisters the service registration ( <see cref="IServiceRegistration"/>) for the
+        ///     specified <paramref name="serviceType"/>.
+        /// </summary>
+        /// <param name="serviceType">the service type to unregister</param>
+        /// <returns>a value indicating whether the service was unregistered</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        public bool Unregister(Type serviceType) => throw ThrowReadOnlyException();
+
+        /// <summary>
         ///     Finds the service registration for the specified <typeparamref name="TService"/>.
         /// </summary>
         /// <typeparam name="TService">the type of the service to find the service for</typeparam>

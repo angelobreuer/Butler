@@ -112,6 +112,44 @@
         }
 
         /// <summary>
+        ///     Unregisters the service registration ( <see cref="IServiceRegistration"/>) for the
+        ///     specified <typeparamref name="TService"/>.
+        /// </summary>
+        /// <typeparam name="TService">the service type to unregister</typeparam>
+        /// <returns>a value indicating whether the service was unregistered</returns>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        public bool Unregister<TService>() => Unregister(typeof(TService));
+
+        /// <summary>
+        ///     Unregisters the service registration ( <see cref="IServiceRegistration"/>) for the
+        ///     specified <paramref name="serviceType"/>.
+        /// </summary>
+        /// <param name="serviceType">the service type to unregister</param>
+        /// <returns>a value indicating whether the service was unregistered</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        public bool Unregister(Type serviceType)
+        {
+            if (serviceType is null)
+            {
+                throw new ArgumentNullException(nameof(serviceType));
+            }
+
+            // acquire lock
+            lock (_registrationsLock)
+            {
+                // remove registration
+                return _registrations.Remove(serviceType);
+            }
+        }
+
+        /// <summary>
         ///     Gets or sets the default service registration mode (
         ///     <see cref="ServiceRegistrationMode"/>). The default value for this property is <see cref="ServiceRegistrationMode.Throw"/>.
         /// </summary>

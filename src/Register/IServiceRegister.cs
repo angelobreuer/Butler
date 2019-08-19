@@ -298,5 +298,30 @@
         /// <returns>the multi-registration containing the registrations</returns>
         MultiRegistration RegisterAll(Type serviceType, IEnumerable<IServiceRegistration> registrations,
             ServiceRegistrationMode registrationMode = ServiceRegistrationMode.Default);
+
+        /// <summary>
+        ///     Unregisters the service registration ( <see cref="IServiceRegistration"/>) for the
+        ///     specified <typeparamref name="TService"/>.
+        /// </summary>
+        /// <typeparam name="TService">the service type to unregister</typeparam>
+        /// <returns>a value indicating whether the service was unregistered</returns>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        bool Unregister<TService>();
+
+        /// <summary>
+        ///     Unregisters the service registration ( <see cref="IServiceRegistration"/>) for the
+        ///     specified <paramref name="serviceType"/>.
+        /// </summary>
+        /// <param name="serviceType">the service type to unregister</param>
+        /// <returns>a value indicating whether the service was unregistered</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        bool Unregister(Type serviceType);
     }
 }
