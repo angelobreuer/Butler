@@ -49,7 +49,7 @@
 #if SUPPORTS_CONCURRENT_COLLECTIONS
         private readonly ConcurrentDictionary<IServiceLifetime, ILifetimeManager> _lifetimes;
 #else // SUPPORTS_CONCURRENT_COLLECTIONS
-        private readonly IDictionary<IServiceLifetime, ILifetimeManager> _lifetimes;
+        private readonly Dictionary<IServiceLifetime, ILifetimeManager> _lifetimes;
 
         /// <summary>
         ///     The lock used for the lifetime manager dictionary ( <see cref="_lifetimes"/>).
@@ -400,6 +400,26 @@
 
             return service;
         }
+
+#if DEBUG
+
+        /// <summary>
+        ///     Debugger proxy interface for <see cref="LifetimeProxy"/>.
+        /// </summary>
+        /// <returns>
+        ///     a list of key-value pairs containing lifetime managers keyed by the corresponding
+        ///     lifetime type
+        /// </returns>
+#if SUPPORTS_READONLY_COLLECTIONS
+
+        public IReadOnlyDictionary<IServiceLifetime, ILifetimeManager> GetLifetimes() => _lifetimes;
+
+#else // SUPPORTS_READONLY_COLLECTIONS
+
+        public IDictionary<IServiceLifetime, ILifetimeManager> GetLifetimes() => _lifetimes;
+
+#endif // !SUPPORTS_READONLY_COLLECTIONS
+#endif // DEBUG
 
         /// <summary>
         ///     Retrieves the <see cref="ILifetimeManager"/> for the specified <paramref name="serviceLifetime"/>.
