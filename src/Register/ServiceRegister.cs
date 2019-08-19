@@ -35,6 +35,22 @@
         private readonly object _registrationsLock;
 
         /// <summary>
+        ///     The current <see cref="DefaultServiceLifetime"/>.
+        /// </summary>
+#if DEBUG
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#endif // DEBUG
+        private IServiceLifetime _defaultServiceLifetime = Lifetime.Transient;
+
+        /// <summary>
+        ///     The current <see cref="DefaultRegistrationMode"/>.
+        /// </summary>
+#if DEBUG
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#endif // DEBUG
+        private ServiceRegistrationMode _defaultRegistrationMode;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ServiceRegister"/> class.
         /// </summary>
         public ServiceRegister()
@@ -88,8 +104,47 @@
         /// <summary>
         ///     Gets or sets the default service lifetime when no specific lifetime was specified.
         /// </summary>
-        public IServiceLifetime DefaultServiceLifetime { get; set; }
-            = Lifetime.Transient;
+        /// <exception cref="ArgumentNullException">thrown if the specified value is <see langword="null"/>.</exception>
+        public IServiceLifetime DefaultServiceLifetime
+        {
+            get => _defaultServiceLifetime;
+            set => _defaultServiceLifetime = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        ///     Gets or sets the default service registration mode (
+        ///     <see cref="ServiceRegistrationMode"/>). The default value for this property is <see cref="ServiceRegistrationMode.Throw"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     thrown if the specified value is not defined in the
+        ///     <see cref="ServiceRegistrationMode"/> enumeration.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     thrown if the specified value is <see cref="ServiceRegistrationMode.Default"/>
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        public ServiceRegistrationMode DefaultRegistrationMode
+        {
+            get => _defaultRegistrationMode;
+
+            set
+            {
+                if (!Enum.IsDefined(typeof(ServiceRegistrationMode), value))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), value,
+                        "The specified value is not defined in the ServiceRegistrationMode enumeration.");
+                }
+
+                if (value == ServiceRegistrationMode.Default)
+                {
+                    throw new InvalidOperationException("The specified value can not be 'Default'.");
+                }
+
+                _defaultRegistrationMode = value;
+            }
+        }
 
         /// <summary>
         ///     Creates a read-only instance of the service register.
@@ -461,6 +516,13 @@
             // acquire lock
             lock (_registrationsLock)
             {
+                // check if the register registration mode should be used
+                if (registrationMode == ServiceRegistrationMode.Default)
+                {
+                    // use register registration mode
+                    registrationMode = DefaultRegistrationMode;
+                }
+
                 // check if a service registration already exists for the type
                 if (registrationMode != ServiceRegistrationMode.Replace && _registrations.TryGetValue(type, out var currentRegistration))
                 {

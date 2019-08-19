@@ -6,10 +6,15 @@
     public enum ServiceRegistrationMode : byte
     {
         /// <summary>
+        ///     Denotes that the default mode for the <see cref="IServiceRegister"/> should be used.
+        /// </summary>
+        Default,
+
+        /// <summary>
         ///     Denotes that an exception should be thrown if a service registration already exists
         ///     for the specified service type.
         /// </summary>
-        Default,
+        Throw,
 
         /// <summary>
         ///     Denotes that the existing service registration should be replaced with the new.

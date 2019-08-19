@@ -13,10 +13,35 @@
     public sealed class ReadOnlyServiceRegister : IServiceRegister
     {
         private readonly IServiceLifetime _defaultServiceLifetime;
+        private readonly ServiceRegistrationMode _defaultRegistrationMode;
+
+        /// <summary>
+        ///     Gets or sets the default service registration mode (
+        ///     <see cref="ServiceRegistrationMode"/>). The default value for this property is <see cref="ServiceRegistrationMode.Throw"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     thrown if the specified value is not defined in the
+        ///     <see cref="ServiceRegistrationMode"/> enumeration.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     thrown if the specified value is <see cref="ServiceRegistrationMode.Default"/>
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        public ServiceRegistrationMode DefaultRegistrationMode
+        {
+            get => _defaultRegistrationMode;
+            set => throw ThrowReadOnlyException();
+        }
 
         /// <summary>
         ///     Gets or sets the default service lifetime when no specific lifetime was specified.
         /// </summary>
+        /// <exception cref="InvalidOperationException">
+        ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
+        /// </exception>
+        /// <exception cref="ArgumentNullException">thrown if the specified value is <see langword="null"/>.</exception>
         public IServiceLifetime DefaultServiceLifetime
         {
             get => _defaultServiceLifetime;
