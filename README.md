@@ -23,16 +23,17 @@
 
 <br/>
 
-<!-- AppVeyor CI (master) Badge -->
+<!-- AppVeyor CI (master) Badge 
 <a href="https://ci.appveyor.com/project/angelobreuer/Butler">
 	<img alt="AppVeyor" src="https://img.shields.io/appveyor/ci/angelobreuer/Butler?style=for-the-badge">
-</a>	
+</a>	-->
 
 
-<!-- AppVeyor CI (Development) Badge -->
+<!-- AppVeyor CI (Development) Badge 
 <a href="https://github.com/angelobreuer/Butler/tree/dev">
 	<img alt="AppVeyor" src="https://img.shields.io/appveyor/ci/angelobreuer/Butler/dev?label=development&style=for-the-badge">
-</a>
+</a>-->
+
 
 </p>
 
