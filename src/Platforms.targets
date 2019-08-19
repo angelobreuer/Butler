@@ -6,12 +6,23 @@
       <!-- DEBUG Configuration -->
       <PropertyGroup>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <PackageId>Butler.IoC.Development</PackageId>
+        <Description>
+          Butler is an easy-to-use and beginner-friendly IoC (Inversion of Control) container designed for performance,
+          low-memory consumption and easy integrability. (Note: This package contains additional debugger
+          proxies and resolve tracing, for production use the Butler.IoC package)
+        </Description>
       </PropertyGroup>
     </When>
     <Otherwise>
       <!-- RELEASE Configuration -->
       <PropertyGroup>
         <DefineConstants>RELEASE</DefineConstants>
+        <PackageId>Butler.IoC</PackageId>
+        <Description>
+          Butler is an easy-to-use and beginner-friendly IoC (Inversion of Control) container designed for performance,
+          low-memory consumption and easy integrability.
+        </Description>
       </PropertyGroup>
     </Otherwise>
   </Choose>

@@ -5,6 +5,10 @@
     <OutputType>Library</OutputType>
     <TargetFrameworks>netstandard1.0;netstandard2.0;netstandard2.1;net20;net35</TargetFrameworks>
     <DocumentationFile>Butler.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <!-- NuGet Package -->
+  <PropertyGroup>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Angelo Breuer</Authors>
@@ -15,7 +19,6 @@
     <PackageProjectUrl>https://github.com/angelobreuer/Butler</PackageProjectUrl>
     <RepositoryUrl>https://github.com/angelobreuer/Butler</RepositoryUrl>
     <PackageTags>inversion of control,ioc,dependency-injection,di,container,butler,butlerioc,butler-ioc</PackageTags>
-    <PackageId>Butler.IoC</PackageId>
   </PropertyGroup>
 
   <!-- Build Configuration / Platform-Specific -->
