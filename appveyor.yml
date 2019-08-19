@@ -1,0 +1,40 @@
+# Build worker image (VM template)
+image: ubuntu
+
+# Maximum number of concurrent jobs for the project
+max_jobs: 3
+
+# Build with Release and Debug configuration
+configuration:
+  - Release
+  - Debug
+
+# Deployment
+deploy:
+  # NuGet Deployment
+  - provider: NuGet
+    api_key:
+      secure: 890qmsksa/e++bOSl2kir1cjUn3Uo+NNJBvmqeI0/4FQKdogI29SYxxPtmAkCT8i
+    skip_symbols: false
+    artifact: /.*\.nupkg/
+
+  # GitHub Release Deployment
+  - provider: GitHub
+    release: v$(appveyor_build_version)
+    description: 'Automated AppVeyor deployment'
+    auth_token:
+      secure: FXSySl7mskNX54E9YTCBXckN8gOPLFU5Q+rg1iNTs5xkeuVLyJ+wMjKeFeEwcxe5
+    prerelease: false
+    draft: false
+    artifact: /.*\.nupkg/
+    on:
+      branch: master
+      APPVEYOR_REPO_TAG: true
+
+# Build Settings
+build:
+  parallel: true
+  project: src/Butler.sln
+  publish_nuget: true
+  publish_nuget_symbols: true
+  verbosity: minimal
