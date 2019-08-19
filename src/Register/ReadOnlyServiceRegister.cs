@@ -60,6 +60,7 @@
         /// <summary>
         ///     Initializes a new instance of the <see cref="ReadOnlyServiceRegister"/> class.
         /// </summary>
+        /// <param name="defaultRegistrationMode">the default registration mode</param>
         /// <param name="defaultServiceLifetime">the default service lifetime</param>
         /// <param name="registrations">the static registrations</param>
         /// <exception cref="ArgumentNullException">
@@ -70,13 +71,16 @@
         /// </exception>
 #if SUPPORTS_READONLY_COLLECTIONS
 
-        public ReadOnlyServiceRegister(IServiceLifetime defaultServiceLifetime, IReadOnlyDictionary<Type, IServiceRegistration> registrations)
+        public ReadOnlyServiceRegister(ServiceRegistrationMode defaultRegistrationMode,
+            IServiceLifetime defaultServiceLifetime, IReadOnlyDictionary<Type, IServiceRegistration> registrations)
 #else // SUPPORTS_READONLY_COLLECTIONS
 
-        public ReadOnlyServiceRegister(IServiceLifetime defaultServiceLifetime, IDictionary<Type, IServiceRegistration> registrations)
+        public ReadOnlyServiceRegister(ServiceRegistrationMode defaultRegistrationMode,
+            IServiceLifetime defaultServiceLifetime, IDictionary<Type, IServiceRegistration> registrations)
 
 #endif // !SUPPORTS_READONLY_COLLECTIONS
         {
+            _defaultRegistrationMode = defaultRegistrationMode;
             _defaultServiceLifetime = defaultServiceLifetime ?? throw new ArgumentNullException(nameof(defaultServiceLifetime));
             _registrations = registrations ?? throw new ArgumentNullException(nameof(registrations));
         }
@@ -100,7 +104,7 @@
         /// </summary>
         /// <returns>the read-only service register</returns>
         public ReadOnlyServiceRegister AsReadOnly()
-            => new ReadOnlyServiceRegister(DefaultServiceLifetime, _registrations);
+            => new ReadOnlyServiceRegister(DefaultRegistrationMode, DefaultServiceLifetime, _registrations);
 
         /// <summary>
         ///     Finds the service registration for the specified <paramref name="type"/>.
@@ -119,9 +123,6 @@
         /// </summary>
         /// <typeparam name="TService">the service type to unregister</typeparam>
         /// <returns>a value indicating whether the service was unregistered</returns>
-        /// <exception cref="ArgumentNullException">
-        ///     thrown if the specified <paramref name="serviceType"/> is <see langword="null"/>.
-        /// </exception>
         /// <exception cref="InvalidOperationException">
         ///     thrown if the register is read-only ( <see cref="IsReadOnly"/>).
         /// </exception>

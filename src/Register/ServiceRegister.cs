@@ -194,7 +194,7 @@
             lock (_registrationsLock)
             {
                 // create register
-                return new ReadOnlyServiceRegister(DefaultServiceLifetime,
+                return new ReadOnlyServiceRegister(DefaultRegistrationMode, DefaultServiceLifetime,
                     new Dictionary<Type, IServiceRegistration>(_registrations));
             }
         }
